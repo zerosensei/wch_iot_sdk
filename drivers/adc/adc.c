@@ -5,7 +5,7 @@
  */
 
 #include <soc.h>
-#include <common.h>
+#include <kernel.h>
 #include <device.h>
 #include "ch57x_hal_adc.h"
 

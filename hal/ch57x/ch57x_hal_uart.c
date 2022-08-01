@@ -4,21 +4,21 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "ch57x_hal_uart.h"
+#include <ch57x_common.h>
 
 /* baudrate = Fsys * 2 / (div * 16 * dl)*/
 void hal_uart_baudrate_set(WCH_UART_Type *uart, uint32_t baudrate)
 {
     uint32_t dl;
 
-    dl = WCH_ROUNDED_DIV(10 * GetSysClock() * 2 
+    dl = WCH_ROUNDED_DIV(10 * hal_clk_sys_get() * 2 
             /(16 * baudrate * uart->SETUP.DIV), 10);
     uart->SETUP.DL = (uint16_t)dl;
 }
 
 uint32_t hal_uart_baudrate_get(WCH_UART_Type *uart)
 {
-    return (GetSysClock() * 2 / (16 * uart->SETUP.DL * uart->SETUP.DIV));
+    return (hal_clk_sys_get() * 2 / (16 * uart->SETUP.DL * uart->SETUP.DIV));
 }
 
 size_t hal_uart_fifo_tx(WCH_UART_Type *uart, const uint8_t *data, size_t len)
@@ -57,4 +57,6 @@ void hal_uart_definit(WCH_UART_Type *uart)
     hal_uart_fifo_cfg(uart, true);
     hal_uart_rx_fifo_trig(uart, UART_FIFO_TRIG_BITS_4);
     hal_uart_tx_enable(uart);
+
+    hal_uart_frequency_div(uart, 1);
 }

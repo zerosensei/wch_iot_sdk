@@ -4,83 +4,80 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "ch57x_hal_sys.h"
+#include <ch57x_common.h>
 
-void hal_sys_clock_setup(sys_clk_source_t clk)
+__HIGHCODE void hal_sys_reset(void)
 {
-    SYS_SAFE_ACCESS();
-    R8_PLL_CONFIG &= ~(1 << 5); 
-    SYS_SAFE_DISABLE();
+    FLASH_ROM_SW_RESET();
+    sys_safe_access_enable();
+    R8_RST_WDOG_CTRL |= RB_SOFTWARE_RESET;
+    sys_safe_access_disable();
+}
 
-    switch (clk & SYS_CLK_MODE_MSK) {
-    case CLK_MODE_32K:
-        /**
-         * The clock source selection 32K frequency 
-         * division factor is invalid. 
-         */
-        hal_sys_clk_config(CLK_MODE_32K, 5U);
-        break;
-    case CLK_MODE_PLL:
-        hal_sys_clk_config(CLK_MODE_PLL, clk & SYS_CLK_DIV_MSK);
-        //TODO: delay  & flash cfg
+__HIGHCODE void hal_sys_init(void)
+{
+#if (FREQ_SYS == 60000000)
+    hal_clk_sys_setup(CLK_SOURCE_PLL_60MHZ);
+#elif (FREQ_SYS == 48000000)
+    hal_clk_sys_setup(CLK_SOURCE_PLL_48MHZ);
+#elif (FREQ_SYS == 40000000)
+    hal_clk_sys_setup(CLK_SOURCE_PLL_40MHZ);
+#elif (FREQ_SYS == 32000000)
+    hal_clk_sys_setup(CLK_SOURCE_PLL_32MHZ);
+#elif (FREQ_SYS == 24000000)
+    hal_clk_sys_setup(CLK_SOURCE_PLL_24MHZ);
+#elif (FREQ_SYS == 16000000)
+    hal_clk_sys_setup(CLK_SOURCE_HSE_16MHZ);
+#elif (FREQ_SYS == 8000000)
+    hal_clk_sys_setup(CLK_SOURCE_HSE_8MHZ);
+#elif (FREQ_SYS == 4000000)
+    hal_clk_sys_setup(CLK_SOURCE_HSE_4MHZ);
+#elif (FREQ_SYS == 2000000)
+    hal_clk_sys_setup(CLK_SOURCE_HSE_2MHZ);
+#elif (FREQ_SYS == 1000000)
+    hal_clk_sys_setup(CLK_SOURCE_HSE_1MHZ);
+#endif
 
-        break;
-    case CLK_MODE_32M:
-    default:
-        hal_sys_clk_config(CLK_MODE_32M, clk & SYS_CLK_DIV_MSK);
+//TODO: DCDC 
+}
 
-        for(int i = 0; i < 1200; i++)
-        {
-            __nop();
-            __nop();
-        }
-        break;
-    }
+__HIGHCODE void hal_sys_delay_us(uint16_t t)
+{
+    uint32_t i = 0;
+#if(FREQ_SYS == 60000000)
+    i = t * 15;
+#elif(FREQ_SYS == 48000000)
+    i = t * 12;
+#elif(FREQ_SYS == 40000000)
+    i = t * 10;
+#elif(FREQ_SYS == 32000000)
+    i = t << 3;
+#elif(FREQ_SYS == 24000000)
+    i = t * 6;
+#elif(FREQ_SYS == 16000000)
+    i = t << 2;
+#elif(FREQ_SYS == 8000000)
+    i = t << 1;
+#elif(FREQ_SYS == 4000000)
+    i = t;
+#elif(FREQ_SYS == 2000000)
+    i = t >> 1;
+#elif(FREQ_SYS == 1000000)
+    i = t >> 2;
+#endif
+    do
+    {
+        __asm__ volatile("nop");
+    } while(--i);
+}
 
 
+__HIGHCODE void hal_sys_delay_ms(uint16_t t)
+{
+    uint16_t i;
 
-
-    if (clk & 0x20) {
-        // HSE div
-        if (!(R8_HFCK_PWR_CTRL & RB_CLK_XT32M_PON)) {
-            SYS_SAFE_ACCESS();
-            R8_HFCK_PWR_CTRL |= RB_CLK_XT32M_PON; // HSE power on
-            for (int i = 0; i < 1200; i++) {
-                __nop();
-                __nop();
-            }
-        }
-
-        SYS_SAFE_ACCESS();
-        R16_CLK_SYS_CFG = (0 << 6) | (clk & 0x1f);
-        __nop();
-        __nop();
-        __nop();
-        __nop();
-
-        SYS_SAFE_ACCESS();
-        R8_FLASH_CFG = 0x51;
-        SYS_SAFE_DISABLE();
-    } else if (clk & 0x40) { 
-        // PLL div
-        if (!(R8_HFCK_PWR_CTRL & RB_CLK_PLL_PON)) {
-            SYS_SAFE_ACCESS();
-            R8_HFCK_PWR_CTRL |= RB_CLK_PLL_PON; // PLL power on
-            for (int i = 0; i < 2000; i++) {
-                __nop();
-                __nop();
-            }
-        }
-
-        SYS_SAFE_ACCESS();
-        R16_CLK_SYS_CFG = (1 << 6) | (clk & 0x1f);
-        __nop();
-        __nop();
-        __nop();
-        __nop();
-
-        SYS_SAFE_ACCESS();
-        R8_FLASH_CFG = 0x53;
-        SYS_SAFE_DISABLE();
+    for(i = 0; i < t; i++)
+    {
+        hal_sys_delay_us(1000);
     }
 }

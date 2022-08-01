@@ -9,7 +9,7 @@
 
 #include "ch57x_common.h"
 
-typedef struct
+typedef struct __attribute__((__packed__))
 {
     struct {
         volatile uint8_t MCR;
@@ -26,8 +26,12 @@ typedef struct
     } STAT;
 
     struct {
-        volatile uint8_t RBR;
-        volatile uint8_t THR;
+        union 
+        {
+            volatile uint8_t RBR;
+            volatile uint8_t THR;
+        };
+        uint8_t RESERVED;
         volatile uint8_t RFC;
         volatile uint8_t TFC;
     } FIFO;
@@ -80,10 +84,10 @@ typedef enum {
 } uart_fifo_trig_t;
 
 typedef enum {
-    UART_INT_RCV_RDY,
-    UART_INT_THR_ENMPTY,
-    UART_INT_LINE_STAT,
-    UART_INT_MODEM_CHG,
+    UART_INT_RCV_RDY = WCH_BIT(0),
+    UART_INT_THR_ENMPTY = WCH_BIT(1),
+    UART_INT_LINE_STAT = WCH_BIT(2),
+    UART_INT_MODEM_CHG = WCH_BIT(3),
 } uart_interrupt_t;
 
 typedef enum {
@@ -206,15 +210,15 @@ static inline void hal_uart_fifo_rx_clear(WCH_UART_Type *uart)
     uart->CTRL.FCR |= RB_FCR_RX_FIFO_CLR;
 }
 
-static inline void hal_uart_interrupt_enable(WCH_UART_Type *uart, uart_interrupt_t interrupt)
+static inline void hal_uart_interrupt_enable(WCH_UART_Type *uart, uint8_t interrupt)
 {
-    uart->CTRL.IER |= interrupt & WCH_MASK(4);
+    uart->CTRL.IER |= (interrupt) & WCH_MASK(4);
     uart->CTRL.MCR |= RB_MCR_INT_OE;
 }
 
-static inline void hal_uart_interrupt_disable(WCH_UART_Type *uart, uart_interrupt_t interrupt)
+static inline void hal_uart_interrupt_disable(WCH_UART_Type *uart, uint8_t interrupt)
 {
-    uart->CTRL.IER &= ~(interrupt & WCH_MASK(4));
+    uart->CTRL.IER &= ~((interrupt) & WCH_MASK(4));
 }
 
 static inline bool hal_uart_interrupt_is_enabled(WCH_UART_Type *uart, uart_interrupt_t interrupt)

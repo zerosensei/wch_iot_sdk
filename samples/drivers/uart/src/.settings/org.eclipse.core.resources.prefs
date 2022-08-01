@@ -1,0 +1,4 @@
+eclipse.preferences.version=1
+encoding//build/uart.lst=UTF-8
+encoding//drivers/timer/sys_timer.c=UTF-8
+encoding//hal/ch57x/inc/ch57x_hal_adc.h=UTF-8

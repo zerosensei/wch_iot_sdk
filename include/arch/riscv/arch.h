@@ -10,6 +10,8 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <soc.h>
+#include <irq.h>
 #include <toolchain.h>
 #include <arch/riscv/csr.h>
 #include <arch/riscv/exp.h>
@@ -23,6 +25,12 @@
 #define MSTATUS_MPIE_EN (1UL << 7)
 #define MSTATUS_FS_INIT (1UL << 13)
 #define MSTATUS_FS_MASK ((1UL << 13) | (1UL << 14))
+
+
+void arch_irq_enable(unsigned int irq);
+void arch_irq_disable(unsigned int irq);
+int arch_irq_is_enabled(unsigned int irq);
+void arch_irq_priority_set(unsigned int irq, unsigned int prio);
 
 /*
  * use atomic instruction csrrc to lock global irq
@@ -62,18 +70,18 @@ static ALWAYS_INLINE void arch_nop(void)
 	__asm__ volatile("nop");
 }
 
-// extern uint32_t sys_clock_cycle_get_32(void);
+extern uint32_t sys_clock_cycle_get_32(void);
 
-// static inline uint32_t arch_k_cycle_get_32(void)
-// {
-// 	return sys_clock_cycle_get_32();
-// }
+static inline uint32_t arch_k_cycle_get_32(void)
+{
+	return sys_clock_cycle_get_32();
+}
 
-// extern uint64_t sys_clock_cycle_get_64(void);
+extern uint64_t sys_clock_cycle_get_64(void);
 
-// static inline uint64_t arch_k_cycle_get_64(void)
-// {
-// 	return sys_clock_cycle_get_64();
-// }
+static inline uint64_t arch_k_cycle_get_64(void)
+{
+	return sys_clock_cycle_get_64();
+}
 
 #endif /* INCLUDE_ARCH_RISCV_ARCH_H */

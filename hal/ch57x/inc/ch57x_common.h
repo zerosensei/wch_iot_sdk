@@ -11,11 +11,19 @@
 #include <stddef.h>
 #include <stdbool.h>
 
-#include "wch_errors.h"
 #include "CH573SFR.h"
+#include "ISP573.h"
 
 #define __WCH_INT_FAST          __attribute__((interrupt("WCH-Interrupt-fast")))
 #define __HIGHCODE              __attribute__((section(".highcode")))
+
+#if (defined CLK_OSC32K) && (CLK_OSC32K == 0)
+#define F32K     	32768UL
+#elif (defined CLK_OSC32K) && (CLK_OSC32K == 2)
+#define F32K     	32768UL
+#else
+#define F32K     	32000UL
+#endif
 
 /**
  * @brief Macro for checking if the specified identifier is defined and it has
@@ -94,5 +102,33 @@
  * @return Array element count.
  */
 #define WCH_ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
+
+
+/** @brief Enumerated type for error codes. */
+typedef enum {
+    WCH_SUCCESS                    = 0,  ///< Operation performed successfully.
+    WCH_ERROR_INTERNAL             = 1,  ///< Internal error.
+    WCH_ERROR_NO_MEM               = 2,  ///< No memory for operation.
+    WCH_ERROR_NOT_SUPPORTED        = 3,  ///< Not supported.
+    WCH_ERROR_INVALID_PARAM        = 4,  ///< Invalid parameter.
+    WCH_ERROR_INVALID_STATE        = 5,  ///< Invalid state, operation disallowed in this state.
+    WCH_ERROR_INVALID_LENGTH       = 6,  ///< Invalid length.
+    WCH_ERROR_TIMEOUT              = 7,  ///< Operation timed out.
+    WCH_ERROR_FORBIDDEN            = 8,  ///< Operation is forbidden.
+    WCH_ERROR_NULL                 = 9,  ///< Null pointer.
+    WCH_ERROR_INVALID_ADDR         = 10, ///< Bad memory address.
+    WCH_ERROR_BUSY                 = 11, ///< Busy.
+    WCH_ERROR_ALREADY_INITIALIZED  = 12, ///< Module already initialized.
+} wch_err_t;
+
+//TODO:
+//#ifdef CONFIG_UART
+#include "ch57x_hal_uart.h"
+#include "ch57x_hal_sys.h"
+#include "ch57x_hal_gpio.h"
+#include "ch57x_hal_pfic.h"
+#include "ch57x_hal_systick.h"
+#include "ch57x_hal_rtc.h"
+#include "ch57x_hal_clk.h"
 
 #endif /* HAL_CH57X_INC_CH57X_COMMON_H */

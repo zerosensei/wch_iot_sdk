@@ -3,6 +3,7 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+
 #ifndef INCLUDE_ARCH_RISCV_EXP_H
 #define INCLUDE_ARCH_RISCV_EXP_H
 
@@ -10,31 +11,29 @@
 #include <stdint.h>
 
 struct __esf {
-	uint32_t ra;		/* return address */
+	unsigned long ra;		/* return address */
 
-	uint32_t t0;		/* Caller-saved temporary register */
-	uint32_t t1;		/* Caller-saved temporary register */
-	uint32_t t2;		/* Caller-saved temporary register */
-	uint32_t t3;		/* Caller-saved temporary register */
-	uint32_t t4;		/* Caller-saved temporary register */
-	uint32_t t5;		/* Caller-saved temporary register */
-	uint32_t t6;		/* Caller-saved temporary register */
+	unsigned long t0;		/* Caller-saved temporary register */
+	unsigned long t1;		/* Caller-saved temporary register */
+	unsigned long t2;		/* Caller-saved temporary register */
+	unsigned long t3;		/* Caller-saved temporary register */
+	unsigned long t4;		/* Caller-saved temporary register */
+	unsigned long t5;		/* Caller-saved temporary register */
+	unsigned long t6;		/* Caller-saved temporary register */
 
-	uint32_t a0;		/* function argument/return value */
-	uint32_t a1;		/* function argument */
-	uint32_t a2;		/* function argument */
-	uint32_t a3;		/* function argument */
-	uint32_t a4;		/* function argument */
-	uint32_t a5;		/* function argument */
-	uint32_t a6;		/* function argument */
-	uint32_t a7;		/* function argument */
+	unsigned long a0;		/* function argument/return value */
+	unsigned long a1;		/* function argument */
+	unsigned long a2;		/* function argument */
+	unsigned long a3;		/* function argument */
+	unsigned long a4;		/* function argument */
+	unsigned long a5;		/* function argument */
+	unsigned long a6;		/* function argument */
+	unsigned long a7;		/* function argument */
 
-	uint32_t mepc;		/* machine exception program counter */
-	uint32_t mstatus;	/* machine status register */
+	unsigned long mepc;		/* machine exception program counter */
+	unsigned long mstatus;	/* machine status register */
 
-	uint32_t s0;		/* callee-saved s0 */
-
-	uint32_t sp;		/* preserved (user or kernel) stack pointer */
+	unsigned long s0;		/* callee-saved s0 */
 
 #if defined(CONFIG_FPU)
 	uint32_t ft0;		/* Caller-saved temporary floating register */

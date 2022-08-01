@@ -10,6 +10,9 @@
 #include <sys/util.h>
 #include <toolchain.h>
 
+#define DEVICE_NAME_GET(name)   _CONCAT(__device_, name)
+#define DEVICE_GET(dev)         (&DEVICE_NAME_GET(dev))
+
 struct device_state {
     int init_result;
     bool is_initialized;
@@ -30,7 +33,5 @@ static inline int device_is_ready(const struct device *dev)
 
     return dev->sta->is_initialized && (dev->sta->init_result == 0);
 }
-
-
 
 #endif /* INCLUDE_DEVICE_H */

@@ -921,5 +921,21 @@ static inline int uart_drv_cmd(const struct device *dev, uint32_t cmd, uint32_t 
 #endif
 }
 
+void uart_init(void);
 
+#ifdef CONFIG_WCH_UART_0
+extern struct device __device_uart0;
+#endif
+
+#ifdef CONFIG_WCH_UART_1
+extern struct device __device_uart1;
+#endif
+
+#ifdef CONFIG_WCH_UART_2
+extern struct device __device_uart2;
+#endif
+
+#ifdef CONFIG_WCH_UART_3
+extern struct device __device_uart3;
+#endif
 #endif /* INCLUDE_DRIVERS_UART_H */

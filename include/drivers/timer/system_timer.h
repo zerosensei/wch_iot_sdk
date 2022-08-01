@@ -16,7 +16,8 @@
 #define ZEPHYR_INCLUDE_DRIVERS_SYSTEM_TIMER_H_
 
 #include <stdbool.h>
-#include <zephyr/types.h>
+#include <stddef.h>
+#include <stdint.h>
 
 #ifdef __cplusplus
 extern "C" {

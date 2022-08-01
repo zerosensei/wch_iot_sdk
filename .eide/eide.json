@@ -16,7 +16,8 @@
             "./lib",
             "./samples",
             "./soc",
-            "./tools"
+            "./tools",
+            "./config"
           ],
           "libList": [
             "./lib/ch57x"
@@ -26,9 +27,22 @@
             "CONFIG_RISCV",
             "CONFIG_UART_INTERRUPT_DRIVEN",
             "CONFIG_WCH_UART_0",
+            "CONFIG_WCH_LOG_UART=1",
+            "CONFIG_ASSERT",
+            "CONFIG_ASSERT_LEVEL=2",
+            "CONFIG_ASSERT_VERBOSE",
             "CONFIG_WCH_UART_1",
             "CONFIG_WCH_UART_2",
-            "CONFIG_WCH_UART_3"
+            "CONFIG_WCH_UART_3",
+            "CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=32768",
+            "CONFIG_SYS_CLOCK_TICKS_PER_SEC=32768",
+            "CONFIG_SYS_CLOCK_MAX_TIMEOUT_DAYS=356",
+            "CONFIG_SYS_CLOCK_EXISTS",
+            "CONFIG_TICKLESS_KERNEL",
+            "CONFIG_TIMER_HAS_64BIT_CYCLE_COUNTER",
+            "FREQ_SYS=60000000",
+            "CONFIG_PRINTK",
+            "CLK_OSC32K=0"
           ]
         }
       ]
@@ -48,7 +62,8 @@
     "./subsys",
     "./tools",
     "./soc/ch57x",
-    "./hal"
+    "./hal",
+    "./arch"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
@@ -61,14 +76,20 @@
     "soc/ch58x",
     "hal/ch58x",
     "drivers/adc.c",
-    "hal/ch57x/ch57x_hal_adc.c"
+    "hal/ch57x/ch57x_hal_adc.c",
+    "drivers/adc/adc.c",
+    "samples/hello_world/src/main.c",
+    "arch/riscv/core/isr.S",
+    "drivers/timer/sys_timer.c",
+    "samples/drivers/uart/src/build"
   ],
   "outDir": "build",
   "deviceName": null,
   "packDir": null,
   "uploadConfig": {
     "bin": "./build/Debug/test_ch583m.hex",
-    "commandLine": "download.cmd ${hexFile}"
+    "commandLine": "download.cmd ${hexFile}",
+    "eraseChipCommand": ""
   },
   "uploadConfigMap": {
     "JLink": {
@@ -97,5 +118,5 @@
     "uid": "16983ebdb12e8c1bcea0eccbe8c84aae"
   },
   "targets": {},
-  "version": "3.1"
+  "version": "3.2"
 }

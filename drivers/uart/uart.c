@@ -5,14 +5,31 @@
  */
 
 #include <soc.h>
-#include <common.h>
+#include <kernel.h>
 #include <drivers/uart.h>
-#include "ch57x_hal_uart.h"
+#include <drivers/gpio.h>
+#include <drivers/pinctrl.h>
+
+#ifdef CONFIG_WCH_UART_0
+struct device __device_uart0 = {0};
+#endif
+
+#ifdef CONFIG_WCH_UART_1
+struct device __device_uart1 = {0};
+#endif
+
+#ifdef CONFIG_WCH_UART_2
+struct device __device_uart2 = {0};
+#endif
+
+#ifdef CONFIG_WCH_UART_3
+struct device __device_uart3 = {0};
+#endif
 
 struct uart_wch_config {
     WCH_UART_Type *uart;
     struct uart_config uart_cfg;
-    bool pin_remap;
+    const struct pinctrl_dev_config *pin_cfg;
 };
 
 struct uart_wch_data {
@@ -22,37 +39,45 @@ struct uart_wch_data {
 #endif
 };
 
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+
+
 __HIGHCODE void uart_isr_handler(const struct device *dev)
 {
+    const struct uart_wch_data *data = dev->data;
 
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+    if (data->callback) {
+        data->callback(dev, data->cb_data);
+    }
+#endif
 }
 
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
 #ifdef CONFIG_WCH_UART_0
 __WCH_INT_FAST __HIGHCODE void UART0_IRQHandler(void)
 {
-
+    uart_isr_handler(DEVICE_GET(uart0));
 }
 #endif
 
 #ifdef CONFIG_WCH_UART_1
 __WCH_INT_FAST __HIGHCODE void UART1_IRQHandler(void)
 {
-    
+    uart_isr_handler(DEVICE_GET(uart1));
 }
 #endif
 
 #ifdef CONFIG_WCH_UART_2
 __WCH_INT_FAST __HIGHCODE void UART2_IRQHandler(void)
 {
-    
+    uart_isr_handler(DEVICE_GET(uart2));
 }
 #endif
 
 #ifdef CONFIG_WCH_UART_3
 __WCH_INT_FAST __HIGHCODE void UART3_IRQHandler(void)
 {
-    
+    uart_isr_handler(DEVICE_GET(uart3));
 }
 #endif
 #endif /* CONFIG_UART_INTERRUPT_DRIVEN */
@@ -209,6 +234,10 @@ static inline int uart_wch_get_data_bits(WCH_UART_Type *uart, uint8_t *data_bits
 static inline int uart_wch_set_flow_ctrl(WCH_UART_Type *uart, uint8_t flow_ctrl)
 {
 #ifdef CONFIG_WCH_UART_0
+    if (uart != UART0) {
+        return -ENOTSUP;
+    }
+
     if (flow_ctrl) {
         hal_uart0_modem_autoflow_enable();
         hal_uart0_modem_rts_enable();
@@ -262,7 +291,6 @@ static void uart_wch_poll_out(const struct device *dev, unsigned char c)
             & UART_LINE_TX_ALL_EMP)) {
         ;
     }
-
     hal_uart_tx(cfg->uart, c);
 }
 
@@ -379,7 +407,6 @@ static int uart_wch_fifo_read(const struct device *dev,
 static void uart_wch_irq_tx_enable(const struct device *dev)
 {
     const struct uart_wch_config *cfg = dev->cfg;
-
     hal_uart_interrupt_enable(cfg->uart, UART_INT_THR_ENMPTY);
 }
 
@@ -495,14 +522,7 @@ static int uart_wch_init(const struct device *dev)
     const struct uart_wch_config *cfg = dev->cfg;
     int err = 0;
 
-    //TODO: clock control
-
-    /*TODO: gpio setup*/
-    if (cfg->pin_remap) {
-
-    } else {
-
-    }
+    pinctrl_configure_pins(cfg->pin_cfg->cfg, cfg->pin_cfg->cnt);
 
     hal_uart_definit(cfg->uart);
 
@@ -524,7 +544,7 @@ static int uart_wch_init(const struct device *dev)
         return err;
     }
 
-    if ((err = uart_wch_set_flow_ctrl(cfg->uart, cfg->uart_cfg.data_bits))) {
+    if ((err = uart_wch_set_flow_ctrl(cfg->uart, cfg->uart_cfg.flow_ctrl))) {
         return err;
     }
 
@@ -555,130 +575,56 @@ static const struct uart_driver_api uart_wch_driver_api = {
 #endif /* CONFIG_UART_INTERRUPT_DRIVEN */
 };
 
+
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+#define UART_IRQ_HANDLER(idx)       irq_enable(DEV_CFG_GET_IRQ(uart##idx))    
+#else 
+#define UART_IRQ_HANDLER(idx)
+#endif    
+
+#define UART_INIT(index) \
+    UART_IRQ_HANDLER(index);        \
+    static const struct uart_wch_config uart_cfg_##index = {    \
+        .uart = (WCH_UART_Type *)DEV_CFG_GET(uart##index, reg),   \
+        .uart_cfg = {           \
+            .baudrate = DEV_CFG_GET(uart##index,  baudrate),      \
+            .data_bits = DEV_CFG_GET(uart##index, data_bits),     \
+            .stop_bits = DEV_CFG_GET(uart##index, stop_bits),     \
+        },      \
+        .pin_cfg = &__pinctrl_uart##index,        \
+    };      \
+    static struct uart_wch_data uart_data_##index;        \
+    static struct device_state uart_sta_##index = {0};        \
+    static struct device *__uart##index = DEVICE_GET(uart##index);     \
+    __uart##index->cfg = &uart_cfg_##index;     \
+    __uart##index->data = &uart_data_##index;       \
+    __uart##index->api = &uart_wch_driver_api;        \
+    __uart##index->sta = &uart_sta_##index;         \
+    int uart_err_##index = uart_wch_init(__uart##index);            \
+    if (uart_err_##index) {         \
+        __uart##index->sta->init_result = uart_err_##index;     \
+        __uart##index->sta->is_initialized = false;     \
+    } else {        \
+        __uart##index->sta->init_result = 0;        \
+        __uart##index->sta->is_initialized = true;      \
+    }
+
 void uart_init(void)
 {
 #ifdef CONFIG_WCH_UART_0
-    static struct uart_wch_config uart_cfg_0 = {
-        .uart = UART0,
-        .uart_cfg = {
-            .baudrate = 115200,
-            .data_bits = UART_CFG_DATA_BITS_8,
-            .stop_bits = UART_CFG_STOP_BITS_1,
-        },
-    };
-    static struct uart_wch_data uart_data_0;
-
-    static struct device_state uart_sta_0 = {0};
-
-    const struct device uart_device_0 = {
-        .cfg = &uart_cfg_0,
-        .data = &uart_data_0,
-        .api = &uart_wch_driver_api,
-        .sta = &uart_sta_0
-    };
-
-    int err = uart_wch_init(&uart_device_0);
-    
-    if (err) {
-        uart_device_0.sta->init_result = err;
-        uart_device_0.sta->is_initialized = false;
-    } else {
-        uart_device_0.sta->init_result = 0;
-        uart_device_0.sta->is_initialized = true;
-    }
+    UART_INIT(0);
 #endif
 
 #ifdef CONFIG_WCH_UART_1
-    static struct uart_wch_config uart_cfg_1 = {
-        .uart = UART1,
-        .uart_cfg = {
-            .baudrate = 115200,
-            .data_bits = UART_CFG_DATA_BITS_8,
-            .stop_bits = UART_CFG_STOP_BITS_1,
-        },
-    };
-    static struct uart_wch_data uart_data_1;
-
-    static struct device_state uart_sta_1 = {0};
-
-    const struct device uart_device_1 = {
-        .cfg = &uart_cfg_1,
-        .data = &uart_data_1,
-        .api = &uart_wch_driver_api,
-        .sta = &uart_sta_1
-    };
-
-    int uart_err_1 = uart_wch_init(&uart_device_1);
-
-    if (uart_err_1) {
-        uart_device_1.sta->init_result = uart_err_1;
-        uart_device_1.sta->is_initialized = false;
-    } else {
-        uart_device_1.sta->init_result = 0;
-        uart_device_1.sta->is_initialized = true;
-    }
+    UART_INIT(1);
 #endif
 
 #ifdef CONFIG_WCH_UART_2
-    static struct uart_wch_config uart_cfg_2 = {
-        .uart = UART2,
-        .uart_cfg = {
-            .baudrate = 115200,
-            .data_bits = UART_CFG_DATA_BITS_8,
-            .stop_bits = UART_CFG_STOP_BITS_1,
-        },
-    };
-    static struct uart_wch_data uart_data_2;
-
-    static struct device_state uart_sta_2 = {0};
-
-    const struct device uart_device_2 = {
-        .cfg = &uart_cfg_2,
-        .data = &uart_data_2,
-        .api = &uart_wch_driver_api,
-        .sta = &uart_sta_2
-    };
-
-    int uart_err_2 = uart_wch_init(&uart_device_2);
-
-    if (uart_err_2) {
-        uart_device_2.sta->init_result = uart_err_2;
-        uart_device_2.sta->is_initialized = false;
-    } else {
-        uart_device_2.sta->init_result = 0;
-        uart_device_2.sta->is_initialized = true;
-    }
+    UART_INIT(2);
 #endif
 
 #ifdef CONFIG_WCH_UART_3
-    static struct uart_wch_config uart_cfg_3 = {
-        .uart = UART3,
-        .uart_cfg = {
-            .baudrate = 115200,
-            .data_bits = UART_CFG_DATA_BITS_8,
-            .stop_bits = UART_CFG_STOP_BITS_1,
-        },
-    };
-    static struct uart_wch_data uart_data_3;
-
-    static struct device_state uart_sta_3 = {0};
-
-    const struct device uart_device_3 = {
-        .cfg = &uart_cfg_3,
-        .data = &uart_data_3,
-        .api = &uart_wch_driver_api,
-        .sta = &uart_sta_3
-    };
-
-    int uart_err_3 = uart_wch_init(&uart_device_3);
-
-    if (uart_err_3) {
-        uart_device_3.sta->init_result = uart_err_3;
-        uart_device_3.sta->is_initialized = false;
-    } else {
-        uart_device_3.sta->init_result = 0;
-        uart_device_3.sta->is_initialized = true;
-    }
+    UART_INIT(3);
 #endif
 
 #if !((defined CONFIG_WCH_UART_0)       \
