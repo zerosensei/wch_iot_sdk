@@ -1079,7 +1079,4 @@ static inline int gpio_get_pending_int(const struct device *dev)
 
 void gpio_init(void);
 
-extern struct device __device_gpioa;
-extern struct device __device_gpiob;
-
 #endif /* INCLUDE_DRIVERS_GPIO_H */
