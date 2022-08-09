@@ -109,41 +109,41 @@ static inline void hal_gpio_analog_disable(uint16_t perph)
     R16_PIN_ANALOG_IE &= ~(perph);
 }
 
-static inline void hal_gpio_pins_reset(WCH_GPIO_Type *port, uint16_t pins)
+static inline void hal_gpio_pins_reset(WCH_GPIO_Type *port, uint32_t pins)
 {
     port->CLR |= pins;
 }
 
-static inline void hal_gpio_pins_set(WCH_GPIO_Type *port, uint16_t pins)
+static inline void hal_gpio_pins_set(WCH_GPIO_Type *port, uint32_t pins)
 {
     port->OUT |= pins;
 }
 
-static inline void hal_gpio_pins_invert(WCH_GPIO_Type *port, uint16_t pins)
+static inline void hal_gpio_pins_invert(WCH_GPIO_Type *port, uint32_t pins)
 {
     port->OUT ^= pins;
 }
 
-static inline uint16_t hal_gpio_port_get(WCH_GPIO_Type *port)
+static inline uint32_t hal_gpio_port_get(WCH_GPIO_Type *port)
 {
     return port->PIN;
 }
 
-static inline uint16_t hal_gpio_pins_get(WCH_GPIO_Type *port, uint16_t pins)
+static inline uint32_t hal_gpio_pins_get(WCH_GPIO_Type *port, uint32_t pins)
 {
     return port->PIN & (pins);
 }
 
-static inline void hal_gpio_int_pins_enable(WCH_GPIO_Type *port, uint16_t pins)
+static inline void hal_gpio_int_pins_enable(WCH_GPIO_Type *port, uint32_t pins)
 {
     if (port == GPIO_A) {
-        R16_PA_INT_EN |= pins;
+        R16_PA_INT_EN |= pins & WCH_MASK(16);
     } else if (port == GPIO_B) {
-        R16_PB_INT_EN |= (pins | ((pins & (GPIO_Pin_22 | GPIO_Pin_23)) >> 14));
+        R16_PB_INT_EN |= (pins | ((pins & (GPIO_Pin_22 | GPIO_Pin_23)) >> 14)) & WCH_MASK(16);
     }
 }
 
-static inline void hal_gpio_int_pins_disable(WCH_GPIO_Type *port, uint16_t pins)
+static inline void hal_gpio_int_pins_disable(WCH_GPIO_Type *port, uint32_t pins)
 {
     if (port == GPIO_A) {
         R16_PA_INT_EN &= ~(pins);
@@ -152,7 +152,7 @@ static inline void hal_gpio_int_pins_disable(WCH_GPIO_Type *port, uint16_t pins)
     }
 }
 
-static inline uint16_t hal_gpio_int_flag_port_get(WCH_GPIO_Type *port)
+static inline uint32_t hal_gpio_int_flag_port_get(WCH_GPIO_Type *port)
 {
     if (port == GPIO_A)  {
         return R16_PA_INT_IF;
@@ -164,7 +164,7 @@ static inline uint16_t hal_gpio_int_flag_port_get(WCH_GPIO_Type *port)
     }
 }
 
-static inline uint16_t hal_gpio_int_flag_pins_get(WCH_GPIO_Type *port, uint16_t pins)
+static inline uint32_t hal_gpio_int_flag_pins_get(WCH_GPIO_Type *port, uint32_t pins)
 {
     if (port == GPIO_A)  {
         return R16_PA_INT_IF & (pins);
@@ -175,19 +175,16 @@ static inline uint16_t hal_gpio_int_flag_pins_get(WCH_GPIO_Type *port, uint16_t 
     }
 }
 
-static inline void hal_gpio_int_flag_pins_clear(WCH_GPIO_Type *port, uint16_t pins)
+static inline void hal_gpio_int_flag_pins_clear(WCH_GPIO_Type *port, uint32_t pins)
 {
     if (port == GPIO_A)  {
-        R16_PA_INT_IF |= pins;
+        R16_PA_INT_IF = pins & WCH_MASK(16);
     } else if (port == GPIO_B) {
-        R16_PB_INT_IF |= ((pins) | (((pins) & (GPIO_Pin_22 | GPIO_Pin_23)) >> 14));
-    } else {
+        R16_PB_INT_IF = ((pins) | (((pins) & (GPIO_Pin_22 | GPIO_Pin_23)) >> 14)) & WCH_MASK(16);
     }
 }
 
 void hal_gpio_mode_config(WCH_GPIO_Type *port, uint32_t pins, gpio_mode_t mode);
 void hal_gpio_int_mode_config(WCH_GPIO_Type *port, uint32_t pins, gpio_int_mode_t mode);
-
-
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_GPIO_H */

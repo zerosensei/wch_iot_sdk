@@ -125,7 +125,6 @@ typedef enum {
 	LSE_CURRENT_100,
     LSE_CURRENT_140,
     LSE_CURRENT_200
-	
 } lse_current_t;
 
 typedef enum {

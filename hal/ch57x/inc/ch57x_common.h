@@ -123,12 +123,13 @@ typedef enum {
 
 //TODO:
 //#ifdef CONFIG_UART
+#include "ch57x_hal_pfic.h"
 #include "ch57x_hal_uart.h"
 #include "ch57x_hal_sys.h"
 #include "ch57x_hal_gpio.h"
-#include "ch57x_hal_pfic.h"
 #include "ch57x_hal_systick.h"
 #include "ch57x_hal_rtc.h"
 #include "ch57x_hal_clk.h"
+#include "ch57x_hal_power.h"
 
 #endif /* HAL_CH57X_INC_CH57X_COMMON_H */

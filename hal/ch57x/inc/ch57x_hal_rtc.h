@@ -93,7 +93,6 @@ void hal_rtc_mode_trig_config(bool ignore);
 void hal_rtc_mode_tmr_cfg(rtc_tmr_mode_t perid);
 
 void hal_rtc_set_alarm(uint32_t ticks);
-void hal_rtc_set_ticks(uint32_t ticks);
 uint32_t hal_rtc_get_ticks(void);
 
 void hal_rtc_update_ticks(uint32_t ticks);

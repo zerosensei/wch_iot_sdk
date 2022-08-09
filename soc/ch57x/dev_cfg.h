@@ -18,7 +18,6 @@
 #define _dev_cfg_rtc_int_num              RTC_IRQn
 #define _dev_cfg_rtc_int_prio             0
 
-
 #define _dev_cfg_gpioa_reg                GPIO_A
 #define _dev_cfg_gpioa_port_pin_mask      (BIT_MASK(16) & (~(BIT(0) | BIT(1) | BIT(2) | BIT(3) | BIT(6) | BIT(7))))
 #define _dev_cfg_gpioa_int_num            GPIO_A_IRQn
@@ -75,5 +74,37 @@
 #define  _dev_cfg_uart3_int_prio          0
 #endif
 
+
+
+/* UART */
+#ifdef CONFIG_WCH_UART_0
+extern struct device __device_uart0;
+#endif
+
+#ifdef CONFIG_WCH_UART_1
+extern struct device __device_uart1;
+#endif
+
+#ifdef CONFIG_WCH_UART_2
+extern struct device __device_uart2;
+#endif
+
+#ifdef CONFIG_WCH_UART_3
+extern struct device __device_uart3;
+#endif
+
+
+/* GPIO */
+extern struct device __device_gpioa;
+extern struct device __device_gpiob;
+
+/* RTC */
+extern struct device __device_rtc;
+
+/* BAT */
+extern struct device __device_bat;
+
+/* USB */
+extern struct device __device_usb;
 
 #endif /* CONFIG_DEV_CFG_H */

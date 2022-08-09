@@ -9,9 +9,6 @@
 #include <drivers/gpio.h>
 #include "gpio_utils.h"
 
-struct device __device_gpioa = {0};
-struct device __device_gpiob = {0};
-
 struct gpio_wch_config {
     /* gpio_driver_config needs to be first */
 	struct gpio_driver_config common;
@@ -25,6 +22,30 @@ struct gpio_wch_data {
 	/* user ISR cb */
 	sys_slist_t cb;
 };
+
+__WCH_INT_FAST __HIGHCODE void GPIOA_IRQHandler(void)
+{
+    const struct gpio_wch_config *config = DEVICE_GET(gpioa)->cfg;
+    struct gpio_wch_data *data = DEVICE_GET(gpioa)->data;
+    uint32_t int_pins;
+
+    int_pins = hal_gpio_int_flag_port_get(config->base);
+    hal_gpio_int_flag_pins_clear(config->base, int_pins);
+
+    gpio_fire_callbacks(&data->cb, DEVICE_GET(gpioa), int_pins);
+}
+
+__WCH_INT_FAST __HIGHCODE void GPIOB_IRQHandler(void)
+{
+    const struct gpio_wch_config *config = DEVICE_GET(gpiob)->cfg;
+    struct gpio_wch_data *data = DEVICE_GET(gpiob)->data;
+    uint32_t int_pins;
+
+    int_pins = hal_gpio_int_flag_port_get(config->base);
+    hal_gpio_int_flag_pins_clear(config->base, int_pins);
+
+    gpio_fire_callbacks(&data->cb, DEVICE_GET(gpiob), int_pins);
+}
 
 static int gpio_wch_flags_to_cfg(uint32_t flag, int *pin_cfg)
 {
@@ -195,6 +216,7 @@ static const struct gpio_driver_api gpio_wch_driver_api = {
 
 
 #define GPIO_INIT(index)     \
+    irq_enable(DEV_CFG_GET_IRQ(gpio##index));       \
     static struct gpio_wch_config gpio_cfg_##index = {       \
         .common = {     \
             .port_pin_mask = DEV_CFG_GET(gpio##index, port_pin_mask),   \

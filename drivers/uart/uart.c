@@ -10,22 +10,6 @@
 #include <drivers/gpio.h>
 #include <drivers/pinctrl.h>
 
-#ifdef CONFIG_WCH_UART_0
-struct device __device_uart0 = {0};
-#endif
-
-#ifdef CONFIG_WCH_UART_1
-struct device __device_uart1 = {0};
-#endif
-
-#ifdef CONFIG_WCH_UART_2
-struct device __device_uart2 = {0};
-#endif
-
-#ifdef CONFIG_WCH_UART_3
-struct device __device_uart3 = {0};
-#endif
-
 struct uart_wch_config {
     WCH_UART_Type *uart;
     struct uart_config uart_cfg;

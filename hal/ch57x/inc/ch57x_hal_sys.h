@@ -43,6 +43,19 @@ __attribute__((always_inline)) static inline uint8_t sys_get_safe_access_tmr(voi
 }
 
 
+__attribute__((always_inline)) static inline void __WFI(void){
+    PFIC->SCTLR &= ~(1<<3);	
+    __asm__ volatile ("wfi");
+}
+
+
+__attribute__((always_inline)) static inline void __WFE(void){
+    PFIC->SCTLR |= (1<<3)|(1<<5);		
+    __asm__ volatile ("wfi");
+    PFIC->SCTLR |= (1<<3);
+    __asm__ volatile ("wfi");
+}
+
 static inline uint8_t hal_sys_get_status(sys_status_t sta)
 {
     return R8_GLOB_CFG_INFO & sta;
