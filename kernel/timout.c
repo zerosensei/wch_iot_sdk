@@ -202,8 +202,6 @@ void sys_clock_announce(int32_t ticks)
 
 	announce_remaining = ticks;
 
-	// printf("dticks: %ld\n", first()->dticks);
-
 	while (first() != NULL && first()->dticks <= announce_remaining) {
 		struct _timeout *t = first();
 		int dt = t->dticks;
@@ -234,7 +232,7 @@ int64_t sys_clock_tick_get(void)
 	uint64_t t = 0U;
 
 	LOCKED(&timeout_lock) {
-		t = curr_tick + sys_clock_elapsed();
+		t = curr_tick + elapsed();
 	}
 
 	return t;
