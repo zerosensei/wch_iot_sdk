@@ -115,47 +115,15 @@ handle_reset:
 .option	pop 
 1:
 	la sp, _eusrstack 
-
-/* Load highcode code  section from flash to RAM */
-2:
-    la a0, _highcode_lma
-    la a1, _highcode_vma_start
-    la a2, _highcode_vma_end
-    bgeu a1, a2, 2f
-1:
-    lw t0, (a0)
-    sw t0, (a1)
-    addi a0, a0, 4
-    addi a1, a1, 4
-    bltu a1, a2, 1b
-
-/* Load data section from flash to RAM */
-2:
-	la a0, _data_lma
-	la a1, _data_vma
-	la a2, _edata
-	bgeu a1, a2, 2f
-1:
-	lw t0, (a0)
-	sw t0, (a1)
-	addi a0, a0, 4
-	addi a1, a1, 4
-	bltu a1, a2, 1b
-2:
-	/* clear bss section */
-	la a0, _sbss
-	la a1, _ebss
-	bgeu a0, a1, 2f
-1:
-	sw zero, (a0)
-	addi a0, a0, 4
-	bltu a0, a1, 1b
 2:
     li t0, 0x1888
     csrs mstatus, t0
 	la t0, _vector_base
     ori t0, t0, 1
 	csrw mtvec, t0
+
+    jal sys_init  # jump to sys_init and save position to ra
+        
 	la t0, main
 	csrw mepc, t0
 	

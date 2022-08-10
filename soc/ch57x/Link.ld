@@ -23,6 +23,22 @@ SECTIONS
         *(.vector);
     } >FLASH AT>FLASH */
     
+	.__init :
+	{
+		__init_start = .;
+		. = ALIGN(4);
+		__init_KERNEL_start = .;
+		KEEP(*(SORT(.z_init_KERNEL[0-9]_*)))
+		KEEP(*(SORT(.z_init_KERNEL[1-9][0-9]_*)))
+		__init_DRIVER_start = .;
+		KEEP(*(SORT(.z_init_DRIVER[0-9]_*)))
+		KEEP(*(SORT(.z_init_DRIVER[1-9][0-9]_*)))
+		__init_APPLICATION_start = .;
+		KEEP(*(SORT(.z_init_APPLICATION[0-9]_*)))
+		KEEP(*(SORT(.z_init_APPLICATION[1-9][0-9]_*)))
+		__init_end = .;
+	} >FLASH AT>FLASH
+
     .highcodelalign : 
     {       
         . = ALIGN(4);
@@ -40,7 +56,7 @@ SECTIONS
 		. = ALIGN(4); 
         PROVIDE(_highcode_vma_end = .);
     } >RAM AT>FLASH
-     
+
 	.text :
 	{
 		. = ALIGN(4);
@@ -49,7 +65,7 @@ SECTIONS
 		*(.text.*)
 		*(.rodata)
 		*(.rodata*)
-  *(.sdata2.*)
+  		*(.sdata2.*)
 		*(.glue_7)
 		*(.glue_7t)
 		*(.gnu.linkonce.t.*)

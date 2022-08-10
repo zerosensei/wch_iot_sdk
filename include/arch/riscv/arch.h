@@ -15,6 +15,7 @@
 #include <toolchain.h>
 #include <arch/riscv/csr.h>
 #include <arch/riscv/exp.h>
+#include <kernel_arch_func.h>
 
 /* Common mstatus bits. All supported cores today have the same
  * layouts.

@@ -76,35 +76,6 @@
 
 
 
-/* UART */
-#ifdef CONFIG_WCH_UART_0
-extern struct device __device_uart0;
-#endif
 
-#ifdef CONFIG_WCH_UART_1
-extern struct device __device_uart1;
-#endif
-
-#ifdef CONFIG_WCH_UART_2
-extern struct device __device_uart2;
-#endif
-
-#ifdef CONFIG_WCH_UART_3
-extern struct device __device_uart3;
-#endif
-
-
-/* GPIO */
-extern struct device __device_gpioa;
-extern struct device __device_gpiob;
-
-/* RTC */
-extern struct device __device_rtc;
-
-/* BAT */
-extern struct device __device_bat;
-
-/* USB */
-extern struct device __device_usb;
 
 #endif /* CONFIG_DEV_CFG_H */

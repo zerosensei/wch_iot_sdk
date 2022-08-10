@@ -5,7 +5,8 @@
  */
 
 #include "soc.h"
-#include <arch/cpu.h>
+#include <kernel.h>
+// #include <arch/cpu.h>
 #include <gen_offset.h>
 
 void sys_arch_reboot(uint8_t type)
@@ -15,11 +16,16 @@ void sys_arch_reboot(uint8_t type)
     hal_sys_reset();
 }
 
-void wch_sys_init(void)
+int wch_sys_init(const struct device *dev)
 {
+	ARG_UNUSED(dev);
+
     hal_sys_init();
 
 	//TODO: dcdc deal
+
+
+	return 0;
 }
 
 
@@ -81,5 +87,4 @@ __HIGHCODE __WCH_INT_FAST void HardFault_Handler(void)
 	__asm__ volatile ("tail _Fault");
 }
 
-
-
+SYS_INIT(wch_sys_init, KERNEL, 0);
