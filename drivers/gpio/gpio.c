@@ -14,6 +14,7 @@ struct gpio_wch_config {
 	struct gpio_driver_config common;
 	/* port base address */
 	WCH_GPIO_Type *base;
+    void (*irq_config_func)(const struct device *dev);
 };
 
 struct gpio_wch_data {
@@ -214,29 +215,36 @@ static const struct gpio_driver_api gpio_wch_driver_api = {
     .get_pending_int = gpio_wch_get_pending_int,
 };
 
+static int gpio_wch_init(const struct device *dev)
+{
+    const struct gpio_wch_config *cfg = dev->cfg;
 
-#define GPIO_INIT(index)     \
-    irq_enable(DEV_CFG_GET_IRQ(gpio##index));       \
+    cfg->irq_config_func(dev);
+
+    return 0;
+}
+
+#define GPIO_INIT(index)      \
+    static void gpio_wch_irq_cfg_func_##index(const struct device *dev)     \
+    {       \
+        irq_enable(DEV_CFG_GET_IRQ(gpio##index));       \
+    }       \
     static struct gpio_wch_config gpio_cfg_##index = {       \
         .common = {     \
             .port_pin_mask = DEV_CFG_GET(gpio##index, port_pin_mask),   \
         },      \
         .base = DEV_CFG_GET(gpio##index, reg),      \
+        .irq_config_func = gpio_wch_irq_cfg_func_##index,       \
     };      \
     static struct gpio_wch_data gpio_data_##index;       \
-    static struct device_state gpio_sta_##index = {      \
-                    .init_result = 0,       \
-                    .is_initialized = true,     \
-    };          \
-    struct device *__gpio##index = DEVICE_GET(gpio##index);       \
-    __gpio##index->api = &gpio_wch_driver_api;       \
-    __gpio##index->cfg = &gpio_cfg_##index;        \
-    __gpio##index->data = &gpio_data_##index;      \
-    __gpio##index->sta = &gpio_sta_##index;        
+    static struct device_state gpio_sta_##index = {0};          \
+    DEVICE_DEFINE(gpio##index, gpio_wch_init, NULL,        \
+            &gpio_data_##index,     \
+            &gpio_cfg_##index,      \
+            &gpio_wch_driver_api,       \
+            &gpio_sta_##index,          \
+            DRIVER,         \
+            0);  
 
-
-void gpio_init(void)
-{
-    GPIO_INIT(a);
-    GPIO_INIT(b);
-}
+GPIO_INIT(a);
+GPIO_INIT(b);
