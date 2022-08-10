@@ -116,3 +116,5 @@ int sys_clock_driver_init(const struct device *dev)
     
 	return 0;
 }
+
+DEVICE_DEFINE(rtc, sys_clock_driver_init, NULL, NULL, NULL, NULL, NULL, DRIVER, 0);
