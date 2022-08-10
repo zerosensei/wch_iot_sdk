@@ -107,6 +107,13 @@ typedef void (*uart_irq_callback_user_data_t)(const struct device *dev,
 					      void *user_data);
 
 /**
+ * @brief For configuring IRQ on each individual UART device.
+ *
+ * @param dev UART device instance.
+ */
+typedef void (*uart_irq_config_func_t)(const struct device *dev);
+
+/**
  * @}
  */
 
