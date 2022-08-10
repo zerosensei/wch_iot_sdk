@@ -42,11 +42,11 @@ static inline char log_level_to_char(int level)
 
 #define LOG_ERR(...)        LOG(LOG_LEVEL_ERR, __VA_ARGS__)
 
-#define LOG_WRN(...)        LOG(LOG_LEVEL_ERR, __VA_ARGS__)
+#define LOG_WRN(...)        LOG(LOG_LEVEL_WRN, __VA_ARGS__)
 
-#define LOG_INF(...)        LOG(LOG_LEVEL_ERR, __VA_ARGS__)
+#define LOG_INF(...)        LOG(LOG_LEVEL_INF, __VA_ARGS__)
 
-#define LOG_DBG(...)        LOG(LOG_LEVEL_ERR, __VA_ARGS__)
+#define LOG_DBG(...)        LOG(LOG_LEVEL_DBG, __VA_ARGS__)
 
 #define LOG_PRINT(...)      LOG(__VA_ARGS__)
 #endif /* INCLUDE_LOGGING_LOG_H */
