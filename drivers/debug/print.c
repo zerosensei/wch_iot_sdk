@@ -44,25 +44,41 @@ int _write(int fd, char *buf, int size)
 #if (defined CONFIG_WCH_UART_0)         \
         && (defined CONFIG_WCH_LOG_UART) && (CONFIG_WCH_LOG_UART == 0)
         const struct device *uart0 = DEVICE_GET(uart0);
-        uart_poll_out(uart0, *buf++);
+        
+        if(device_is_ready(uart0))
+        {
+            uart_poll_out(uart0, *buf++);
+        }
 #endif
 
 #if (defined CONFIG_WCH_UART_1)         \
         && (defined CONFIG_WCH_LOG_UART) && (CONFIG_WCH_LOG_UART == 1)
         const struct device *uart1 = DEVICE_GET(uart1);
-        uart_poll_out(uart1, *buf++);
+
+        if(device_is_ready(uart1))
+        {
+            uart_poll_out(uart1, *buf++);
+        }
 #endif
 
 #if (defined CONFIG_WCH_UART_2)         \
         && (defined CONFIG_WCH_LOG_UART) && (CONFIG_WCH_LOG_UART == 2)
         const struct device *uart2 = DEVICE_GET(uart2);
-        uart_poll_out(uart2, *buf++);
+        
+        if(device_is_ready(uart2))
+        {
+            uart_poll_out(uart2, *buf++);
+        }
 #endif
 
 #if (defined CONFIG_WCH_UART_3)         \
         && (defined CONFIG_WCH_LOG_UART) && (CONFIG_WCH_LOG_UART == 3)
         const struct device *uart3 = DEVICE_GET(uart3);
-        uart_poll_out(uart3, *buf++);
+        
+        if(device_is_ready(uart3))
+        {
+            uart_poll_out(uart3, *buf++);
+        }
 #endif    
     }
     
