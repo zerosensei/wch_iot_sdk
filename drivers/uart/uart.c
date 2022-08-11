@@ -590,5 +590,18 @@ static const struct uart_driver_api uart_wch_driver_api = {
             DRIVER,         \
             0);     
 
+#ifdef CONFIG_WCH_UART_0
 UART_INTI(0);
+#endif
+
+#ifdef CONFIG_WCH_UART_1
 UART_INTI(1);
+#endif
+
+#ifdef CONFIG_WCH_UART_2
+UART_INTI(2);
+#endif
+
+#ifdef CONFIG_WCH_UART_3
+UART_INTI(3);
+#endif
