@@ -24,6 +24,7 @@ struct gpio_wch_data {
 	sys_slist_t cb;
 };
 
+#ifdef CONFIG_WCH_GPIO
 __WCH_INT_FAST __HIGHCODE void GPIOA_IRQHandler(void)
 {
     const struct gpio_wch_config *config = DEVICE_GET(gpioa)->cfg;
@@ -47,6 +48,7 @@ __WCH_INT_FAST __HIGHCODE void GPIOB_IRQHandler(void)
 
     gpio_fire_callbacks(&data->cb, DEVICE_GET(gpiob), int_pins);
 }
+#endif /* CONFIG_WCH_GPIO */
 
 static int gpio_wch_flags_to_cfg(uint32_t flag, int *pin_cfg)
 {
@@ -246,5 +248,8 @@ static int gpio_wch_init(const struct device *dev)
             DRIVER,         \
             0);  
 
+
+#ifdef CONFIG_WCH_GPIO
 GPIO_INIT(a);
 GPIO_INIT(b);
+#endif
