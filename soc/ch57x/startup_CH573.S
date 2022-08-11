@@ -122,16 +122,8 @@ handle_reset:
     ori t0, t0, 1
 	csrw mtvec, t0
 
-    jal sys_init  # jump to sys_init and save position to ra
-        
-	la t0, main
-	csrw mepc, t0
-	
-	/* enable vector relocation
-	li t0, 0xE000ED14
-	li t1, 1
-	sw t1, 0(t0)*/
-	
-	mret
+    call sys_init 
+
+    call main
 
 
