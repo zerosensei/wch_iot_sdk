@@ -6,13 +6,9 @@
 
 #include <kernel.h>
 #include <soc.h>
-#include <drivers/uart.h>
 
 int main(void)
 {       
-    wch_sys_init();
-    uart_init();
-
     printk("Hello world\n");
 
     while(1) {

@@ -36,11 +36,6 @@ int main(void)
 {
     int ret;
 
-    wch_sys_init();
-    gpio_init();
-    uart_init();
-    sys_clock_driver_init(NULL);
-
 	printk("This is button example\n");
 
     if (!device_is_ready(button)) {

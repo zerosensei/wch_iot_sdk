@@ -47,10 +47,6 @@ static void uart_cb_handler(const struct device *dev, void *data)
 
 int main(void)
 {
-    wch_sys_init();
-    gpio_init();
-    uart_init();
-
     printk("This is uart exapmle\n");
 
     if (!device_is_ready(uart0)) {
