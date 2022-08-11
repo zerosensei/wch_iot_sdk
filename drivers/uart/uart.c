@@ -529,7 +529,8 @@ static int uart_wch_init(const struct device *dev)
         return err;
     }
 
-    if ((err = uart_wch_set_flow_ctrl(cfg->uart, cfg->uart_cfg.flow_ctrl))) {
+    if (cfg->uart_cfg.flow_ctrl && 
+            (err = uart_wch_set_flow_ctrl(cfg->uart, cfg->uart_cfg.flow_ctrl))) {
         return err;
     }
 
