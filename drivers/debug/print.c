@@ -35,7 +35,7 @@ int snprintk(char *str, size_t size, const char *fmt, ...)
 
 int vsnprintk(char *str, size_t size, const char *fmt, va_list ap)
 {
-    return vsnprintk(str, size, fmt, ap);
+    return vsnprintf(str, size, fmt, ap);
 }
 
 int _write(int fd, char *buf, int size)

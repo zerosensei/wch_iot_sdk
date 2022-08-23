@@ -16,7 +16,7 @@ void hal_gpio_mode_config(WCH_GPIO_Type *port, uint32_t pins, gpio_mode_t mode)
         break;
     case GPIO_MODE_IN_PU:
         port->PD_DRV &= ~pins;
-        port->PU &= ~pins;
+        port->PU |= pins;
         port->DIR &= ~pins;
         break;
     case GPIO_MODE_IN_PD:

@@ -13,7 +13,10 @@
 #include <ch57x_common.h>
 
 /* Exception code Mask */
-#define SOC_MCAUSE_EXP_MASK 0x7FFFFFFF
+#define SOC_MCAUSE_EXP_MASK (0x7FFFFFFF)
+#define ACTIVE_USEC		    (100)
+#define IDLE_USEC		    (1200)
+
 
 void sys_reboot(uint8_t type);
 

@@ -30,8 +30,6 @@
 extern "C" {
 #endif
 
-#if !defined(_ASMLANGUAGE)
-
 /* kernel timeout record */
 
 struct _timeout;
@@ -51,7 +49,5 @@ struct _timeout {
 #ifdef __cplusplus
 }
 #endif
-
-#endif /* _ASMLANGUAGE */
 
 #endif /* ZEPHYR_KERNEL_INCLUDE_KERNEL_STRUCTS_H_ */

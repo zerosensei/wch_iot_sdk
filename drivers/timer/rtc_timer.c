@@ -6,13 +6,14 @@
 
 #include <soc.h>
 #include <kernel.h>
+#include <pm/device.h>
 #include <drivers/timer/system_timer.h>
 
 #define CYC_PER_TICK (sys_clock_hw_cycles_per_sec()	\
 		      / CONFIG_SYS_CLOCK_TICKS_PER_SEC)
 #define MAX_TICKS ((RTC_ONEDAY_TICKS / 2 - CYC_PER_TICK) / CYC_PER_TICK)
 #define MAX_CYC (MAX_TICKS * CYC_PER_TICK)
-#define MIN_DELAY		33
+#define MIN_DELAY		15
 
 #define TICKLESS IS_ENABLED(CONFIG_TICKLESS_KERNEL)
 
@@ -78,7 +79,7 @@ void sys_clock_set_timeout(int32_t ticks, bool idle)
 		 * cyc + last_count should not less then current ticks. 
 		 * Otherwise, the alarm will not trig untill a day later.
 		 */
-		cyc += CYC_PER_TICK * 33;
+		cyc += CYC_PER_TICK * MIN_DELAY;
 	}
 
 	set_rtc_alarm(cyc + last_count + 1);
@@ -117,4 +118,13 @@ int sys_clock_driver_init(const struct device *dev)
 	return 0;
 }
 
-DEVICE_DEFINE(rtc, sys_clock_driver_init, NULL, NULL, NULL, NULL, NULL, DRIVER, 0);
+#define RTC_INIT()		\
+	struct pm_device pm_rtc = {		\
+		.flags = BIT(PM_DEVICE_FLAG_WS_CAPABLE),			\
+	};		\
+	const struct device DEVICE_NAME_GET(rtc) = {		\
+		COND_CODE_1(CONFIG_PM_DEVICE, (.pm = &pm_rtc,), ())	\
+	};		\
+	Z_INIT_ENTRY_DEFINE(DEVICE_NAME_GET(rtc), sys_clock_driver_init, DEVICE_GET(rtc), DRIVER, 0)	
+
+RTC_INIT();

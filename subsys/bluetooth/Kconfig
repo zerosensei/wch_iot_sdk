@@ -1,0 +1,149 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig BT
+    bool "Bluetooth"
+
+    help
+      Enable bluetooth support.
+
+if BT
+config BT_CUSTOM_ADDRESS
+    bool "Use custom address"
+    default n
+    help
+      Use custom address, otherwise use chip MAC address.
+      
+config BT_STACK_SIZE
+    int "Bluetooth Stack size"
+    default 6144
+    help
+      Configure the Bluetooth stack size.
+      Should not be less than 6K.
+
+config BT_SNV
+    bool "Bluetooth SNV"
+    default y
+    help
+      Enable Bluetooth SNV function.
+      
+config BT_SNV_ADDR
+    hex "Bluetooth SNV start address"
+    # TODO: depends on flash
+    default 0 
+    depends on BT_SNV
+    help
+      Configure the Bluetooth snv start address.
+
+config BT_TEM_SAMPLE
+    bool "Bluetooth TEM sample"
+    # default y
+    help
+      Enable the function of calibrating according 
+      to temperature changes, and a single 
+      calibration takes less than 10ms.
+
+config BT_CALIBRATION
+    bool "Bluetooth calibration"
+    default y
+    help
+      Enable the function of timing calibration, 
+      and a single calibration takes less than 10ms.
+
+config BT_CALIBRATION_PERIOD
+    int "Bluetooth calibration period"
+    default 120000
+    help
+      Configure bluetooth calibration period, unit 625us. 
+
+config BT_L2CAP_TX_SIZE
+    int "Maximun size for L2CAP Tx buffers"
+    range 27 251
+    default 27
+    help
+      Maximum size for L2CAP TX buffers.
+
+config BT_L2CAP_BUF_NUM
+    int "Number of L2CAP buffers"
+    default 5
+    help
+      Number of buffers available for L2CAP packets.
+
+config BT_L2CAP_TX_EVENT_NUM
+    int "Maximum number of TX data in a connection event"
+    default 1
+    help
+      Maximum number of TX data in a connection event. Defaut 1.
+
+config BT_L2CAP_RX_EVENT_NUM
+    int "Maximum number of RX data in a connection event"
+    default BT_L2CAP_TX_EVENT_NUM
+    help
+      Maximum number of RX data in a connection event.
+      Default equal to BufNumber.
+
+choice BT_CTLR_TX_PWR
+	prompt "Tx Power"
+	default BT_CTLR_TX_PWR_0
+	help
+	  Select the supported BLE Radio transmit power level in dBm.
+
+config BT_CTLR_TX_PWR_PLUS_7
+  depends on SOC_CH32V208 || SOC_CH32F208
+	bool "+7 dBm"
+
+config BT_CTLR_TX_PWR_PLUS_6
+  depends on SOC_CH32V208 || SOC_CH32F208
+	bool "+6 dBm"
+
+config BT_CTLR_TX_PWR_PLUS_5
+	bool "+5 dBm"
+
+config BT_CTLR_TX_PWR_PLUS_4
+	bool "+4 dBm"
+
+config BT_CTLR_TX_PWR_PLUS_3
+	bool "+3 dBm"
+
+config BT_CTLR_TX_PWR_PLUS_2
+	bool "+2 dBm"
+
+config BT_CTLR_TX_PWR_PLUS_1
+	bool "+1 dBm"
+
+config BT_CTLR_TX_PWR_0
+	bool "0 dBm"
+
+config BT_CTLR_TX_PWR_MINUS_4
+	bool "-4 dBm"
+
+config BT_CTLR_TX_PWR_MINUS_8
+	bool "-8 dBm"
+
+config BT_CTLR_TX_PWR_MINUS_12
+	bool "-12 dBm"
+
+config BT_CTLR_TX_PWR_MINUS_16
+	bool "-16 dBm"
+
+config BT_CTLR_TX_PWR_MINUS_20
+	bool "-20 dBm"
+
+endchoice
+
+config BT_PERIPHERAL_MAX_CONNECTION
+    int "Peripheral maximum connection number"
+    default 1
+    help
+      The number of slave roles that can be 
+      played at the same time.
+
+config BT_CENTRAL_MAX_CONNECTION
+    int "Central maximum connection number"
+    default 1
+    help
+      The number of master roles that can be 
+      played at the same time.  
+
+
+endif

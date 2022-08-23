@@ -1,6 +1,15 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
+mainmenu "WCH iot SDK Configuration"
+
+source "soc/Kconfig"
+
+source "arch/Kconfig"
+
+source "drivers/Kconfig"
+
+source "subsys/Kconfig"
 
 
 

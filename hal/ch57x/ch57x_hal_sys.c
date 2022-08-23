@@ -41,7 +41,7 @@ __HIGHCODE void hal_sys_init(void)
 //TODO: DCDC 
 }
 
-__HIGHCODE void hal_sys_delay_us(uint16_t t)
+__HIGHCODE __attribute__((optimize("-Os"))) void hal_sys_delay_us(uint16_t t)
 {
     uint32_t i = 0;
 #if(FREQ_SYS == 60000000)
@@ -72,7 +72,7 @@ __HIGHCODE void hal_sys_delay_us(uint16_t t)
 }
 
 
-__HIGHCODE void hal_sys_delay_ms(uint16_t t)
+__HIGHCODE __attribute__((optimize("-Os"))) void hal_sys_delay_ms(uint16_t t)
 {
     uint16_t i;
 

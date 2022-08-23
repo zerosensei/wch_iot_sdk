@@ -5,7 +5,6 @@
  */
 
 #include <kernel.h>
-#include <soc.h>
 
 int main(void)
 {       

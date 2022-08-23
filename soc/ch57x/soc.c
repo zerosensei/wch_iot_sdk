@@ -28,6 +28,10 @@ int wch_sys_init(const struct device *dev)
 	return 0;
 }
 
+void arch_busy_wait(uint32_t time_us)
+{
+	hal_sys_delay_us(time_us);
+}
 
 __HIGHCODE __WCH_INT_FAST void HardFault_Handler(void)
 {

@@ -42,7 +42,7 @@ void hal_rtc_mode_tmr_cfg(rtc_tmr_mode_t perid)
     hal_rtc_mode_tmr_enable();
 }
 
-void hal_rtc_set_ticks(uint32_t ticks)
+static void hal_rtc_set_ticks(uint32_t ticks)
 {
     if (ticks > RTC_ONEDAY_TICKS) {
         ticks -= RTC_ONEDAY_TICKS;

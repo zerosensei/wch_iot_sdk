@@ -1,0 +1,52 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+choice
+    prompt "SoC"
+
+    config SOC_CH573X
+        bool "CH573X"
+        depends on SOC_SERIES_CH57X
+
+    config SOC_CH573F
+        bool "CH573F"
+        depends on SOC_SERIES_CH57X
+
+    config SOC_CH571F
+        bool "CH571F"
+        depends on SOC_SERIES_CH57X
+
+    config SOC_CH571D
+        bool "CH571D"
+        depends on SOC_SERIES_CH57X
+
+    config SOC_CH571K
+        bool "CH571K"
+        depends on SOC_SERIES_CH57X
+
+endchoice
+
+config SOC_DCDC_CH57X
+    bool "SoC DC/DC CH57X"
+    depends on SOC_CH573X || SOC_CH573F || SOC_CH571F
+    help
+      Enable CH57X series System on Chip DC/DC converter.
+
+choice
+    prompt "SoC RTC source select"
+
+    config SOC_LSE_32768
+        bool "LSE 32768Hz"
+    config SOC_LSI_32000
+        bool "LSI 32768Hz"
+    config SOC_LSI_32768
+        bool "LSI 32768Hz"
+
+endchoice
+
+config SOC_RTC_FREQ
+    int
+    default 32768 if SOC_LSE_32768 || SOC_LSI_32768
+    default 32000 if SOC_LSI_32000
+    help
+      SoC RTC frequency (in Hz).

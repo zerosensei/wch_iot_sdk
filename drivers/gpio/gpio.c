@@ -223,6 +223,10 @@ static int gpio_wch_init(const struct device *dev)
 
     cfg->irq_config_func(dev);
 
+    for(int i = 0; i < 32; i++) {
+        gpio_wch_pin_configure(dev, i, GPIO_INPUT | GPIO_PULL_UP);
+    }
+
     return 0;
 }
 

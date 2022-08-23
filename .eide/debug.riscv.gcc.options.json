@@ -1,6 +1,14 @@
 {
     "version": 1,
-    "beforeBuildTasks": [],
+    "beforeBuildTasks": [
+        {
+            "name": "genconfig",
+            "disable": false,
+            "abortAfterFailed": false,
+            "stopBuildAfterFailed": true,
+            "command": "python ${ProjectRoot}\\script\\kconfig.py ${ProjectRoot}\\Kconfig ${OutDir}\\.config ${OutDir}\\auto_config.h ${OutDir}\\source.txt ${ProjectRoot}\\soc\\ch57x\\ch57x_defconfig ${ProjectRoot}\\samples\\drivers\\uart\\prj.conf"
+        }
+    ],
     "afterBuildTasks": [
         {
             "name": "output lst file",

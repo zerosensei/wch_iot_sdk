@@ -14,6 +14,8 @@
 #include <errno.h>
 #include <toolchain.h>
 #include <kernel_structs.h>
+#include <kernel_arch_interface.h>
+#include <init.h>
 #include <sys/__assert.h>
 #include <sys/slist.h>
 #include <sys/util.h>
@@ -223,6 +225,14 @@
 
 #endif
 
+/**
+ * @brief Cause the cpu to busy wait.
+ *
+ * This routine causes the cpu to execute a "do nothing" loop for
+ * @a usec_to_wait microseconds.
+ *
+ */
+void k_busy_wait(uint32_t usec_to_wait);
 
 /**
  * @}
@@ -564,5 +574,7 @@ static inline uint64_t k_cycle_get_64(void)
  * @internal
  */
 extern void z_timer_expiration_handler(struct _timeout *t);
+
+#include <auto_config.h>
 
 #endif /* INCLUDE_KERNEL_H */

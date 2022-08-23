@@ -1,0 +1,27 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+choice
+    prompt "WCH MCU Selection"
+    depends on SOC_SERIES_CH58X
+
+config SOC_CH583M
+    bool "CH583M"
+
+config SOC_CH582M
+    bool "CH582M"
+
+config SOC_CH582F
+    bool "CH582F"
+
+config SOC_CH581F
+    bool "CH581F"
+
+endchoice 
+
+config SOC_DCDC_CH58X
+    bool "Soc DC/DC CH58X"
+    depends on SOC_CH583M || SOC_CH582M || SOC_CH582F || SOC_CH581F
+    help
+      Enable CH57X series System on Chip DC/DC converter.
+

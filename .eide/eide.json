@@ -13,11 +13,14 @@
             "./drivers",
             "./subsys",
             "./StdPeriphDriver/inc",
-            "./lib",
             "./samples",
-            "./soc",
-            "./tools",
-            "./config"
+            "./include",
+            "./arch/riscv/include",
+            "./soc/ch57x",
+            "./hal/ch57x/inc",
+            "./kernel/include",
+            "./lib/ch57x",
+            "./build/Debug"
           ],
           "libList": [
             "./lib/ch57x"
@@ -26,14 +29,10 @@
           "defineList": [
             "CONFIG_RISCV",
             "CONFIG_UART_INTERRUPT_DRIVEN",
-            "CONFIG_WCH_UART_0",
-            "CONFIG_WCH_LOG_UART=1",
             "CONFIG_ASSERT",
             "CONFIG_ASSERT_LEVEL=2",
             "CONFIG_ASSERT_VERBOSE",
             "CONFIG_WCH_UART_1",
-            "CONFIG_WCH_UART_2",
-            "CONFIG_WCH_UART_3",
             "CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=32768",
             "CONFIG_SYS_CLOCK_TICKS_PER_SEC=32768",
             "CONFIG_SYS_CLOCK_MAX_TIMEOUT_DAYS=356",
@@ -42,7 +41,17 @@
             "CONFIG_TIMER_HAS_64BIT_CYCLE_COUNTER",
             "FREQ_SYS=60000000",
             "CONFIG_PRINTK",
-            "CLK_OSC32K=0"
+            "CLK_OSC32K=0",
+            "CONFIG_STATS",
+            "CONFIG_MP_NUM_CPUS=1",
+            "CONFIG_PM",
+            "CONFIG_PM_STATS",
+            "CONFIG_PM_DEVICE",
+            "CONFIG_WCH_LOG_UART=1",
+            "CONFIG_WCH_GPIO",
+            "CONFIG_PM_POLICY_DEFAULT",
+            "CONFIG_WCH_UART_0",
+            "CONFIG_SOC_CH57X"
           ]
         }
       ]
@@ -78,10 +87,16 @@
     "drivers/adc.c",
     "hal/ch57x/ch57x_hal_adc.c",
     "drivers/adc/adc.c",
-    "samples/hello_world/src/main.c",
     "arch/riscv/core/isr.S",
     "drivers/timer/sys_timer.c",
-    "samples/drivers/uart/src/build"
+    "samples/drivers/uart/src/build",
+    "subsys/pm/device_runtime.c",
+    "subsys/pm/pm copy.c",
+    "samples/basic",
+    "samples/hello_world",
+    "samples/drivers/uart",
+    "samples/drivers/timer_rtc",
+    "samples/subsys"
   ],
   "outDir": "build",
   "deviceName": null,

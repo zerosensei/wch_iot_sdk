@@ -171,11 +171,20 @@ void hal_clk_lf_source_select(low_freq_source_t src)
     R8_CK32K_CONFIG = cfg;
     sys_safe_access_disable();
 
+    if (src == LF_SOURCE_LSE) {
+        hal_clk_lse_cfg_current(LSE_CURRENT_200);
+    }
+
     volatile uint8_t clk_pin;
 
+    //FIXME: 异步信号可不可靠
     do {
         clk_pin = (R8_CK32K_CONFIG & RB_32K_CLK_PIN);
-    } while ((clk_pin != (R8_CK32K_CONFIG & RB_32K_CLK_PIN)) || (!clk_pin));
+    } while ((clk_pin != (R8_CK32K_CONFIG & RB_32K_CLK_PIN)) || (!clk_pin)); 
+
+    if (src == LF_SOURCE_LSE) {
+        hal_clk_lse_cfg_current(LSE_CURRENT_100);
+    }
 }
 
 void hal_clk_lse_cfg_current(lse_current_t cur)
