@@ -22,7 +22,7 @@ def main():
     print(kconf.write_config(args.config_out))
     print(kconf.write_autoconf(args.header_out))
 
-    # write_kconfig_filenames(kconf, args.kconfig_list_out)
+    write_kconfig_filenames(kconf, args.kconfig_list_out)
 
 
 def parse_args():

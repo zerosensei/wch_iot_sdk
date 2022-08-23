@@ -7,6 +7,7 @@
 #include <kernel.h>
 #include <bluetooth/bluetooth.h>
 #include <logging/log.h>
+#include <pm/pm.h>
 #include <string.h>
 
 __attribute__((aligned(4))) uint8_t _bt_heap[CONFIG_BT_STACK_SIZE];
@@ -56,9 +57,9 @@ void bt_init(void)
     cfg.rcCB = hal_clk_lsi_calibrate; // 内部32K时钟校准
   #endif
 #endif
-#if(defined(HAL_SLEEP)) && (HAL_SLEEP == TRUE)
-    cfg.WakeUpTime = WAKE_UP_RTC_MAX_TIME;
-    cfg.sleepCB = CH57X_LowPower; // 启用睡眠
+#if defined(CONFIG_PM)
+    // cfg.WakeUpTime = WAKE_UP_RTC_MAX_TIME;
+    cfg.sleepCB = pm_system_suspend; // 启用睡眠
 #endif
 #if(defined(CONFIG_BT_CUSTOM_ADDRESS))
     for(int i = 0; i < 6; i++) {
@@ -67,6 +68,7 @@ void bt_init(void)
 #else
     GetMACAddress(cfg.MacAddr);
 #endif
+
     __ASSERT(cfg.MEMAddr, "MEMAddr invalid");
     __ASSERT_NO_MSG(cfg.MEMLen >= 4 * 1024);
 

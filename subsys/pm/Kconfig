@@ -1,0 +1,72 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig PM
+    bool "Power Management"
+    help
+      This option manages the power consumption of the chip in a unified manner 
+      based on the kernel timer, and enables the chip to enter a low-power state 
+      when the core is idle.
+
+if PM
+
+choice PM_POLICY
+	prompt "Idle State Power Management Policy"
+	default PM_POLICY_DEFAULT
+	help
+	  Select the idle state power management policy.
+
+config PM_POLICY_DEFAULT
+	bool "Default PM policy"
+	help
+	  This option selects the default PM policy. Default policy is based
+	  on CPU residency times and other constraints imposed by the drivers or
+	  application.
+
+config PM_POLICY_CUSTOM
+	bool "Custom PM Policy"
+	help
+	  This options allows applications to override the default policy with
+	  a custom implementation.
+
+endchoice
+
+choice PM_LEVEL
+	prompt "Power Management Level"
+	depends on PM_POLICY_DEFAULT
+	default PM_SUSPEND_TO_RAM
+	help
+	  Select the deepest PM state.
+
+config PM_SUSPEND_TO_IDLE
+	bool "PM level idle"
+	help
+	  The deepest PM state of the kernel is idle.
+
+config PM_SUSPEND_TO_RAM
+	bool "PM level suspend to RAM"
+	help
+	  The deepest PM state of the kernel is suspend to RAM.
+
+config PM_SOFT_OFF
+	bool "PM level soft off"
+	help
+	  The deepest PM state of the kernel is soft off".
+
+endchoice
+
+config PM_ACTIVE_USEC
+	int "Minimum time to enter idle (in us)"
+	default 100
+	help
+	  The minimum number of microseconds to enter idle, 
+	  when less than its value do not enter idle.
+
+config PM_IDLE_USEC
+	int "Minimum time to enter sleep (in us)"
+	default 1200
+	help
+	  The maximum number of microseconds to enter idle, 
+	  when greater than its value, enter sleep if sleep is enabled.
+
+endif

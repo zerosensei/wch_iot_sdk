@@ -1,137 +1,134 @@
 {
   "name": "wch_iot_sdk",
   "type": "RISC-V",
-  "mode": "Debug",
-  "toolchain": "RISCV_GCC",
-  "dependenceList": [
-    {
-      "groupName": "custom",
-      "depList": [
-        {
-          "name": "default",
-          "incList": [
-            "./drivers",
-            "./subsys",
-            "./StdPeriphDriver/inc",
-            "./samples",
-            "./include",
-            "./arch/riscv/include",
-            "./soc/ch57x",
-            "./hal/ch57x/inc",
-            "./kernel/include",
-            "./lib/ch57x",
-            "./build/Debug"
-          ],
-          "libList": [
-            "./lib/ch57x"
-          ],
-          "sourceDirList": [],
-          "defineList": [
-            "CONFIG_RISCV",
-            "CONFIG_UART_INTERRUPT_DRIVEN",
-            "CONFIG_ASSERT",
-            "CONFIG_ASSERT_LEVEL=2",
-            "CONFIG_ASSERT_VERBOSE",
-            "CONFIG_WCH_UART_1",
-            "CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=32768",
-            "CONFIG_SYS_CLOCK_TICKS_PER_SEC=32768",
-            "CONFIG_SYS_CLOCK_MAX_TIMEOUT_DAYS=356",
-            "CONFIG_SYS_CLOCK_EXISTS",
-            "CONFIG_TICKLESS_KERNEL",
-            "CONFIG_TIMER_HAS_64BIT_CYCLE_COUNTER",
-            "FREQ_SYS=60000000",
-            "CONFIG_PRINTK",
-            "CLK_OSC32K=0",
-            "CONFIG_STATS",
-            "CONFIG_MP_NUM_CPUS=1",
-            "CONFIG_PM",
-            "CONFIG_PM_STATS",
-            "CONFIG_PM_DEVICE",
-            "CONFIG_WCH_LOG_UART=1",
-            "CONFIG_WCH_GPIO",
-            "CONFIG_PM_POLICY_DEFAULT",
-            "CONFIG_WCH_UART_0",
-            "CONFIG_SOC_CH57X"
-          ]
-        }
-      ]
-    }
-  ],
-  "compileConfig": {
-    "linkerScriptPath": "soc/ch57x/Link.ld",
-    "options": "null"
-  },
-  "uploader": "Custom",
+  "dependenceList": [],
   "srcDirs": [
-    "./drivers",
-    "./include",
-    "./kernel",
-    "./lib",
-    "./samples",
-    "./subsys",
-    "./tools",
-    "./soc/ch57x",
-    "./hal",
-    "./arch"
+    "drivers",
+    "include",
+    "kernel",
+    "lib",
+    "samples",
+    "subsys",
+    "tools",
+    "soc/ch57x",
+    "hal",
+    "arch"
   ],
   "virtualFolder": {
     "name": "<virtual_root>",
     "files": [],
     "folders": []
   },
-  "excludeList": [
-    "../SRC/Ld",
-    "subsys/SPI_Flash",
-    "soc/ch58x",
-    "hal/ch58x",
-    "drivers/adc.c",
-    "hal/ch57x/ch57x_hal_adc.c",
-    "drivers/adc/adc.c",
-    "arch/riscv/core/isr.S",
-    "drivers/timer/sys_timer.c",
-    "samples/drivers/uart/src/build",
-    "subsys/pm/device_runtime.c",
-    "subsys/pm/pm copy.c",
-    "samples/basic",
-    "samples/hello_world",
-    "samples/drivers/uart",
-    "samples/drivers/timer_rtc",
-    "samples/subsys"
-  ],
   "outDir": "build",
   "deviceName": null,
   "packDir": null,
-  "uploadConfig": {
-    "bin": "./build/Debug/test_ch583m.hex",
-    "commandLine": "download.cmd ${hexFile}",
-    "eraseChipCommand": ""
-  },
-  "uploadConfigMap": {
-    "JLink": {
-      "bin": "",
-      "baseAddr": "0x08000000",
-      "cpuInfo": {
-        "vendor": "ST",
-        "cpuName": "STM32F103C8"
-      },
-      "proType": 1,
-      "speed": 8000,
-      "otherCmds": ""
-    },
-    "OpenOCD": {
-      "bin": "${ExecutableName}.hex",
-      "target": "${workspaceFolder}/tools/wch-riscv",
-      "interface": "${workspaceFolder}/tools/wch-interface",
-      "baseAddr": "0x08000000"
-    },
-    "Custom": {
-      "bin": "./build/Debug/ch582_demo.hex",
-      "commandLine": "test.sh ./build/Debug/ch582_demo.hex"
-    }
-  },
   "miscInfo": {
     "uid": "16983ebdb12e8c1bcea0eccbe8c84aae"
   },
-  "targets": {},
-  "version": "3.2"
+  "targets": {
+    "Debug": {
+      "excludeList": [
+        "../SRC/Ld",
+        "subsys/SPI_Flash",
+        "soc/ch58x",
+        "hal/ch58x",
+        "drivers/adc.c",
+        "hal/ch57x/ch57x_hal_adc.c",
+        "drivers/adc/adc.c",
+        "arch/riscv/core/isr.S",
+        "drivers/timer/sys_timer.c",
+        "samples/drivers/uart/src/build",
+        "subsys/pm/device_runtime.c",
+        "subsys/pm/pm copy.c",
+        "samples/basic",
+        "samples/hello_world",
+        "samples/drivers/uart",
+        "samples/drivers/timer_rtc",
+        "samples/subsys",
+        "lib/ch58x"
+      ],
+      "toolchain": "RISCV_GCC",
+      "compileConfig": {
+        "linkerScriptPath": "soc/ch57x/Link.ld",
+        "options": "null"
+      },
+      "uploader": "Custom",
+      "uploadConfig": {
+        "bin": "./build/Debug/test_ch583m.hex",
+        "commandLine": "download.cmd ${hexFile}",
+        "eraseChipCommand": ""
+      },
+      "uploadConfigMap": {
+        "JLink": {
+          "bin": "",
+          "baseAddr": "0x08000000",
+          "cpuInfo": {
+            "vendor": "ST",
+            "cpuName": "STM32F103C8"
+          },
+          "proType": 1,
+          "speed": 8000,
+          "otherCmds": ""
+        },
+        "OpenOCD": {
+          "bin": "${ExecutableName}.hex",
+          "target": "${workspaceFolder}/tools/wch-riscv",
+          "interface": "${workspaceFolder}/tools/wch-interface",
+          "baseAddr": "0x08000000"
+        },
+        "Custom": {
+          "bin": "./build/Debug/ch582_demo.hex",
+          "commandLine": "test.sh ./build/Debug/ch582_demo.hex"
+        }
+      },
+      "custom_dep": {
+        "name": "default",
+        "incList": [
+          "drivers",
+          "subsys",
+          "StdPeriphDriver/inc",
+          "samples",
+          "include",
+          "arch/riscv/include",
+          "soc/ch57x",
+          "hal/ch57x/inc",
+          "kernel/include",
+          "lib/ch57x",
+          "build/Debug"
+        ],
+        "libList": [
+          "lib/ch57x"
+        ],
+        "sourceDirList": [],
+        "defineList": [
+          "CONFIG_RISCV",
+          "CONFIG_UART_INTERRUPT_DRIVEN",
+          "CONFIG_ASSERT",
+          "CONFIG_ASSERT_LEVEL=2",
+          "CONFIG_ASSERT_VERBOSE",
+          "CONFIG_WCH_UART_1",
+          "CONFIG_SYS_CLOCK_HW_CYCLES_PER_SEC=32768",
+          "CONFIG_SYS_CLOCK_TICKS_PER_SEC=32768",
+          "CONFIG_SYS_CLOCK_MAX_TIMEOUT_DAYS=356",
+          "CONFIG_SYS_CLOCK_EXISTS",
+          "CONFIG_TICKLESS_KERNEL",
+          "CONFIG_TIMER_HAS_64BIT_CYCLE_COUNTER",
+          "FREQ_SYS=60000000",
+          "CONFIG_PRINTK",
+          "CLK_OSC32K=0",
+          "CONFIG_STATS",
+          "CONFIG_MP_NUM_CPUS=1",
+          "CONFIG_PM",
+          "CONFIG_PM_STATS",
+          "CONFIG_PM_DEVICE",
+          "CONFIG_WCH_LOG_UART=1",
+          "CONFIG_WCH_GPIO",
+          "CONFIG_PM_POLICY_DEFAULT",
+          "CONFIG_WCH_UART_0",
+          "CONFIG_SOC_CH57X"
+        ]
+      }
+    }
+  },
+  "version": "3.3"
 }

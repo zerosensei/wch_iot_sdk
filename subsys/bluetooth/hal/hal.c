@@ -6,6 +6,8 @@
 
 #include <kernel.h>
 #include <logging/log.h>
+#include <pm/pm.h>
+#include <pm/device.h>
 #include "hal.h"
 
 tmosTaskID hal_taskid = INVALID_TASK_ID;
@@ -40,8 +42,6 @@ static tmosEvents hal_process_event(tmosTaskID task_id, tmosEvents events)
 #if (defined CONFIG_SOC_LSI_32000) || (defined CONFIG_SOC_LSI_32768)
         hal_clk_lsi_calibrate();
 #endif
-        tmos_start_task(hal_taskid, HAL_REG_INIT_EVENT, 
-            MS1_TO_SYSTEM_TIME(CONFIG_BT_CALIBRATION_PERIOD));
         return events ^ HAL_REG_INIT_EVENT;
     }
 #endif /* CONFIG_BT_CALIBRATION */
@@ -63,5 +63,17 @@ void hal_init(void)
         return ;
     }
 
+    //TODO: tmos use rtc irq?
     TMOS_TimerInit(k_cycle_get_32);
+
+#if defined CONFIG_BT_CALIBRATION
+    tmos_start_reload_task(hal_taskid, HAL_REG_INIT_EVENT, 
+            MS1_TO_SYSTEM_TIME(CONFIG_BT_CALIBRATION_PERIOD));
+#endif 
+
+#if defined CONFIG_PM
+    pm_device_wakeup_enable(DEVICE_GET(rtc), true);
+    __ASSERT(pm_device_wakeup_is_enabled(DEVICE_GET(rtc)), 
+            "wakeup source is not enabled");
+#endif
 }

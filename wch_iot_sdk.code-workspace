@@ -26,8 +26,9 @@
             "editor.tabSize": 4,
             "editor.autoIndent": "advanced"
         },
-        "EIDE.RISCV.InstallDirectory": "",
-        "C_Cpp.errorSquiggles": "Disabled"
+        "EIDE.RISCV.InstallDirectory": "D:\\MounRiver\\MounRiver_Studio\\toolchain\\RISC-V Embedded GCC",
+        "C_Cpp.errorSquiggles": "Disabled",
+        "files.encoding": "gbk"
     },
     "extensions": {
         "recommendations": [

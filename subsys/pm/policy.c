@@ -65,11 +65,11 @@ const struct pm_state_info *pm_policy_next_state(uint8_t cpu, int32_t ticks)
 	uint32_t min_residency, exit_latency;
 	int32_t usecs = k_ticks_to_us_floor64(ticks);
 
-	if (usecs < ACTIVE_USEC) {
+	if (usecs < CONFIG_PM_ACTIVE_USEC) {
 		state.state = PM_STATE_ACTIVE;
 		state.exit_latency_us = 0;
 		state.min_residency_us = 0;
-	} else if (usecs <= IDLE_USEC) {
+	} else if (usecs <= CONFIG_PM_IDLE_USEC) {
 		state.state = PM_STATE_SUSPEND_TO_IDLE;
 		state.exit_latency_us = 0;
 		state.min_residency_us = 0;

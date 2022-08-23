@@ -11,4 +11,7 @@
 
 #define HAL_REG_INIT_EVENT          (1<<0)
 
+void hal_init(void);
+
+
 #endif /* SUBSYS_BLUETOOTH_HAL_HAL_H */

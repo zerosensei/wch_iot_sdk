@@ -1,2 +1,2 @@
-cd %SRCTREE%/build/Debug
+cd %SRCTREE%\build\Debug
 python ..\..\script\guiconfig.py

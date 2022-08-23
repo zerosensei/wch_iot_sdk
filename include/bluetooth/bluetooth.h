@@ -7,7 +7,7 @@
 #ifndef INCLUDE_BLUETOOTH_BLUETOOTH_H
 #define INCLUDE_BLUETOOTH_BLUETOOTH_H
 
-#include <bluetooth/hal/config.h>
+#include <bluetooth/hal/hal.h>
 
 void bt_init(void);
 
