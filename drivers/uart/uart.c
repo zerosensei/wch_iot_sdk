@@ -24,13 +24,11 @@ struct uart_wch_data {
 #endif
 };
 
-
-
 __HIGHCODE void uart_isr_handler(const struct device *dev)
 {
+#ifdef CONFIG_UART_INTERRUPT_DRIVEN
     const struct uart_wch_data *data = dev->data;
 
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
     if (data->callback) {
         data->callback(dev, data->cb_data);
     }

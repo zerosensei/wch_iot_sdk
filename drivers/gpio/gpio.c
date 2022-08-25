@@ -253,7 +253,7 @@ static int gpio_wch_init(const struct device *dev)
             0);  
 
 
-#ifdef CONFIG_WCH_GPIO
+#ifdef CONFIG_GPIO
 GPIO_INIT(a);
 GPIO_INIT(b);
 #endif

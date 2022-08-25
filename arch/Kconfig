@@ -1,4 +1,20 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
-source "arch/riscv/Kconfig"
+config RISCV
+	bool
+	help
+	  RISCV architecture
+
+config ARM
+    bool
+    help
+      ARM architecture
+
+if RISCV
+    source "arch/riscv/Kconfig"
+endif
+
+if ARM
+    source "arch/arm/Kconfig"
+endif

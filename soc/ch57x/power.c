@@ -25,7 +25,6 @@ void pm_device_wakeup_source(const struct device *dev, bool enable)
 	// 	hal_pwr_wakeup_source(PWR_WAKEUP_SOURCE_BAT, true);
 	}
 }
-#endif
 
 /* Invoke Low Power/System Off specific Tasks */
 __weak void pm_state_set(enum pm_state state, uint8_t substate_id)
@@ -80,4 +79,4 @@ __weak void pm_state_exit_post_ops(enum pm_state state, uint8_t substate_id)
 		break;
 	}
 }
-
+#endif

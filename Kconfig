@@ -3,6 +3,8 @@
 
 mainmenu "WCH iot SDK Configuration"
 
+source "kernel/Kconfig"
+
 source "soc/Kconfig"
 
 source "arch/Kconfig"

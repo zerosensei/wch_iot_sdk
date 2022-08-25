@@ -5,4 +5,14 @@ menu "Device Drivers"
 
 source "drivers/uart/Kconfig"
 
+source "drivers/timer/Kconfig"
+
+source "drivers/pinctrl/Kconfig"
+
+source "drivers/gpio/Kconfig"
+
+source "drivers/debug/Kconfig"
+
+source "drivers/adc/Kconfig"
+
 endmenu

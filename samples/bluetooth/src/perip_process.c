@@ -13,9 +13,9 @@ tmosEvents perip_process_event(tmosTaskID taskID, tmosEvents event)
     if (event & SYS_EVENT_MSG) {
         uint8_t *pMsg;
 
-        if((pMsg = tmos_msg_receive(Peripheral_TaskID)) != NULL)
+        if((pMsg = tmos_msg_receive(perip_taskid)) != NULL)
         {
-            Peripheral_ProcessTMOSMsg((tmos_event_hdr_t *)pMsg);
+            // Peripheral_ProcessTMOSMsg((tmos_event_hdr_t *)pMsg);
             // Release the TMOS message
             tmos_msg_deallocate(pMsg);
         }
@@ -27,6 +27,8 @@ tmosEvents perip_process_event(tmosTaskID taskID, tmosEvents event)
 
         return event ^ PERIP_POLL_NOTIFY_EVENT;
     }
+
+    return 0;
 }
 
 void perip_process_init(void)

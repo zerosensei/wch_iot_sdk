@@ -1,6 +1,28 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
+menu "RISC-V Options"
+	depends on RISCV
+
 config ARCH
     string
-    default "riscv"
+	default "riscv64" if 64BIT
+	default "riscv32"
+
+config RISCV_PMP
+	bool "RISC-V PMP Support"
+	help
+	  MCU implements Physical Memory Protection.
+
+if RISCV_PMP
+
+config PMP_SLOTS
+	int "Number of PMP slots"
+	default 8
+	help
+	  This is the number of PMP entries implemented by the hardware.
+	  Typical values are 8 or 16.
+
+endif
+
+endmenu

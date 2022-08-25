@@ -7,6 +7,7 @@
 #ifndef ZEPHYR_INCLUDE_SYS___ASSERT_H_
 #define ZEPHYR_INCLUDE_SYS___ASSERT_H_
 
+#include <auto_config.h>
 #include <stdbool.h>
 #include <toolchain.h>
 

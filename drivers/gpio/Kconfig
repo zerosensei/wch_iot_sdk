@@ -1,0 +1,17 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig GPIO
+    bool "GPIO Drivers"
+    help
+      Enable GPIO drivers.
+
+if GPIO
+
+config GPIO_INIT_PRIORITY
+	int "GPIO init priority"
+	default 0
+	help
+	  GPIO driver device initialization priority.
+
+endif

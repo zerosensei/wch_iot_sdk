@@ -8,15 +8,17 @@ choice
 
     config SOC_SERIES_CH57X
         bool "WCH CH57X series MCU"
-        select RISV
+        select RISCV
+        select TICKLESS_CAPABLE
         help
-        Enable support for CH57X series MCU
+          Enable support for CH57X series MCU
 
     config SOC_SERIES_CH58X
         bool "WCH CH58X series MCU"
-        select RISV
+        select RISCV
+        select TICKLESS_CAPABLE
         help
-        Enable support for CH58X series MCU
+          Enable support for CH58X series MCU
 
 endchoice
 

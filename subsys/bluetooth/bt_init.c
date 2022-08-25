@@ -12,21 +12,21 @@
 
 __attribute__((aligned(4))) uint8_t _bt_heap[CONFIG_BT_STACK_SIZE];
 
-uint32_t bt_flash_read_cb(uint32_t addr, uint32_t num, uint32_t *pBuf)
+uint32_t ble_flash_read_cb(uint32_t addr, uint32_t num, uint32_t *pBuf)
 {
     //TODO: FLASH read API
 
     return 0;
 }
 
-uint32_t bt_flash_write_cb(uint32_t addr, uint32_t num, uint32_t *pBuf)
+uint32_t ble_flash_write_cb(uint32_t addr, uint32_t num, uint32_t *pBuf)
 {
     //TODO: FLASH write API
 
     return 0;
 }
 
-void bt_init(void)
+void ble_init(void)
 {
     bleConfig_t cfg;
 
@@ -44,8 +44,8 @@ void bt_init(void)
     cfg.TxPower = (uint32_t)CONFIG_BT_CTLR_TX_PWR_0;
 #if(defined(CONFIG_BT_SNV)) && (CONFIG_BT_SNV_ADDR)
     cfg.SNVAddr = (uint32_t)CONFIG_BT_SNV_ADDR;
-    cfg.readFlashCB = bt_flash_read_cb;
-    cfg.writeFlashCB = bt_flash_write_cb;
+    cfg.readFlashCB = ble_flash_read_cb;
+    cfg.writeFlashCB = ble_flash_write_cb;
 #endif
     cfg.SelRTCClock = 1;
     cfg.ConnectNumber = (CONFIG_BT_PERIPHERAL_MAX_CONNECTION & 3) | 

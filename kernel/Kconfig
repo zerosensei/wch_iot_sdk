@@ -1,0 +1,80 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+menu "General Kernel Options"
+
+config SYS_CLOCK_TICKS_PER_SEC
+	int "System tick frequency (in ticks/second)"
+	default 10000 if TICKLESS_KERNEL
+	default 100
+	help
+	  This option specifies the nominal frequency of the system clock in Hz.
+
+	  For asynchronous timekeeping, the kernel defines a "ticks" concept. A
+	  "tick" is the internal count in which the kernel does all its internal
+	  uptime and timeout bookkeeping. Interrupts are expected to be delivered
+	  on tick boundaries to the extent practical, and no fractional ticks
+	  are tracked.
+
+	  The choice of tick rate is configurable by this option. Also the number
+	  of cycles per tick should be chosen so that 1 millisecond is exactly
+	  represented by an integral number of ticks. Defaults on most hardware
+	  platforms (ones that support setting arbitrary interrupt timeouts) are
+	  expected to be in the range of 10 kHz, with software emulation
+	  platforms and legacy drivers using a more traditional 100 Hz value.
+
+	  Note that when available and enabled, in "tickless" mode
+	  this config variable specifies the minimum available timing
+	  granularity, not necessarily the number or frequency of
+	  interrupts delivered to the kernel.
+
+	  A value of 0 completely disables timer support in the kernel.
+
+config SYS_CLOCK_HW_CYCLES_PER_SEC
+	int "System clock's h/w timer frequency"
+	help
+	  This option specifies the frequency of the hardware timer used for the
+	  system clock (in Hz). This option is set by the SOC's or board's Kconfig file
+	  and the user should generally avoid modifying it via the menu configuration.
+
+config SYS_CLOCK_EXISTS
+	bool "System clock exists and is enabled"
+	default y
+	help
+	  This option specifies that the kernel has timer support.
+
+	  Some device configurations can eliminate significant code if
+	  this is disabled.  Obviously timeout-related APIs will not
+	  work when disabled.
+
+config TIMEOUT_64BIT
+	bool "Store kernel timeouts in 64 bit precision"
+	default y
+	help
+	  When this option is true, the k_ticks_t values passed to
+	  kernel APIs will be a 64 bit quantity, allowing the use of
+	  larger values (and higher precision tick rates) without fear
+	  of overflowing the 32 bit word.  This feature also gates the
+	  availability of absolute timeout values (which require the
+	  extra precision).
+
+config SYS_CLOCK_MAX_TIMEOUT_DAYS
+	int "Max timeout (in days) used in conversions"
+	default 365
+	help
+	  Value is used in the time conversion static inline function to determine
+	  at compile time which algorithm to use. One algorithm is faster, takes
+	  less code but may overflow if multiplication of source and target
+	  frequency exceeds 64 bits. Second algorithm prevents that. Faster
+	  algorithm is selected for conversion if maximum timeout represented in
+	  source frequency domain multiplied by target frequency fits in 64 bits.
+
+config TICKLESS_KERNEL
+	bool "Tickless kernel"
+	default y if TICKLESS_CAPABLE
+	depends on TICKLESS_CAPABLE
+	help
+	  This option enables a fully event driven kernel. Periodic system
+	  clock interrupt generation would be stopped at all times.
+
+endmenu
