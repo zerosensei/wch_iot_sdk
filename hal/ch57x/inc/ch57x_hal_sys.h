@@ -7,9 +7,11 @@
 #ifndef HAL_CH57X_INC_CH57X_HAL_SYS_H
 #define HAL_CH57X_INC_CH57X_HAL_SYS_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ch57x_common.h"
-
-
 
 typedef enum {
     STA_RAM_READABLE = 0U,          // FlashROM 代码和数据区 是否可读
@@ -65,5 +67,9 @@ void hal_sys_reset(void);
 void hal_sys_init(void);
 void hal_sys_delay_us(uint16_t t);
 void hal_sys_delay_ms(uint16_t t);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_SYS_H */

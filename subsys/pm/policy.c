@@ -8,7 +8,6 @@
 #include <kernel.h>
 #include <pm/pm.h>
 #include <pm/policy.h>
-#include <spinlock.h>
 #include <sys_clock.h>
 #include <sys/__assert.h>
 #include <sys/time_units.h>
@@ -20,80 +19,41 @@
 /** State lock reference counting */
 static atomic_t state_lock_cnt[PM_STATE_COUNT];
 
-/** Lock to synchronize access to the latency request list. */
-static struct k_spinlock latency_lock;
-/** List of maximum latency requests. */
-static sys_slist_t latency_reqs;
-/** Maximum CPU latency in ticks */
-static int32_t max_latency_ticks = K_TICKS_FOREVER;
-/** Callback to notify when maximum latency changes. */
-static pm_policy_latency_changed_cb_t latency_changed_cb;
-
-/** @brief Update maximum allowed latency. */
-static void update_max_latency(void)
-{
-	int32_t new_max_latency_ticks = K_TICKS_FOREVER;
-	struct pm_policy_latency_request *req;
-
-	SYS_SLIST_FOR_EACH_CONTAINER(&latency_reqs, req, node) {
-		if ((new_max_latency_ticks == K_TICKS_FOREVER) ||
-		    ((int32_t)req->value < new_max_latency_ticks)) {
-			new_max_latency_ticks = (int32_t)req->value;
-		}
-	}
-
-	if ((latency_changed_cb != NULL) &&
-	    (max_latency_ticks != new_max_latency_ticks)) {
-		int32_t latency_us;
-
-		if (new_max_latency_ticks == K_TICKS_FOREVER) {
-			latency_us = SYS_FOREVER_US;
-		} else {
-			latency_us = (int32_t)k_ticks_to_us_ceil32(new_max_latency_ticks);
-		}
-
-		latency_changed_cb(latency_us);
-	}
-
-	max_latency_ticks = new_max_latency_ticks;
-}
-
 #ifdef CONFIG_PM_POLICY_DEFAULT
-const struct pm_state_info *pm_policy_next_state(uint8_t cpu, int32_t ticks)
+__attribute__((section(".highcode")))
+const struct pm_state_info *pm_policy_next_state(uint32_t ticks)
 {
 	static struct pm_state_info state = {0};
-	uint32_t min_residency, exit_latency;
-	int32_t usecs = k_ticks_to_us_floor64(ticks);
+	uint32_t usecs = k_ticks_to_us_floor64(ticks);
 
-	if (usecs < CONFIG_PM_ACTIVE_USEC) {
-		state.state = PM_STATE_ACTIVE;
-		state.exit_latency_us = 0;
-		state.min_residency_us = 0;
-	} else if (usecs <= CONFIG_PM_IDLE_USEC) {
-		state.state = PM_STATE_SUSPEND_TO_IDLE;
-		state.exit_latency_us = 0;
-		state.min_residency_us = 0;
-	} else {
+#if (defined SOC_SERIES_CH58X)
+	if (usecs > (CONFIG_PM_RESIDENCY_TIME_MAX *
+			 1000 * 1000)) {
+		return NULL;
+	}
+#endif
+
+	if (usecs > CONFIG_PM_IDLE_USEC) {
 		state.state = PM_STATE_SUSPEND_TO_RAM;
-		state.exit_latency_us = 1000;
-		state.min_residency_us = 1000;
+		state.exit_latency_ticks = k_us_to_ticks_ceil32(1400);
+		state.min_residency_ticks = k_us_to_ticks_ceil32(100);
+	} else if (usecs >= CONFIG_PM_ACTIVE_USEC) {
+		state.state = PM_STATE_SUSPEND_TO_IDLE;
+		state.exit_latency_ticks = 0;
+		state.min_residency_ticks = 0;
+	} else {
+		state.state = PM_STATE_ACTIVE;
+		state.exit_latency_ticks = 0;
+		state.min_residency_ticks = 0;
 	}
 
 	if (pm_policy_state_lock_is_active(state.state)) {
 		return NULL;
 	}
 
-	min_residency = k_us_to_ticks_ceil32(state.min_residency_us);
-	exit_latency = k_us_to_ticks_ceil32(state.exit_latency_us);
-
-	/* skip state if it brings too much latency */
-	if ((max_latency_ticks != K_TICKS_FOREVER) &&
-		(exit_latency >= max_latency_ticks)) {
-		return NULL;
-	}
-
 	if ((ticks == K_TICKS_FOREVER) ||
-		(ticks >= (min_residency + exit_latency))) {
+		(ticks >= (state.exit_latency_ticks + 
+		state.min_residency_ticks))) {
 		return &state;
 	}
 	
@@ -118,49 +78,6 @@ void pm_policy_state_lock_put(enum pm_state state)
 bool pm_policy_state_lock_is_active(enum pm_state state)
 {
 	return (atomic_get(&state_lock_cnt[state]) != 0);
-}
-
-void pm_policy_latency_request_add(struct pm_policy_latency_request *req,
-				   uint32_t value)
-{
-	req->value = k_us_to_ticks_ceil32(value);
-
-	k_spinlock_key_t key = k_spin_lock(&latency_lock);
-
-	sys_slist_append(&latency_reqs, &req->node);
-	update_max_latency();
-
-	k_spin_unlock(&latency_lock, key);
-}
-
-void pm_policy_latency_request_update(struct pm_policy_latency_request *req,
-				      uint32_t value)
-{
-	k_spinlock_key_t key = k_spin_lock(&latency_lock);
-
-	req->value = k_us_to_ticks_ceil32(value);
-	update_max_latency();
-
-	k_spin_unlock(&latency_lock, key);
-}
-
-void pm_policy_latency_request_remove(struct pm_policy_latency_request *req)
-{
-	k_spinlock_key_t key = k_spin_lock(&latency_lock);
-
-	(void)sys_slist_find_and_remove(&latency_reqs, &req->node);
-	update_max_latency();
-
-	k_spin_unlock(&latency_lock, key);
-}
-
-void pm_policy_latency_changed(pm_policy_latency_changed_cb_t cb)
-{
-	k_spinlock_key_t key = k_spin_lock(&latency_lock);
-
-	latency_changed_cb = cb;
-
-	k_spin_unlock(&latency_lock, key);
 }
 
 #endif /* CONFIG_PM */

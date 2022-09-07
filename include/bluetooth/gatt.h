@@ -55,17 +55,18 @@
                     _props)   
 
 #define BLE_GATT_CHRC_VALUE(_uuid, _perm, _value)  \
-    BLE_GATT_ATTRIBUTE(BLE_CHRC_TYPE_UUID_16(_uuid), _perm, _value)            
+    BLE_GATT_ATTRIBUTE(BLE_CHRC_TYPE_UUID_16(_uuid),    \
+                      _perm,            \
+                      (uint8_t *)_value)            
 
 #define BLE_GATT_CHRC_DESCRIPTION(_des) \
     BLE_GATT_ATTRIBUTE(BLE_CHRC_TYPE_UUID_16(charUserDescUUID),         \
                 GATT_PERMIT_READ,       \
                 _des)
 
-#define BLE_GATT_CHARACTERISTIC(_uuid, _perm, _props, _value, _des)     \
+#define BLE_GATT_CHARACTERISTIC(_uuid, _perm, _props, _value)     \
     BLE_GATT_CHRC_DECLARATION(_props),          \
-    BLE_GATT_CHRC_VALUE(_uuid, _perm, _value),          \
-    BLE_GATT_CHRC_DESCRIPTION(_des)
+    BLE_GATT_CHRC_VALUE(_uuid, _perm, _value)
 
 
 #define BLE_GATT_CCC(_perm, _cfg)     \

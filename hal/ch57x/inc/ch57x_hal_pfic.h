@@ -7,6 +7,10 @@
 #ifndef HAL_CH57X_INC_CH57X_HAL_PFIC_H
 #define HAL_CH57X_INC_CH57X_HAL_PFIC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ch57x_common.h"
 
 /* memory mapped structure for Program Fast Interrupt Controller (PFIC) */
@@ -277,5 +281,9 @@ static inline void PFIC_INTNestCfg(bool NewState)
         PFIC->CFGR = PFIC_KEY1 | (1 << 1);
     }
 }
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_PFIC_H */

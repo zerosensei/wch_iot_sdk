@@ -44,7 +44,8 @@
         "samples/hello_world",
         "samples/drivers/uart",
         "samples/drivers/timer_rtc",
-        "samples/subsys"
+        "samples/subsys",
+        "samples/bluetooth/peripheral_hr"
       ],
       "toolchain": "RISCV_GCC",
       "compileConfig": {
@@ -99,7 +100,9 @@
           "lib/ch57x"
         ],
         "sourceDirList": [],
-        "defineList": []
+        "defineList": [
+          "CLK_OSC32K=0"
+        ]
       }
     }
   },

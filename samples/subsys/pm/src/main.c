@@ -5,7 +5,6 @@
  */
 
 #include <kernel.h>
-#include <logging/log.h>
 #include <drivers/gpio.h>
 #include <pm/pm.h>
 #include <pm/device.h>

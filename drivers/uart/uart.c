@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <soc.h>
 #include <kernel.h>
 #include <drivers/uart.h>
 #include <drivers/gpio.h>
@@ -18,7 +17,7 @@ struct uart_wch_config {
 };
 
 struct uart_wch_data {
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_SUPPORT_INTERRUPT
     uart_irq_callback_user_data_t callback;
 	void *cb_data;
 #endif
@@ -26,7 +25,7 @@ struct uart_wch_data {
 
 __HIGHCODE void uart_isr_handler(const struct device *dev)
 {
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_SUPPORT_INTERRUPT
     const struct uart_wch_data *data = dev->data;
 
     if (data->callback) {
@@ -35,7 +34,7 @@ __HIGHCODE void uart_isr_handler(const struct device *dev)
 #endif
 }
 
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_SUPPORT_INTERRUPT
 #ifdef CONFIG_WCH_UART_0
 __WCH_INT_FAST __HIGHCODE void UART0_IRQHandler(void)
 {
@@ -63,7 +62,7 @@ __WCH_INT_FAST __HIGHCODE void UART3_IRQHandler(void)
     uart_isr_handler(DEVICE_GET(uart3));
 }
 #endif
-#endif /* CONFIG_UART_INTERRUPT_DRIVEN */
+#endif /* CONFIG_UART_SUPPORT_INTERRUPT */
 
 static inline int uart_wch_set_pairty(WCH_UART_Type *uart, uint8_t pairty)
 {
@@ -365,7 +364,7 @@ static int uart_wch_configure_get(const struct device *dev,
 }
 
 
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_SUPPORT_INTERRUPT
 static int uart_wch_fifo_fill(const struct device *dev,
             const uint8_t *tx_data, int len)
 {
@@ -498,7 +497,7 @@ static void uart_wch_irq_callback_set(const struct device *dev,
     data->callback = cb;
     data->cb_data = cb_data;
 }
-#endif /* CONFIG_UART_INTERRUPT_DRIVEN */
+#endif /* CONFIG_UART_SUPPORT_INTERRUPT */
 
 static int uart_wch_init(const struct device *dev)
 {
@@ -532,7 +531,7 @@ static int uart_wch_init(const struct device *dev)
         return err;
     }
 
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_SUPPORT_INTERRUPT
     cfg->irq_config_func(dev);
 #endif
 
@@ -545,7 +544,7 @@ static const struct uart_driver_api uart_wch_driver_api = {
 	.err_check		    = uart_wch_err_check,
     .configure          = uart_wch_configure,
     .config_get         = uart_wch_configure_get,
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_SUPPORT_INTERRUPT
 	.fifo_fill          = uart_wch_fifo_fill,
 	.fifo_read		    = uart_wch_fifo_read,
 	.irq_tx_enable	    = uart_wch_irq_tx_enable,
@@ -560,7 +559,7 @@ static const struct uart_driver_api uart_wch_driver_api = {
 	.irq_is_pending	    = uart_wch_irq_is_pending,
     .irq_update         = uart_wch_irq_update,
 	.irq_callback_set   = uart_wch_irq_callback_set,
-#endif /* CONFIG_UART_INTERRUPT_DRIVEN */
+#endif /* CONFIG_UART_SUPPORT_INTERRUPT */
 };  
 
 #define UART_INTI(index)   \
@@ -588,18 +587,18 @@ static const struct uart_driver_api uart_wch_driver_api = {
             DRIVER,         \
             1);     
 
-#ifdef CONFIG_WCH_UART_0
+#ifdef CONFIG_UART_0
 UART_INTI(0);
 #endif
 
-#ifdef CONFIG_WCH_UART_1
+#ifdef CONFIG_UART_1
 UART_INTI(1);
 #endif
 
-#ifdef CONFIG_WCH_UART_2
+#ifdef CONFIG_UART_2
 UART_INTI(2);
 #endif
 
-#ifdef CONFIG_WCH_UART_3
+#ifdef CONFIG_UART_3
 UART_INTI(3);
 #endif

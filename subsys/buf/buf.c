@@ -7,15 +7,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <logging/log.h>
-
 #include <stdio.h>
 #include <errno.h>
 #include <stddef.h>
 #include <string.h>
 #include <sys/byteorder.h>
-
 #include <buf/buf.h>
+#include <logging/log.h>
+
+LOG_MODULE_REGISTER(buf, CONFIG_BUF_LOG_LEVEL);
 
 #if defined(CONFIG_BUF_LOG)
 #define BUF_DBG(fmt, ...) LOG_DBG(fmt, ##__VA_ARGS__)

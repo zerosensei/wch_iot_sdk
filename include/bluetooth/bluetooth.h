@@ -9,7 +9,9 @@
 
 #include <stddef.h>
 #include <bluetooth/hal/hal.h>
+#include "err_code.h"
 #include "gatt.h"
+#include "conn.h"
 
 typedef struct {
     uint8_t type;
@@ -42,6 +44,10 @@ struct ble_data {
 	BT_DATA(_type, ((uint8_t []) { _bytes }), \
 		sizeof((uint8_t []) { _bytes }))
 
+#define BLE_DATA_STRING(_type, _bytes...)      \
+	BT_DATA(_type, ((uint8_t []) { _bytes }), \
+		sizeof((uint8_t []) { _bytes }) - 1)
+
 
 #define BLE_ADV_PARAM_INIT(_options, _int_min, _int_max, _addr) \
 { \
@@ -59,7 +65,7 @@ struct ble_data {
 	 })
 
 #define BLE_ADV_CONN BLE_ADV_PARAM(GAP_ADTYPE_ADV_IND, 100, 150, NULL)
-
+#define BLE_ADV_NOCONN BLE_ADV_PARAM(GAP_ADTYPE_ADV_NONCONN_IND, 100, 150, NULL)
 
 
 int ble_adv_enable(const struct ble_adv_param *param,
@@ -68,8 +74,9 @@ int ble_adv_enable(const struct ble_adv_param *param,
 
 
 int ble_adv_disable(void);
-
+int ble_adv_restart(void);
 
 void ble_init(void);
+
 
 #endif /* INCLUDE_BLUETOOTH_BLUETOOTH_H */

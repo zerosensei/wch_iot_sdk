@@ -163,9 +163,11 @@ void pm_state_exit_post_ops(enum pm_state state, uint8_t substate_id);
  * This function is entered with interrupts disabled. It should re-enable
  * interrupts if it had entered a power state.
  *
- * @return True if the system suspended, otherwise return false
+ * @return 0: system entered deepsleep, some registers may not be maintained,
+ * 		   1: system entered idle, all registers keep,
+ * 		   2: system did not suspended.
  */
-bool pm_system_suspend(int32_t ticks);
+uint32_t pm_system_suspend(uint32_t ticks);
 
 /**
  * Notify exit from kernel idling after PM operations

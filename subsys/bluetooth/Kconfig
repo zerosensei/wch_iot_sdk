@@ -146,4 +146,17 @@ config BT_CENTRAL_MAX_CONNECTION
       played at the same time.  
 
 
-endif
+config BT_DEVICE_NAME
+    string
+    default "WCH iot"
+    help
+      Bluetooth device name. Name can be up to 21 bytes long (excluding
+	    NULL termination). Can be empty string.  
+
+module = BT
+module-str = BT
+source "subsys/logging/Kconfig.template.log_config"
+
+endif #BT
+
+

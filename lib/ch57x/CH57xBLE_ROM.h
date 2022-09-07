@@ -1,8 +1,8 @@
 /********************************** (C) COPYRIGHT ******************************
  * File Name         : CH57xBLE_ROM.H
  * Author            : WCH
- * Version           : V1.80
- * Date              : 2022/06/28
+ * Version           : V1.90
+ * Date              : 2022/08/08
  * Description       : head file
  *                    Address Space
  *                       CODE:   00010000H - 0002FFFFH   128K
@@ -186,7 +186,7 @@ typedef struct
 /*********************************************************************
  * GLOBAL MACROS
  */
-#define  VER_FILE            "CH57x_BLE_LIB_V1.8"
+#define  VER_FILE            "CH57x_BLE_LIB_V1.9"
 extern const uint8_t VER_LIB[];  // LIB version
 #define SYSTEM_TIME_MICROSEN            625   // unit of process event timer is 625us
 #define MS1_TO_SYSTEM_TIME(x)  ((x)*1000/SYSTEM_TIME_MICROSEN)   // transform unit in ms to unit in 625us ( attentional bias )
@@ -666,8 +666,7 @@ extern const uint8_t VER_LIB[];  // LIB version
 #define gattCharacterType( t )          ( ATT_CompareUUID( characterUUID, ATT_BT_UUID_SIZE, (t).uuid, (t).len ) )
 #define gattIncludeType( t )            ( ATT_CompareUUID( includeUUID, ATT_BT_UUID_SIZE, (t).uuid, (t).len ) )
 #define gattServiceType( t )            ( gattPrimaryServiceType( (t) ) || gattSecondaryServiceType( (t) ) )
-#define GATT_CONNECT_NUM                (3)
-#define GATT_MAX_NUM_CONN               (GATT_CONNECT_NUM+1)
+#define GATT_MAX_NUM_CONN               (4)
 
 // GATT Client Characteristic Configuration Bit Fields
 #define GATT_CLIENT_CFG_NOTIFY          0x0001 //!< The Characteristic Value shall be notified
@@ -958,6 +957,7 @@ extern const uint8_t VER_LIB[];  // LIB version
 #define GAPBOND_ENABLE_ALLBONDS                 0x41D  //!< Ensable all of the bonded devices. Write Only. No Size.
 #define GAPBOND_ERASE_AUTO                      0x41E  //!< Auto erase all of the bonded devices when the maximum number is reached.Size is uint8_t. Default is 1(enabled).
 #define GAPBOND_AUTO_SYNC_RL                    0x41F  //!< Clears the Resolving List adds to it each unique address stored by bonds in NV. Read/Write. Size is uint8_t. Default is FALSE.
+#define GAPBOND_SET_ENC_PARAMS                  0x420  //!< Set bonding parameters.size is bondEncParams_t.
 
 // GAPBOND_PAIRING_MODE_DEFINES GAP Bond Manager Pairing Modes
 #define GAPBOND_PAIRING_MODE_NO_PAIRING         0x00  //!< Pairing is not allowed
@@ -1086,13 +1086,21 @@ typedef struct
 
 typedef struct
 {
+    uint8_t connRole;          // GAP Profile Roles @GAP_PROFILE_ROLE_DEFINES
+    uint8_t addrType;          // Address type of connected device
+    uint8_t addr[B_ADDR_LEN];  // Other Device's address
+    encParams_t encParams;
+} bondEncParams_t;
+
+typedef struct
+{
     uint8_t taskID;            // Application that controls the link
     uint16_t connectionHandle; // Controller connection handle
     uint8_t stateFlags;        // LINK_CONNECTED, LINK_AUTHENTICATED...
     uint8_t addrType;          // Address type of connected device
     uint8_t addr[B_ADDR_LEN];  // Other Device's address
-    uint8_t connRole;          // Connection formed as Master or Slave
-    uint16_t connInterval;     // The connection's interval (n * 1.23 ms)
+    uint8_t connRole;          // Connection formed as central or peripheral
+    uint16_t connInterval;     // The connection's interval (n * 1.25ms)
     uint16_t connLatency;
     uint16_t connTimeout;
     uint16_t MTU;              // The connection's MTU size
@@ -1102,6 +1110,7 @@ typedef struct
     void *pPairingParams;
     void *pAuthLink;
 } linkDBItem_t;
+
 // function pointer used to register for a status callback
 typedef void (*pfnLinkDBCB_t)( uint16_t connectionHandle, uint8_t changeType );
 // function pointer used to perform specialized link database searches
@@ -2047,12 +2056,14 @@ typedef struct tag_rf_config
 #define LIB_FLASH_BASE_ADDRESSS   0x00010000
 #endif
 #define LIB_FLASH_MAX_SIZE        0x00020000
+#define LIB_RAM_MAX_SIZE          0x00001000
 
-#define RAM_BASE_ADDRESSS         0x20004800
+#define RAM_BASE_ADDRESSS         0x20003800
 #define UUID_BASE_ADDRESSS        (LIB_FLASH_BASE_ADDRESSS+0x08)
 #define FUNCITON_BASE_ADDRESSS    (LIB_FLASH_BASE_ADDRESSS+0x34)
 
 #define  BLE_LIB_UUID(n) ( UUID_BASE_ADDRESSS+n*2 )
+#define  BLE_LIB_RAM_JT(n) (*(uint32_t*)( RAM_BASE_ADDRESSS+n*4 ))
 #define  BLE_LIB_JT(n) (*(uint32_t*)( FUNCITON_BASE_ADDRESSS+n*4 ))
 #define  VER_LIB  ((  const uint8_t*)      BLE_LIB_JT(0))
 
@@ -2240,7 +2251,7 @@ typedef struct tag_rf_config
  *
  * @return  None.
  */
-#define    TMOS_SystemProcess  ((  void  (*)  ( void ))  BLE_LIB_JT(17))
+#define    TMOS_SystemProcess  ((  void  (*)  ( void ))  BLE_LIB_RAM_JT(0))
 
 /**
  * @brief   Get current system clock
@@ -2271,7 +2282,7 @@ typedef struct tag_rf_config
 #define    TMOS_Set32KTuneValue  ((  void  (*)  ( uint16_t flash_val, uint16_t ram_val ))  BLE_LIB_JT(120) )
 
 /**
- * @brief   Add a device address into white list ( support 16 MAX )
+ * @brief   Add a device address into white list ( support SNVNum MAX )
  *
  * @param   addrType - Type of device address
  * @param   devAddr  - first address of device address
@@ -3110,7 +3121,7 @@ typedef struct tag_rf_config
  * @note    The 'pReqs' pointer will be freed when the sub-procedure is complete.
  *
  * @param   connHandle - connection to use
- * @param   pReqs - pointer to requests to be sent (must be allocated)
+ * @param   pReqs - pointer to requests to be sent
  * @param   numReqs - number of requests in pReq
  * @param   flags - execute write request flags
  * @param   taskId - task to be notified of response

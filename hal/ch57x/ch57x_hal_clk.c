@@ -136,7 +136,7 @@ uint32_t hal_clk_sys_get(void)
 
     switch (mod) {
     case CLK_MODE_32K:
-        fsys = F32K;
+        fsys = CONFIG_SOC_RTC_FREQ;
         break;
     case CLK_MODE_PLL:
         fsys = FPLL / div;
@@ -242,16 +242,16 @@ static uint16_t hal_clk_lsi_calibrate_flash(void)
 
     if ((rev & RB_CLK_SYS_MOD) == (2 << 6)) {
         // 32M做主频
-        calv = ((5 * 32000000 + (F32K >> 1)) / F32K);
+        calv = ((5 * 32000000 + (CONFIG_SOC_RTC_FREQ >> 1)) / CONFIG_SOC_RTC_FREQ);
         CNT_STEP_K = -1.6;
     } else if ((rev & RB_CLK_SYS_MOD) == (1 << 6)) {
         // PLL进行分频
-        calv = (((uint32_t)5 * 480000000 / (rev & 0x1f) + (F32K >> 1)) / F32K);
+        calv = (((uint32_t)5 * 480000000 / (rev & 0x1f) + (CONFIG_SOC_RTC_FREQ >> 1)) / CONFIG_SOC_RTC_FREQ);
         CNT_STEP_K = -0.1 * (rev & 0x1f);
     }
     else if ((rev & RB_CLK_SYS_MOD) == (0 << 6)) {
         // 32M进行分频
-        calv = ((5 * 32000000 / (rev & 0x1f) + (F32K >> 1)) / F32K);
+        calv = ((5 * 32000000 / (rev & 0x1f) + (CONFIG_SOC_RTC_FREQ >> 1)) / CONFIG_SOC_RTC_FREQ);
         CNT_STEP_K = -1.6 * (rev & 0x1f);
     } else {
         // 32K做主频
@@ -376,15 +376,15 @@ static uint16_t hal_clk_lsi_calibrate_ram(void)
     rev = R16_CLK_SYS_CFG & 0xff;
     if ((rev & RB_CLK_SYS_MOD) == (2 << 6)) { 
         // 32M做主频
-        calv = ((5 * 32000000 + (F32K >> 1)) / F32K);
+        calv = ((5 * 32000000 + (CONFIG_SOC_RTC_FREQ >> 1)) / CONFIG_SOC_RTC_FREQ);
         CNT_STEP_K = -1.6;
     } else if ((rev & RB_CLK_SYS_MOD) == (1 << 6)) { 
         // PLL进行分频
-        calv = (((uint32_t)5 * 480000000 / (rev & 0x1f) + (F32K >> 1)) / F32K);
+        calv = (((uint32_t)5 * 480000000 / (rev & 0x1f) + (CONFIG_SOC_RTC_FREQ >> 1)) / CONFIG_SOC_RTC_FREQ);
         CNT_STEP_K = -0.1 * (rev & 0x1f);
     } else if ((rev & RB_CLK_SYS_MOD) == (0 << 6)) { 
         // 32M进行分频
-        calv = ((5 * 32000000 / (rev & 0x1f) + (F32K >> 1)) / F32K);
+        calv = ((5 * 32000000 / (rev & 0x1f) + (CONFIG_SOC_RTC_FREQ >> 1)) / CONFIG_SOC_RTC_FREQ);
         CNT_STEP_K = -1.6 * (rev & 0x1f);
     } else { 
         // 32K做主频

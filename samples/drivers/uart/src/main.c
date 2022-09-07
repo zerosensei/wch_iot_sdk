@@ -6,7 +6,6 @@
 
 #include <kernel.h>
 #include <drivers/uart.h>
-#include <logging/log.h>
 #include <drivers/pinctrl.h>
 #include <drivers/gpio.h>
 
@@ -49,7 +48,7 @@ int main(void)
     printk("This is uart exapmle\n");
 
     if (!device_is_ready(uart0)) {
-        LOG_ERR("uart0 device not ready");
+        printk("uart0 device not ready\n");
         while(1) {
             ;
         }

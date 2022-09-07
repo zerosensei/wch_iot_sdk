@@ -7,15 +7,9 @@
 #include <kernel.h>
 #include <core_pmp.h>
 #include <kernel_arch_func.h>
-
-#define CONFIG_PMP_LOG
-
-#ifdef CONFIG_PMP_LOG
 #include <logging/log.h>
-#else
-#define LOG_DBG(...)		(void) 0
-#define LOG_ERR(...)		(void) 0
-#endif
+
+LOG_MODULE_REGISTER(arch, CONFIG_ARCH_LOG_LEVEL);
 
 #ifdef CONFIG_64BIT
 # define PR_ADDR "0x%016lx"

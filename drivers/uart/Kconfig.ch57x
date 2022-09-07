@@ -1,0 +1,36 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+config UART_CH57X
+    bool "WCH CH57x MCU serial driver"
+    default y
+    depends on SOC_SERIES_CH57X
+    select SERIAL_HAS_DRIVER
+    select SERIAL_SUPPORT_INTERRUPT
+    help
+      Enable the CH57x MCU driver.
+
+if UART_CH57X
+
+config UART_0
+    bool "Uart 0"
+    help
+      Enable uart 0.
+
+config UART_1
+    bool "Uart 1"
+    default y
+    help
+      Enable uart 1.
+
+config UART_2
+    bool "Uart 2"
+    help
+      Enable uart 2.
+
+config UART_3
+    bool "Uart 3"
+    help
+      Enable uart 3.
+
+endif

@@ -7,6 +7,7 @@
 #include <kernel.h>
 #include <inttypes.h>
 #include <logging/log.h>
+LOG_MODULE_REGISTER(arch_ricv_fatal, 3);
 
 #if __riscv_xlen == 32
  #define PR_REG "%08" PRIxPTR

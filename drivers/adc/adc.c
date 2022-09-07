@@ -4,10 +4,9 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <soc.h>
 #include <kernel.h>
 #include <device.h>
-#include "ch57x_hal_adc.h"
+#include <drivers/adc.h>
 
 int adc_wch_init(const struct device *dev)
 {
@@ -25,7 +24,6 @@ int adc_wch_channel_setup(const struct device *dev,
 {
 
     //set channel id
-    channel_cfg->channels
 
     //gain
 

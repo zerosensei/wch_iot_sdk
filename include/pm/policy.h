@@ -49,13 +49,12 @@ struct pm_policy_latency_request {
  * idle and returns the most appropriate state based on the number of
  * ticks to the next event.
  *
- * @param cpu CPU index.
  * @param ticks The number of ticks to the next scheduled event.
  *
- * @return The power state the system should use for the given cpu. The function
- * will return NULL if system should remain into PM_STATE_ACTIVE.
+ * @return The function will return NULL if system should remain 
+ * into PM_STATE_ACTIVE.
  */
-const struct pm_state_info *pm_policy_next_state(uint8_t cpu, int32_t ticks);
+const struct pm_state_info *pm_policy_next_state(uint32_t ticks);
 
 /** @endcond */
 
@@ -97,40 +96,7 @@ void pm_policy_state_lock_put(enum pm_state state);
  */
 bool pm_policy_state_lock_is_active(enum pm_state state);
 
-/**
- * @brief Add a new latency requirement.
- *
- * The system will not enter any power state that would make the system to
- * exceed the given latency value.
- *
- * @param req Latency request.
- * @param value Maximum allowed latency in microseconds.
- */
-void pm_policy_latency_request_add(struct pm_policy_latency_request *req,
-				   uint32_t value);
 
-/**
- * @brief Update a latency requirement.
- *
- * @param req Latency request.
- * @param value New maximum allowed latency in microseconds.
- */
-void pm_policy_latency_request_update(struct pm_policy_latency_request *req,
-				      uint32_t value);
-
-/**
- * @brief Remove a latency requirement.
- *
- * @param req Latency request.
- */
-void pm_policy_latency_request_remove(struct pm_policy_latency_request *req);
-
-/**
- * @brief Set the callback to be called when maximum latency changes.
- *
- * @param cb Callback function (NULL to disable).
- */
-void pm_policy_latency_changed(pm_policy_latency_changed_cb_t cb);
 #else
 static inline void pm_policy_state_lock_get(enum pm_state state)
 {
@@ -149,25 +115,6 @@ static inline bool pm_policy_state_lock_is_active(enum pm_state state)
 	return false;
 }
 
-static inline void pm_policy_latency_request_add(
-	struct pm_policy_latency_request *req, uint32_t value)
-{
-	ARG_UNUSED(req);
-	ARG_UNUSED(value);
-}
-
-static inline void pm_policy_latency_request_update(
-	struct pm_policy_latency_request *req, uint32_t value)
-{
-	ARG_UNUSED(req);
-	ARG_UNUSED(value);
-}
-
-static inline void pm_policy_latency_request_remove(
-	struct pm_policy_latency_request *req)
-{
-	ARG_UNUSED(req);
-}
 #endif /* CONFIG_PM */
 
 /**

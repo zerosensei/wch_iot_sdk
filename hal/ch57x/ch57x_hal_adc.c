@@ -83,10 +83,3 @@ void adc_self_calibration(void)
     adc_offset = 2048 - sum;
 }
 
-
-__attribute__((interrupt("WCH-Interrupt-fast")))
-__attribute__((section(".highcode")))
-void ADC_IRQHandler(void)
-{
-
-}

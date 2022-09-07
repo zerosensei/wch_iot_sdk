@@ -43,19 +43,19 @@
 
 
 
-#ifdef CONFIG_WCH_UART_0
+#ifdef CONFIG_UART_0
 extern const struct pinctrl_dev_config __pinctrl_uart0;;
 #endif
 
-#ifdef CONFIG_WCH_UART_1
+#ifdef CONFIG_UART_1
 extern const struct pinctrl_dev_config __pinctrl_uart1;
 #endif
 
-#ifdef CONFIG_WCH_UART_2
+#ifdef CONFIG_UART_2
 extern const struct pinctrl_dev_config __pinctrl_uart2;;
 #endif
 
-#ifdef CONFIG_WCH_UART_3
+#ifdef CONFIG_UART_3
 extern const struct pinctrl_dev_config __pinctrl_uart3;;
 #endif
 

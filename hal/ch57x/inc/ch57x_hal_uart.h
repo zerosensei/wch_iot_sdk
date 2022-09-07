@@ -7,6 +7,10 @@
 #ifndef HAL_CH57X_INC_CH57X_HAL_UART_H
 #define HAL_CH57X_INC_CH57X_HAL_UART_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ch57x_common.h"
 
 typedef struct __attribute__((__packed__))
@@ -378,5 +382,8 @@ size_t hal_uart_fifo_tx(WCH_UART_Type *uart, const uint8_t *data, size_t len);
 uint8_t hal_uart_fifo_rx(WCH_UART_Type *uart, uint8_t *data);
 void hal_uart_definit(WCH_UART_Type *uart);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_UART_H */

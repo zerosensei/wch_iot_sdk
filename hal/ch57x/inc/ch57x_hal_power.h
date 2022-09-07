@@ -7,6 +7,10 @@
 #ifndef HAL_CH57X_INC_CH57X_HAL_POWER_H
 #define HAL_CH57X_INC_CH57X_HAL_POWER_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ch57x_common.h"
 
 /* Config address for hardware config for LDO&OSC and etc. */
@@ -67,5 +71,9 @@ void hal_pwr_enter_sleep(uint8_t peri);
 void hal_pwr_enter_shutdown(uint8_t peri);
 
 //TODO: 电源基本操作写成内联函数
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_POWER_H */

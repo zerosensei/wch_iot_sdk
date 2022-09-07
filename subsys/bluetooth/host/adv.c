@@ -20,6 +20,8 @@ int ble_adv_enable(const struct ble_adv_param *param,
     uint8_t filter = param->filter_policy;
     uint8_t adv_type = param->type;
     ble_addr_t *addr = param->dir_addr; 
+    uint32_t adv_interval_min = param->interval_min;
+    uint32_t adv_interval_max = param->interval_max;
 
     if (!param) {
         return -EINVAL;
@@ -33,7 +35,10 @@ int ble_adv_enable(const struct ble_adv_param *param,
                         sizeof(uint8_t), &channel);
     err |= GAPRole_SetParameter(GAPROLE_ADV_FILTER_POLICY, 
                         sizeof(uint8_t), &filter);
-    
+
+    err |= GAP_SetParamValue(TGAP_DISC_ADV_INT_MIN, adv_interval_min);
+    err |= GAP_SetParamValue(TGAP_DISC_ADV_INT_MAX, adv_interval_max);
+
     if (addr) {
         err |= GAPRole_SetParameter(GAPROLE_ADV_DIRECT_TYPE, 
                             sizeof(uint8_t), &addr->type);
@@ -58,9 +63,9 @@ int ble_adv_enable(const struct ble_adv_param *param,
         buf_simple_reset(&adv_data);
 
         for (int i = 0; i < ad_len; i++) {
-            (void)buf_simple_add_u8(&adv_data, ad[i].len + sizeof(ad[i].type));
-            (void)buf_simple_add_u8(&adv_data, ad[i].type);
-            (void)buf_simple_add_mem(&adv_data, ad[i].data, ad[i].len);
+            (void)buf_simple_add_u8(&adv_data, sd[i].len + sizeof(sd[i].type));
+            (void)buf_simple_add_u8(&adv_data, sd[i].type);
+            (void)buf_simple_add_mem(&adv_data, sd[i].data, sd[i].len);
         }
 
         err |= GAPRole_SetParameter(GAPROLE_SCAN_RSP_DATA, 
@@ -83,4 +88,12 @@ int ble_adv_disable(void)
                         sizeof(uint8_t), &adv_enable);
 
     return err;
+}
+
+int ble_adv_restart(void)
+{
+    uint8_t advertising_enable = TRUE;
+    GAPRole_SetParameter(GAPROLE_ADVERT_ENABLED, sizeof(uint8_t), &advertising_enable);
+
+    return 0;
 }

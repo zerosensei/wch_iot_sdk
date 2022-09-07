@@ -7,6 +7,10 @@
 #ifndef HAL_CH57X_INC_CH57X_HAL_GPIO_H
 #define HAL_CH57X_INC_CH57X_HAL_GPIO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ch57x_common.h"
 
 typedef struct 
@@ -186,5 +190,9 @@ static inline void hal_gpio_int_flag_pins_clear(WCH_GPIO_Type *port, uint32_t pi
 
 void hal_gpio_mode_config(WCH_GPIO_Type *port, uint32_t pins, gpio_mode_t mode);
 void hal_gpio_int_mode_config(WCH_GPIO_Type *port, uint32_t pins, gpio_int_mode_t mode);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_GPIO_H */

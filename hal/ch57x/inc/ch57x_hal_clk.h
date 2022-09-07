@@ -7,10 +7,14 @@
 #ifndef HAL_CH57X_INC_CH57X_HAL_CLK_H
 #define HAL_CH57X_INC_CH57X_HAL_CLK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ch57x_common.h"
 
 /* System clock */
-#define FHSE                        (32000000)
+#define FHSE                        (32000000UL)
 #define FPLL                        (FHSE * 15)
 
 #define SYS_CLK_MODE_POS            (6U)
@@ -182,5 +186,9 @@ void hal_clk_hse_cfg_current(hse_current_t cur);
 void hal_clk_hse_cfg_capacitance(hse_capacitance_t cap);
 
 void hal_clk_lsi_calibrate(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_CLK_H */

@@ -3,6 +3,7 @@
 
 menuconfig GPIO
     bool "GPIO Drivers"
+	default y
     help
       Enable GPIO drivers.
 

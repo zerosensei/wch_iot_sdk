@@ -16,7 +16,6 @@
 
 #define TICKLESS IS_ENABLED(CONFIG_TICKLESS_KERNEL)
 
-static struct k_spinlock lock;
 static uint64_t last_count = 0;
 
 static void set_systimer_alarm(uint64_t time)
@@ -32,7 +31,7 @@ static uint64_t systimer_alarm(void)
 __WCH_INT_FAST __HIGHCODE void SysTick_Handler(void)
 {
 	//XXX: CH573的sysytick是递减的 原驱动使用的是递增的，这边存在问题
-	k_spinlock_key_t key = k_spin_lock(&lock);
+    int key = irq_lock();
 	uint64_t now = systimer_alarm();
 	int32_t dticks = ((now - last_count) / CYC_PER_TICK);
 
@@ -47,7 +46,7 @@ __WCH_INT_FAST __HIGHCODE void SysTick_Handler(void)
 		set_systimer_alarm(next);
 	}
 
-	k_spin_unlock(&lock, key);
+	irq_unlock(key);
 	sys_clock_announce(IS_ENABLED(CONFIG_TICKLESS_KERNEL) ? dticks : 1);
 
 	hal_systick_clear_flag(SYSTICK_FLAG_CNT);
@@ -60,7 +59,7 @@ void sys_clock_set_timeout(int32_t ticks, bool idle)
 	ticks = ticks == K_TICKS_FOREVER ? MAX_TICKS : ticks;
 	ticks = CLAMP(ticks - 1, 0, (int32_t)MAX_TICKS);
 
-	k_spinlock_key_t key = k_spin_lock(&lock);
+    int key = irq_lock();
 	uint64_t now = systimer_alarm();
 	uint32_t adj, cyc = ticks * CYC_PER_TICK;
 
@@ -78,7 +77,7 @@ void sys_clock_set_timeout(int32_t ticks, bool idle)
 	}
 
 	set_systimer_alarm(cyc + last_count);
-	k_spin_unlock(&lock, key);
+	irq_unlock(key);
 #endif
 }
 
@@ -88,10 +87,10 @@ uint32_t sys_clock_elapsed(void)
 		return 0;
 	}
 
-	k_spinlock_key_t key = k_spin_lock(&lock);
+    int key = irq_lock();
 	uint32_t ret = ((uint32_t)systimer_alarm() - (uint32_t)last_count) / CYC_PER_TICK;
 
-	k_spin_unlock(&lock, key);
+	irq_unlock(key);
 	return ret;
 }
 

@@ -3,6 +3,7 @@
 
 menuconfig DEBUG
     bool "Debugging Options"
+	default y
     help
       Enable debugging options.
     
@@ -16,11 +17,26 @@ config PRINTK
 
 config ASSERT
 	bool "__ASSERT() macro"
+	depends on PRINTK
 	help
       This enables the __ASSERT() macro in the code. If an assertion fails, 
       the policy for what to do is controlled by the implementation of the 
       assert_post_action() function.
-	  
+
+choice DEBUG_PORT
+	prompt "Select debug port"
+	default DEBUG_PORT_UART_1
+
+	config DEBUG_PORT_UART_0
+		bool "UART 0"
+	config DEBUG_PORT_UART_1
+		bool "UART 1"
+	config DEBUG_PORT_UART_2
+		bool "UART 2"
+	config DEBUG_PORT_UART_3
+		bool "UART 3"
+endchoice
+
 if ASSERT
 
 config ASSERT_LEVEL

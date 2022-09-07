@@ -1,6 +1,8 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
+menu "General Architecture Options"
+
 config RISCV
 	bool
 	help
@@ -18,3 +20,9 @@ endif
 if ARM
     source "arch/arm/Kconfig"
 endif
+
+module = ARCH
+module-str = arch
+source "subsys/logging/Kconfig.template.log_config"
+
+endmenu

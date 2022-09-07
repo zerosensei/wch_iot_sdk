@@ -77,4 +77,8 @@ config TICKLESS_KERNEL
 	  This option enables a fully event driven kernel. Periodic system
 	  clock interrupt generation would be stopped at all times.
 
+module = KERNEL
+module-str = KERNEL
+source "subsys/logging/Kconfig.template.log_config"
+
 endmenu

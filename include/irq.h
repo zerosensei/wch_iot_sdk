@@ -59,3 +59,11 @@
  * @return interrupt enable state, true or false
  */
 #define irq_is_enabled(irq) arch_irq_is_enabled(irq)
+
+/**
+ * @brief Set IRQ priority.
+ * 
+ * @param irq IRQ line.
+ * @param prio IRQ priority.
+ */
+#define irq_priority_set(irq, prio) arch_irq_priority_set(irq, prio)

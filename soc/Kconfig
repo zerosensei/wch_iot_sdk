@@ -30,4 +30,8 @@ if SOC_SERIES_CH58X
     source "soc/ch58x/Kconfig.soc"
 endif
 
+module = SOC
+module-str = SOC
+source "subsys/logging/Kconfig.template.log_config"
+
 endmenu

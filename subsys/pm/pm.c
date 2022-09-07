@@ -12,8 +12,9 @@
 #include <pm/pm.h>
 #include <pm/state.h>
 #include <pm/policy.h>
+#include <drivers/timer/system_timer.h>
 
-#include <logging/log.h>
+#include <drivers/gpio.h>
 
 #ifdef CONFIG_PM
 
@@ -28,38 +29,8 @@ static struct pm_state_info z_pm_state = {
 	.state = PM_STATE_ACTIVE,
 };
 
-/* bitmask to check if a power state was forced. */
-// static ATOMIC_DEFINE(z_cpus_pm_state_forced, CONFIG_MP_NUM_CPUS);
-static struct k_spinlock pm_notifier_lock;
-
-static inline void pm_exit_pos_ops(struct pm_state_info *info)
-{
-	extern __weak void
-		pm_state_exit_post_ops(enum pm_state state, uint8_t substate_id);
-
-	if (pm_state_exit_post_ops != NULL) {
-		pm_state_exit_post_ops(info->state, info->substate_id);
-	} else {
-		/*
-		 * This function is supposed to be overridden to do SoC or
-		 * architecture specific post ops after sleep state exits.
-		 *
-		 * The kernel expects that irqs are unlocked after this.
-		 */
-
-		irq_unlock(0);
-	}
-}
-
-static inline void state_set(struct pm_state_info *info)
-{
-	extern __weak void
-		pm_state_set(enum pm_state state, uint8_t substate_id);
-
-	if (pm_state_set != NULL) {
-		pm_state_set(info->state, info->substate_id);
-	}
-}
+extern void pm_state_set(enum pm_state state, uint8_t substate_id);
+extern void pm_state_exit_post_ops(enum pm_state state, uint8_t substate_id);
 
 /*
  * Function called to notify when the system is entering / exiting a
@@ -68,10 +39,9 @@ static inline void state_set(struct pm_state_info *info)
 static inline void pm_state_notify(bool entering_state)
 {
 	struct pm_notifier *notifier;
-	k_spinlock_key_t pm_notifier_key;
+    int key = irq_lock();
 	void (*callback)(enum pm_state state);
 
-	pm_notifier_key = k_spin_lock(&pm_notifier_lock);
 	SYS_SLIST_FOR_EACH_CONTAINER(&pm_notifiers, notifier, _node) {
 		if (entering_state) {
 			callback = notifier->state_entry;
@@ -83,7 +53,7 @@ static inline void pm_state_notify(bool entering_state)
 			callback(z_pm_state.state);
 		}
 	}
-	k_spin_unlock(&pm_notifier_lock, pm_notifier_key);
+	irq_unlock(key);
 }
 
 void pm_system_resume(void)
@@ -101,73 +71,77 @@ void pm_system_resume(void)
 	 * and it may schedule another thread.
 	 */
 	if (atomic_test_and_clear_bit(z_post_ops_required, 0)) {
-		pm_exit_pos_ops(&z_pm_state);
+		pm_state_exit_post_ops(z_pm_state.state, z_pm_state.substate_id);
 		pm_state_notify(false);
 		z_pm_state = (struct pm_state_info){PM_STATE_ACTIVE,
 			0, 0};
 	}
 }
 
-bool pm_system_suspend(int32_t ticks)
+__attribute__((section(".highcode")))
+uint32_t pm_system_suspend(uint32_t ticks)
 {
-	bool ret = true;
-	const struct pm_state_info *info;
+    gpio_pin_set(DEVICE_GET(gpioa), 5, 1);
 
-	info = pm_policy_next_state(0, ticks);
+	uint32_t sleep_ticks;
+    int key = irq_lock();
+    uint32_t now = k_cycle_get_32();
 
-	if (info != NULL) {
-		z_pm_state = *info;
+    irq_unlock(key);
+
+	if (ticks >= now) {
+		sleep_ticks = ticks - now;
+	} else {
+		sleep_ticks = ticks + 
+			CONFIG_SOC_RTC_MAX_TICK - now;
 	}
 
-	if (ticks != K_TICKS_FOREVER) {
-		/*
-		 * We need to set the timer to interrupt a little bit early to
-		 * accommodate the time required by the CPU to fully wake up.
-		 */
-		z_set_timeout_expiry(ticks -
-		     k_us_to_ticks_ceil32(
-			     z_pm_state.exit_latency_us),
-				     true);
-	}
+	const struct pm_state_info *pm_state = 
+		pm_policy_next_state(sleep_ticks);
 
-	/*
-	 * This function runs with interruptions locked but it is
-	 * expected the SoC to unlock them in
-	 * pm_state_exit_post_ops() when returning to active
-	 * state. We don't want to be scheduled out yet, first we need
-	 * to send a notification about leaving the idle state. So,
-	 * we lock the scheduler here and unlock just after we have
-	 * sent the notification in pm_system_resume().
-	 */
-	/* Enter power state */
+	if (!pm_state) {
+		return 2;
+	} 
+	z_pm_state = *pm_state;
+	sys_clock_set_ticks(ticks - 
+			z_pm_state.exit_latency_ticks, 
+			true);
+
 	pm_state_notify(true);
 	atomic_set_bit(z_post_ops_required, 0);
-	state_set(&z_pm_state);
+    gpio_pin_set(DEVICE_GET(gpioa), 5, 0);
 
-	/* Wake up sequence starts here */
+	pm_state_set(z_pm_state.state, z_pm_state.substate_id);
+
+	if (z_pm_state.exit_latency_ticks) {
+		sys_clock_set_ticks(ticks, true);
+		pm_state_set(PM_STATE_SUSPEND_TO_IDLE, 0);
+	} else {
+		pm_system_resume();
+		return 1;
+	}
 	pm_system_resume();
 
-	return ret;
+	return 0;
 }
 
 void pm_notifier_register(struct pm_notifier *notifier)
 {
-	k_spinlock_key_t pm_notifier_key = k_spin_lock(&pm_notifier_lock);
+    int key = irq_lock();
 
 	sys_slist_append(&pm_notifiers, &notifier->_node);
-	k_spin_unlock(&pm_notifier_lock, pm_notifier_key);
+	irq_unlock(key);
 }
 
 int pm_notifier_unregister(struct pm_notifier *notifier)
 {
 	int ret = -EINVAL;
-	k_spinlock_key_t pm_notifier_key;
+    int key = irq_lock();
 
-	pm_notifier_key = k_spin_lock(&pm_notifier_lock);
 	if (sys_slist_find_and_remove(&pm_notifiers, &(notifier->_node))) {
 		ret = 0;
 	}
-	k_spin_unlock(&pm_notifier_lock, pm_notifier_key);
+	irq_unlock(key);
 
 	return ret;
 }

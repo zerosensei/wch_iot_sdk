@@ -24,7 +24,7 @@ struct device {
     struct device_state *sta;
     void *data;
     
-#ifdef CONFIG_PM_DEVICE
+#ifdef CONFIG_PM
 	/** Reference to the device PM resources. */
 	struct pm_device * const pm;
 #endif

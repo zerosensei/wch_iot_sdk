@@ -31,30 +31,13 @@ config PM_POLICY_CUSTOM
 
 endchoice
 
-choice PM_LEVEL
-	prompt "Power Management Level"
-	depends on PM_POLICY_DEFAULT
-	default PM_SUSPEND_TO_RAM
+config PM_RESIDENCY_TIME_MAX
+	int "Maximum time in low power mode (in s)"
+	default 85484
+	depends on SOC_SERIES_CH58X
 	help
-	  Select the deepest PM state.
-
-config PM_SUSPEND_TO_IDLE
-	bool "PM level idle"
-	help
-	  The deepest PM state of the kernel is idle.
-
-config PM_SUSPEND_TO_RAM
-	bool "PM level suspend to RAM"
-	help
-	  The deepest PM state of the kernel is suspend to RAM.
-
-config PM_SOFT_OFF
-	bool "PM level soft off"
-	help
-	  The deepest PM state of the kernel is soft off".
-
-endchoice
-
+	  Maximum time to stay in low power mode.
+	  
 config PM_ACTIVE_USEC
 	int "Minimum time to enter idle (in us)"
 	default 100
@@ -64,7 +47,7 @@ config PM_ACTIVE_USEC
 
 config PM_IDLE_USEC
 	int "Minimum time to enter sleep (in us)"
-	default 1200
+	default 1400
 	help
 	  The maximum number of microseconds to enter idle, 
 	  when greater than its value, enter sleep if sleep is enabled.

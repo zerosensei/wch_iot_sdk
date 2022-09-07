@@ -7,6 +7,10 @@
 #ifndef HAL_CH57X_INC_CH57X_HAL_SYSTICK_H
 #define HAL_CH57X_INC_CH57X_HAL_SYSTICK_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ch57x_common.h"
 #include <stdio.h>
 
@@ -110,5 +114,9 @@ static inline void hal_systick_sw_disable(void)
 
 
 void hal_systick_definit(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_SYSTICK_H */

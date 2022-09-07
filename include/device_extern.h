@@ -1,6 +1,7 @@
 #ifndef INCLUDE_DEVICE_EXTERN_H
 #define INCLUDE_DEVICE_EXTERN_H
 
+#include <auto_config.h>
 #include <dev_cfg.h>
 
 /* GPIO */
@@ -8,19 +9,19 @@ extern const struct device DEVICE_NAME_GET(gpioa);
 extern const struct device DEVICE_NAME_GET(gpiob);
 
 /* UART */
-#ifdef CONFIG_WCH_UART_0
+#ifdef CONFIG_UART_0
 extern const struct device DEVICE_NAME_GET(uart0);
 #endif
 
-#ifdef CONFIG_WCH_UART_1
+#ifdef CONFIG_UART_1
 extern const struct device DEVICE_NAME_GET(uart1);
 #endif
 
-#ifdef CONFIG_WCH_UART_2
+#ifdef CONFIG_UART_2
 extern const struct device DEVICE_NAME_GET(uart2);
 #endif
 
-#ifdef CONFIG_WCH_UART_3
+#ifdef CONFIG_UART_3
 extern const struct device DEVICE_NAME_GET(uart3);
 #endif
 
@@ -35,4 +36,9 @@ extern const struct device DEVICE_NAME_GET(bat);
 extern const struct device DEVICE_NAME_GET(usb);
 
 
+/* FLASH */
+extern const struct device DEVICE_NAME_GET(flash);
+
+/* EEPROM */
+extern const struct device DEVICE_NAME_GET(eeprom);
 #endif /* INCLUDE_DEVICE_EXTERN_H */

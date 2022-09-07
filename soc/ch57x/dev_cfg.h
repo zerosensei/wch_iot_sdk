@@ -30,7 +30,7 @@
                                             (~(BIT(1) | BIT(2) | BIT(3) | BIT(8) | BIT(9) | BIT(16)     \
                                             | BIT(17) | BIT(18) | BIT(19) | BIT(20) | BIT(21)))  
 
-#ifdef CONFIG_WCH_UART_0
+#ifdef CONFIG_UART_0
 #define  _dev_cfg_uart0_reg               UART0
 #define  _dev_cfg_uart0_baudrate          115200UL
 #define  _dev_cfg_uart0_stop_bits         UART_CFG_STOP_BITS_1
@@ -41,7 +41,7 @@
 #define  _dev_cfg_uart0_int_prio          0
 #endif
 
-#ifdef CONFIG_WCH_UART_1
+#ifdef CONFIG_UART_1
 #define  _dev_cfg_uart1_reg               UART1
 #define  _dev_cfg_uart1_baudrate          115200UL
 #define  _dev_cfg_uart1_stop_bits         UART_CFG_STOP_BITS_1
@@ -52,7 +52,7 @@
 #define  _dev_cfg_uart1_int_prio          0
 #endif
 
-#ifdef CONFIG_WCH_UART_2
+#ifdef CONFIG_UART_2
 #define  _dev_cfg_uart2_reg               UART2
 #define  _dev_cfg_uart2_baudrate          115200UL
 #define  _dev_cfg_uart2_stop_bits         UART_CFG_STOP_BITS_1
@@ -63,7 +63,7 @@
 #define  _dev_cfg_uart2_int_prio          0
 #endif
 
-#ifdef CONFIG_WCH_UART_3
+#ifdef CONFIG_UART_3
 #define  _dev_cfg_uart3_reg               UART3
 #define  _dev_cfg_uart3_baudrate          115200UL
 #define  _dev_cfg_uart3_stop_bits         UART_CFG_STOP_BITS_1

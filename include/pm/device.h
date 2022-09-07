@@ -94,7 +94,7 @@ struct pm_device {
 	_CONCAT(Z_PM_DEVICE_NAME(dev_name), _slot) __used		\
 	__attribute__((__section__(".z_pm_device_slots")))
 
-#ifdef CONFIG_PM_DEVICE
+#ifdef CONFIG_PM
 /**
  * Define device PM resources for the given node identifier.
  *
@@ -197,7 +197,7 @@ struct pm_device {
 #define PM_DEVICE_DT_INST_GET(idx) \
 	PM_DEVICE_DT_GET(DT_DRV_INST(idx))
 
-#ifdef CONFIG_PM_DEVICE
+#ifdef CONFIG_PM
 /**
  * @brief Enable or disable a device as a wake up source.
  *

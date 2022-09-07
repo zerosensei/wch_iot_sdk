@@ -69,9 +69,18 @@ struct adc_channel_cfg {
 
 	/** Reference selection. */
 	enum adc_reference reference;
-
+	
+	/**
+	 * Channel identifier.
+	 * This value primarily identifies the channel within the ADC API - when
+	 * a read request is done, the corresponding bit in the "channels" field
+	 * of the "adc_sequence" structure must be set to include this channel
+	 * in the sampling.
+	 */
 	uint8_t channel_id   : 5;
 
+	/** Channel type: single-ended or differential. */
+	uint8_t differential : 1;
 };
 
 /**
@@ -124,14 +133,41 @@ struct adc_sequence {
 };
 
 /**
- * @brief Initialize ADC
- * 
- * This function enables ADC and performs a ADC self-calibration.
- * 
- * @param dev      Pointer to the device structure for the driver instance.
- * @retval 0       On success.
+ * @brief Type definition of ADC API function for configuring a channel.
+ * See adc_channel_setup() for argument descriptions.
  */
-static int adc_wch_init(const struct device *dev);
+typedef int (*adc_api_channel_setup)(const struct device *dev,
+				     const struct adc_channel_cfg *channel_cfg);
+
+/**
+ * @brief Type definition of ADC API function for setting a read request.
+ * See adc_read() for argument descriptions.
+ */
+typedef int (*adc_api_read)(const struct device *dev,
+			    const struct adc_sequence *sequence);
+
+/**
+ * @brief Type definition of ADC API function for setting an asynchronous
+ *        read request.
+ * See adc_read_async() for argument descriptions.
+ */
+typedef int (*adc_api_read_async)(const struct device *dev,
+				  const struct adc_sequence *sequence,
+				  struct k_poll_signal *async);
+
+/**
+ * @brief ADC driver API
+ *
+ * This is the mandatory API any ADC driver needs to expose.
+ */
+struct adc_driver_api {
+	adc_api_channel_setup channel_setup;
+	adc_api_read          read;
+#ifdef CONFIG_ADC_ASYNC
+	adc_api_read_async    read_async;
+#endif
+	uint16_t ref_internal;	/* mV */
+};
 
 /**
  * @brief Configure an ADC channel.
@@ -145,8 +181,14 @@ static int adc_wch_init(const struct device *dev);
  * @retval 0       On success.
  * @retval -EINVAL If a parameter with an invalid value has been provided.
  */
-int adc_wch_channel_setup(const struct device *dev,
-				const struct adc_channel_cfg *channel_cfg);
+static inline int adc_channel_setup(const struct device *dev,
+					   const struct adc_channel_cfg *channel_cfg)
+{
+	const struct adc_driver_api *api =
+				(const struct adc_driver_api *)dev->api;
+
+	return api->channel_setup(dev, channel_cfg);
+}
 
 /**
  * @brief Set a read request.
@@ -169,8 +211,51 @@ int adc_wch_channel_setup(const struct device *dev,
  *                  in the buffer, but at least some of them were taken with
  *                  an extra delay compared to what was scheduled.
  */
-int adc_wch_read(const struct device *dev,
-		       const struct adc_sequence *sequence);
+static inline int adc_read(const struct device *dev,
+				  const struct adc_sequence *sequence)
+{
+	const struct adc_driver_api *api =
+				(const struct adc_driver_api *)dev->api;
+
+	return api->read(dev, sequence);
+}
+
+/**
+ * @brief Set an asynchronous read request.
+ *
+ * @note This function is available only if @kconfig{CONFIG_ADC_ASYNC}
+ * is selected.
+ *
+ * If invoked from user mode, any sequence struct options for callback must
+ * be NULL.
+ *
+ * @param dev       Pointer to the device structure for the driver instance.
+ * @param sequence  Structure specifying requested sequence of samplings.
+ * @param async     Pointer to a valid and ready to be signaled struct
+ *                  k_poll_signal. (Note: if NULL this function will not notify
+ *                  the end of the transaction, and whether it went successfully
+ *                  or not).
+ *
+ * @returns 0 on success, negative error code otherwise.
+ *          See adc_read() for a list of possible error codes.
+ *
+ */
+static inline int adc_read_async(const struct device *dev,
+					const struct adc_sequence *sequence,
+					struct k_poll_signal *async)
+{
+#ifdef CONFIG_ADC_ASYNC
+	const struct adc_driver_api *api =
+				(const struct adc_driver_api *)dev->api;
+
+	return api->read_async(dev, sequence, async);
+#else
+	ARG_UNUSED(dev);
+	ARG_UNUSED(sequence);
+	ARG_UNUSED(async);
+	return -ENOTSUP;
+#endif
+}
 
 /**
  * @brief Get the internal reference voltage.
@@ -181,7 +266,13 @@ int adc_wch_read(const struct device *dev,
  * @return a positive value is the reference voltage value.  Returns
  * zero if reference voltage information is not available.
  */
-static uint16_t adc_wch_ref_internal(const struct device *dev);
+static inline uint16_t adc_ref_internal(const struct device *dev)
+{
+	const struct adc_driver_api *api =
+				(const struct adc_driver_api *)dev->api;
+
+	return api->ref_internal;
+}
 
 /**
  * @brief Convert a raw ADC value to millivolts.
@@ -206,10 +297,20 @@ static uint16_t adc_wch_ref_internal(const struct device *dev);
  * @retval 0 on successful conversion
  * @retval -EINVAL if the gain is not reversible
  */
-static int adc_wch_raw_to_millivolts(int32_t ref_mv,
+static inline int adc_raw_to_millivolts(int32_t ref_mv,
 					enum adc_gain gain,
 					uint8_t resolution,
-					int32_t *valp);
+					int32_t *valp)
+{
+	int32_t adc_mv = *valp * ref_mv;
+	int ret = adc_gain_invert(gain, &adc_mv);
+
+	if (ret == 0) {
+		*valp = (adc_mv >> resolution);
+	}
+
+	return ret;
+}
 
 
 #endif /* INCLUDE_DRIVERS_ADC_H */

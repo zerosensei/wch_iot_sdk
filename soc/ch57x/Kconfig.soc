@@ -38,7 +38,7 @@ choice
     config SOC_LSE_32768
         bool "LSE 32768Hz"
     config SOC_LSI_32000
-        bool "LSI 32768Hz"
+        bool "LSI 32000Hz"
     config SOC_LSI_32768
         bool "LSI 32768Hz"
 
@@ -50,3 +50,20 @@ config SOC_RTC_FREQ
     default 32000 if SOC_LSI_32000
     help
       SoC RTC frequency (in Hz).
+
+config SOC_RTC_MAX_TICK
+    hex 
+    default 0xA8C00000
+
+
+config SOC_SYSTEM_OPERATE_FREQ
+    int "System Operating Frequency"
+    default 60000000
+    help
+      System operating frequency. 
+
+config SYS_CLOCK_HW_CYCLES_PER_SEC
+    default 32768
+
+config SYS_CLOCK_TICKS_PER_SEC
+    default 32768

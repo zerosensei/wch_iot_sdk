@@ -99,20 +99,12 @@ void z_sys_init_run_level(int32_t level);
  * Must be one of the following symbols, which are listed in the order
  * they are performed by the kernel:
  * \n
- * \li PRE_KERNEL_1: Used for initialization objects that have no dependencies,
+ * \li KERNEL: Used for initialization objects that have no dependencies,
  * such as those that rely solely on hardware present in the processor/SOC.
  * These objects cannot use any kernel services during configuration, since
  * they are not yet available.
  * \n
- * \li PRE_KERNEL_2: Used for initialization objects that rely on objects
- * initialized as part of the PRE_KERNEL_1 level. These objects cannot use any
- * kernel services during configuration, since they are not yet available.
- * \n
- * \li POST_KERNEL: Used for initialization objects that require kernel services
- * during configuration.
- * \n
- * \li POST_KERNEL_SMP: Used for initialization objects that require kernel
- * services during configuration after SMP initialization.
+ * \li DRIVER: Used for initialization drivers like GPIO, UART.
  * \n
  * \li APPLICATION: Used for application components (i.e. non-kernel components)
  * that need automatic configuration. These objects can use all services

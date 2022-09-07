@@ -1,6 +1,10 @@
 #ifndef INCLUDE_DRIVERS_UART_H
 #define INCLUDE_DRIVERS_UART_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <errno.h>
 #include <device.h>
 
@@ -930,5 +934,8 @@ static inline int uart_drv_cmd(const struct device *dev, uint32_t cmd, uint32_t 
 
 void uart_init(void);
 
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INCLUDE_DRIVERS_UART_H */

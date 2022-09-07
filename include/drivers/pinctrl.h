@@ -7,6 +7,10 @@
 #ifndef INCLUDE_DRIVERS_PINCTRL_H
 #define INCLUDE_DRIVERS_PINCTRL_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <errno.h>
 #include <device.h>
 
@@ -96,5 +100,9 @@ struct pinctrl_dev_config {
 
 
 int pinctrl_configure_pins(const pinctrl_config *pins, uint8_t pin_cnt);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INCLUDE_DRIVERS_PINCTRL_H */

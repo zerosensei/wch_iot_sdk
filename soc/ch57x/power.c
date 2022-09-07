@@ -5,12 +5,24 @@
  */
 
 #include <kernel.h>
-#include <logging/log.h>
 #include <pm/pm.h>
+#include <pm/state.h>
 #include "soc.h"
 #include <drivers/gpio.h>
+#include <drivers/timer/system_timer.h>
+#include <logging/log.h>
 
 #ifdef CONFIG_PM
+
+LOG_MODULE_REGISTER(soc, CONFIG_SOC_LOG_LEVEL);
+
+const struct pm_state_info soc_pm_state = {
+	.exit_latency_ticks = 45,
+	.min_residency_ticks = 3,
+	.state = PM_STATE_SUSPEND_TO_RAM,
+	.substate_id = 0
+};
+
 void pm_device_wakeup_source(const struct device *dev, bool enable)
 {
 	if (dev == DEVICE_GET(rtc)) {
@@ -27,11 +39,12 @@ void pm_device_wakeup_source(const struct device *dev, bool enable)
 }
 
 /* Invoke Low Power/System Off specific Tasks */
-__weak void pm_state_set(enum pm_state state, uint8_t substate_id)
+void pm_state_set(enum pm_state state, uint8_t substate_id)
 {
 	ARG_UNUSED(substate_id);
 
 	switch (state) {
+	case PM_STATE_RUNTIME_IDLE:
 	case PM_STATE_SUSPEND_TO_IDLE:
 		hal_pwr_enter_idle();
 		break;
@@ -55,11 +68,12 @@ __weak void pm_state_set(enum pm_state state, uint8_t substate_id)
 }
 
 /* Handle SOC specific activity after Low Power Mode Exit */
-__weak void pm_state_exit_post_ops(enum pm_state state, uint8_t substate_id)
+void pm_state_exit_post_ops(enum pm_state state, uint8_t substate_id)
 {
 	ARG_UNUSED(substate_id);
 
 	switch (state) {
+	case PM_STATE_RUNTIME_IDLE:
 	case PM_STATE_SUSPEND_TO_IDLE:
 		break;
 	case PM_STATE_STANDBY:
@@ -67,8 +81,6 @@ __weak void pm_state_exit_post_ops(enum pm_state state, uint8_t substate_id)
 		break;
 
 	case PM_STATE_SUSPEND_TO_RAM:
-		z_set_timeout_expiry(k_us_to_ticks_ceil32(1000), true);
-		hal_pwr_enter_idle();
 		hal_clk_hse_cfg_current(HSE_CURRENT_100);
 		break;
 

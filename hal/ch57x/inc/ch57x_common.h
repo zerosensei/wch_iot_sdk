@@ -10,20 +10,13 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-
+#include <auto_config.h>
 #include "CH573SFR.h"
 #include "ISP573.h"
 
 #define __WCH_INT_FAST          __attribute__((interrupt("WCH-Interrupt-fast")))
 #define __HIGHCODE              __attribute__((section(".highcode")))
 
-#if (defined CLK_OSC32K) && (CLK_OSC32K == 0)
-#define F32K     	32768UL
-#elif (defined CLK_OSC32K) && (CLK_OSC32K == 2)
-#define F32K     	32768UL
-#else
-#define F32K     	32000UL
-#endif
 
 /**
  * @brief Macro for checking if the specified identifier is defined and it has
@@ -131,5 +124,6 @@ typedef enum {
 #include "ch57x_hal_rtc.h"
 #include "ch57x_hal_clk.h"
 #include "ch57x_hal_power.h"
+#include "ch57x_hal_flash.h"
 
 #endif /* HAL_CH57X_INC_CH57X_COMMON_H */

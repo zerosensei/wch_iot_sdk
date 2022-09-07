@@ -8,8 +8,10 @@
 #include <kernel_structs.h>
 #include <sys/__assert.h>
 #include <arch/cpu.h>
-#include <logging/log.h>
 #include <fatal.h>
+#include <logging/log.h>
+
+LOG_MODULE_REGISTER(kernel_fatal, CONFIG_KERNEL_LOG_LEVEL);
 
 /* LCOV_EXCL_START */
 FUNC_NORETURN __weak void arch_system_halt(unsigned int reason)

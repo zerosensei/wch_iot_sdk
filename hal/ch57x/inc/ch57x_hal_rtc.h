@@ -7,12 +7,17 @@
 #ifndef HAL_CH57X_INC_CH57X_HAL_RTC_H
 #define HAL_CH57X_INC_CH57X_HAL_RTC_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include "ch57x_common.h"
 
 #define RTC_TIMESTAMP_MAX               1388534400UL      //44 years
 #define RTC_ONEDDAY_SECONDS             (60UL * 60UL * 24UL)
 #define RTC_ONEDAY_TICKS                (RTC_ONEDDAY_SECONDS * 32768UL)
 #define RTC_START_TIMESTAMP             1640995200UL      //2022-01-01 08:00:00
+#define RTC_MAX_VALUE                   (RTC_ONEDAY_TICKS)
 
 #define RTC_CNT_DAY_MSK                 (WCH_MASK(14))
 
@@ -81,10 +86,7 @@ static inline void hal_rtc_load_low(void)
     sys_safe_access_disable();
 }
 
-static inline uint32_t hal_rtc_get_alarm(void)
-{
-    return R32_RTC_TRIG;
-}
+
 
 bool hal_rtc_flag_get(rtc_flag_t flag);
 void hal_rtc_flag_clear(rtc_flag_t flag);
@@ -92,7 +94,7 @@ void hal_rtc_flag_clear(rtc_flag_t flag);
 void hal_rtc_mode_trig_config(bool ignore);
 void hal_rtc_mode_tmr_cfg(rtc_tmr_mode_t perid);
 
-void hal_rtc_set_alarm(uint32_t ticks);
+void hal_rtc_set_ticks(uint32_t ticks);
 uint32_t hal_rtc_get_ticks(void);
 
 void hal_rtc_update_ticks(uint32_t ticks);
@@ -101,5 +103,19 @@ int hal_rtc_set_timestamp(time_t rawtime);
 time_t hal_rtc_get_timestamp(void);
 
 void hal_rtc_init(void);
+
+static inline void hal_rtc_set_alarm(uint32_t ticks)
+{
+    hal_rtc_set_ticks(ticks);
+}
+
+static inline uint32_t hal_rtc_get_alarm(void)
+{
+    return R32_RTC_TRIG;
+}
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* HAL_CH57X_INC_CH57X_HAL_RTC_H */

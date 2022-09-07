@@ -3,3 +3,6 @@
  *
  * SPDX-License-Identifier: Apache-2.0
  */
+
+#include <kernel.h>
+#include <bluetooth/bluetooth.h>

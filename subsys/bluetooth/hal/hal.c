@@ -5,7 +5,6 @@
  */
 
 #include <kernel.h>
-#include <logging/log.h>
 #include <pm/pm.h>
 #include <pm/device.h>
 #include "hal.h"
@@ -53,18 +52,10 @@ void hal_init(void)
 {
     hal_taskid = TMOS_ProcessEventRegister(hal_process_event);
 
-    __ASSERT_NO_MSG(hal_taskid == INVALID_TASK_ID);
-
-    const struct device *rtc = DEVICE_GET(rtc);
-
-    if (!device_is_ready(rtc)) {
-        LOG_DBG("RTC device is not ready\n");
-
-        return ;
-    }
+    __ASSERT_NO_MSG(hal_taskid != INVALID_TASK_ID);
 
     //TODO: tmos use rtc irq?
-    TMOS_TimerInit(k_cycle_get_32);
+    TMOS_TimerInit(0);
 
 #if defined CONFIG_BT_CALIBRATION
     tmos_start_reload_task(hal_taskid, HAL_REG_INIT_EVENT, 

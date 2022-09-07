@@ -7,9 +7,7 @@
 #include <device.h>
 #include <pm/device.h>
 
-#include <logging/log.h>
-
-#ifdef CONFIG_PM_DEVICE
+#ifdef CONFIG_PM
 
 extern void pm_device_wakeup_source(const struct device *dev, bool enable);
 
@@ -64,6 +62,4 @@ bool pm_device_wakeup_is_capable(const struct device *dev)
 			       PM_DEVICE_FLAG_WS_CAPABLE);
 }
 
-
-
-#endif /* CONFIG_PM_DEVICE */
+#endif /* CONFIG_PM */

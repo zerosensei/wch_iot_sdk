@@ -42,7 +42,7 @@ void hal_rtc_mode_tmr_cfg(rtc_tmr_mode_t perid)
     hal_rtc_mode_tmr_enable();
 }
 
-static void hal_rtc_set_ticks(uint32_t ticks)
+void hal_rtc_set_ticks(uint32_t ticks)
 {
     if (ticks > RTC_ONEDAY_TICKS) {
         ticks -= RTC_ONEDAY_TICKS;
@@ -64,10 +64,7 @@ uint32_t hal_rtc_get_ticks(void)
     return ticks;
 }
 
-void hal_rtc_set_alarm(uint32_t ticks)
-{
-    hal_rtc_set_ticks(ticks);
-}
+
 
 void hal_rtc_update_ticks(uint32_t ticks)
 {
@@ -118,7 +115,7 @@ time_t hal_rtc_get_timestamp(void)
 
 void hal_rtc_init(void)
 {
-#if (defined CLK_OSC32K) && (CLK_OSC32K == 0)
+#if (defined CONFIG_SOC_LSE_32768)
     hal_clk_lf_source_select(LF_SOURCE_LSE);
 #else
     hal_clk_lf_source_select(LF_SOURCE_LSI);

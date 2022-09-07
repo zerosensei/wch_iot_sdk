@@ -1,0 +1,26 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig LOG
+    bool "Logging"
+    select PRINTK
+    help
+      Enable LOG function.
+
+if LOG
+
+config LOG_DEFAULT_LEVEL
+    int "Default log level"
+    default 3
+    range  0 4
+    help
+      Sets log level. When set to 0 it means log will 
+      not be activated. Levels are:
+
+	  - 0 OFF, do not write by default
+	  - 1 ERROR, default to only write LOG_LEVEL_ERR
+	  - 2 WARNING, default to write LOG_LEVEL_WRN
+	  - 3 INFO, default to write LOG_LEVEL_INFO
+	  - 4 DEBUG, default to write LOG_LEVEL_DBG
+
+endif

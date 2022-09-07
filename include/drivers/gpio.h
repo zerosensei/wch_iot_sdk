@@ -7,6 +7,10 @@
 #ifndef INCLUDE_DRIVERS_GPIO_H
 #define INCLUDE_DRIVERS_GPIO_H
 
+#ifdef __cplusplus
+extern "C" {
+#endif
+
 #include <device.h>
 
 /**
@@ -1078,5 +1082,9 @@ static inline int gpio_get_pending_int(const struct device *dev)
 }
 
 void gpio_init(void);
+
+#ifdef __cplusplus
+}
+#endif
 
 #endif /* INCLUDE_DRIVERS_GPIO_H */

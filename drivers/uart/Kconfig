@@ -10,35 +10,35 @@ if UART
 
 comment "Capabilities"
 
-config SERIAL_HAS_DRIVER
+config UART_HAS_DRIVER
 	bool
 	help
-	  This is an option to be enabled by individual serial driver
-	  to signal that there is a serial driver. This is being used
-	  by other drivers which are dependent on serial.
+	  This is an option to be enabled by individual uart driver
+	  to signal that there is a uart driver. This is being used
+	  by other drivers which are dependent on uart.
 
-config SERIAL_SUPPORT_ASYNC
+config UART_SUPPORT_ASYNC
 	bool
 	help
-	  This is an option to be enabled by individual serial driver
+	  This is an option to be enabled by individual uart driver
 	  to signal that the driver and hardware supports async operation.
 
-config SERIAL_SUPPORT_INTERRUPT
+config UART_SUPPORT_INTERRUPT
 	bool
 	help
-	  This is an option to be enabled by individual serial driver
+	  This is an option to be enabled by individual uart driver
 	  to signal that the driver and hardware supports interrupts.
 
-config SERIAL_INIT_PRIORITY
+config UART_INIT_PRIORITY
 	int "Serial init priority"
 	default 1
 	help
 	  Serial driver device initialization priority.
 
-config SERIAL_SUPPORT_WIDE_DATA
+config UART_SUPPORT_WIDE_DATA
 	bool
 	help
-	  This is an option to be enabled by individual serial driver
+	  This is an option to be enabled by individual uart driver
 	  to signal that the driver and hardware support data longer
 	  than 8-bit.
 
@@ -59,13 +59,13 @@ config UART_USE_RUNTIME_CONFIGURE
 
 config UART_ASYNC_API
 	bool "Asynchronous UART API"
-	depends on SERIAL_SUPPORT_ASYNC
+	depends on UART_SUPPORT_ASYNC
 	help
 	  This option enables asynchronous UART API.
 
 config UART_INTERRUPT_DRIVEN
 	bool "UART Interrupt support"
-	depends on SERIAL_SUPPORT_INTERRUPT
+	depends on UART_SUPPORT_INTERRUPT
 	help
 	  This option enables interrupt support for UART allowing console
 	  input and other UART based drivers.
@@ -73,7 +73,7 @@ config UART_INTERRUPT_DRIVEN
 config UART_LINE_CTRL
 	bool "Serial Line Control API"
 	help
-	  This enables the API for apps to control the serial line,
+	  This enables the API for apps to control the uart line,
 	  such as baud rate, CTS and RTS.
 
 	  Implementation is up to individual driver.
@@ -96,5 +96,7 @@ config UART_WIDE_DATA
 	  to properly support this.
 
 comment "Serial Drivers"
+
+source "drivers/uart/Kconfig.ch57x"
 
 endif # UART

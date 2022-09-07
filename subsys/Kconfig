@@ -11,4 +11,6 @@ source "subsys/pm/Kconfig"
 
 source "subsys/usb/Kconfig"
 
+source "subsys/buf/Kconfig"
+
 endmenu

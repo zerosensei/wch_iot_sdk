@@ -115,44 +115,24 @@ struct pm_state_info {
 
 	/**
 	 * Some platforms have multiple states that map to
-	 * one Zephyr power state. This property allows the platform
-	 * distinguish them. e.g:
-	 *
-	 * @code{.dts}
-	 *	power-states {
-	 *		state0: state0 {
-	 *			compatible = "zephyr,power-state";
-	 *			power-state-name = "suspend-to-idle";
-	 *			substate-id = <1>;
-	 *			min-residency-us = <10000>;
-	 *			exit-latency-us = <100>;
-	 *		};
-	 *		state1: state1 {
-	 *			compatible = "zephyr,power-state";
-	 *			power-state-name = "suspend-to-idle";
-	 *			substate-id = <2>;
-	 *			min-residency-us = <20000>;
-	 *			exit-latency-us = <200>;
-	 *		};
-	 *	};
-	 * @endcode
+	 * one power state. 
 	 */
 	uint8_t substate_id;
 
 	/**
-	 * Minimum residency duration in microseconds. It is the minimum
+	 * Minimum residency duration in ticks. It is the minimum
 	 * time for a given idle state to be worthwhile energywise.
 	 *
 	 * @note 0 means that this property is not available for this state.
 	 */
-	uint32_t min_residency_us;
+	uint32_t min_residency_ticks;
 
 	/**
-	 * Worst case latency in microseconds required to exit the idle state.
+	 * Worst case latency in ticks required to exit the idle state.
 	 *
 	 * @note 0 means that this property is not available for this state.
 	 */
-	uint32_t exit_latency_us;
+	uint32_t exit_latency_ticks;
 };
 
 /** @cond INTERNAL_HIDDEN */

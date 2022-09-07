@@ -4,6 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
+#include <auto_config.h>
 #include <sys/printk.h>
 #include <soc.h>
 #include <drivers/uart.h>
@@ -41,8 +42,8 @@ int vsnprintk(char *str, size_t size, const char *fmt, va_list ap)
 int _write(int fd, char *buf, int size)
 {
     for(int i = 0; i < size; i++) {
-#if (defined CONFIG_WCH_UART_0)         \
-        && (defined CONFIG_WCH_LOG_UART) && (CONFIG_WCH_LOG_UART == 0)
+#if (defined CONFIG_DEBUG)         \
+        && (defined CONFIG_DEBUG_PORT_UART_0)
         const struct device *uart0 = DEVICE_GET(uart0);
         
         if(device_is_ready(uart0))
@@ -51,8 +52,8 @@ int _write(int fd, char *buf, int size)
         }
 #endif
 
-#if (defined CONFIG_WCH_UART_1)         \
-        && (defined CONFIG_WCH_LOG_UART) && (CONFIG_WCH_LOG_UART == 1)
+#if (defined CONFIG_DEBUG)         \
+        && (defined CONFIG_DEBUG_PORT_UART_1)
         const struct device *uart1 = DEVICE_GET(uart1);
 
         if(device_is_ready(uart1))
@@ -61,8 +62,8 @@ int _write(int fd, char *buf, int size)
         }
 #endif
 
-#if (defined CONFIG_WCH_UART_2)         \
-        && (defined CONFIG_WCH_LOG_UART) && (CONFIG_WCH_LOG_UART == 2)
+#if (defined CONFIG_DEBUG)         \
+        && (defined CONFIG_DEBUG_PORT_UART_2)
         const struct device *uart2 = DEVICE_GET(uart2);
         
         if(device_is_ready(uart2))
@@ -71,8 +72,8 @@ int _write(int fd, char *buf, int size)
         }
 #endif
 
-#if (defined CONFIG_WCH_UART_3)         \
-        && (defined CONFIG_WCH_LOG_UART) && (CONFIG_WCH_LOG_UART == 3)
+#if (defined CONFIG_DEBUG)         \
+        && (defined CONFIG_DEBUG_PORT_UART_3)
         const struct device *uart3 = DEVICE_GET(uart3);
         
         if(device_is_ready(uart3))
