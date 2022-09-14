@@ -28,16 +28,15 @@ config BT_SNV
       Enable Bluetooth SNV function.
       
 config BT_SNV_ADDR
-    hex "Bluetooth SNV start address"
-    # TODO: depends on flash
-    default 0 
+    hex 
     depends on BT_SNV
     help
       Configure the Bluetooth snv start address.
 
-config BT_TEM_SAMPLE
-    bool "Bluetooth TEM sample"
-    # default y
+config BT_TEMP_SAMPLE
+    bool "Bluetooth temp sample"
+    default y
+    select ADC
     help
       Enable the function of calibrating according 
       to temperature changes, and a single 

@@ -73,7 +73,8 @@ void hal_sys_delay_us(uint16_t t)
 }
 
 
-__HIGHCODE __attribute__((optimize("-Os"))) void hal_sys_delay_ms(uint16_t t)
+__HIGHCODE __attribute__((optimize("-Os"))) 
+void hal_sys_delay_ms(uint16_t t)
 {
     uint16_t i;
 

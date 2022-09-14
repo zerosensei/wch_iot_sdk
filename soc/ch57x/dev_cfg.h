@@ -12,6 +12,9 @@
 #define DEV_CFG_GET(dev, prop)            (_dev_cfg_ ## dev ## _ ## prop) 
 #define DEV_CFG_GET_IRQ(dev)              DEV_CFG_GET(dev, int_num)
 
+#define _dev_cfg_adc_int_num            ADC_IRQn
+#define _dev_cfg_adc_int_prio           0
+
 #define _dev_cfg_systick_int_num          SysTick_IRQn
 #define _dev_cfg_systick_int_prio         0
 

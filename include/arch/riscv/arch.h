@@ -13,6 +13,7 @@
 #include <soc.h>
 #include <irq.h>
 #include <toolchain.h>
+#include <arch/common/ffs.h>
 #include <arch/riscv/csr.h>
 #include <arch/riscv/exp.h>
 #include <kernel_arch_func.h>
@@ -32,6 +33,9 @@ void arch_irq_enable(unsigned int irq);
 void arch_irq_disable(unsigned int irq);
 int arch_irq_is_enabled(unsigned int irq);
 void arch_irq_priority_set(unsigned int irq, unsigned int prio);
+
+
+//TODO: pmp deals
 
 /*
  * use atomic instruction csrrc to lock global irq

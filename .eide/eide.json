@@ -33,8 +33,6 @@
         "soc/ch58x",
         "hal/ch58x",
         "drivers/adc.c",
-        "hal/ch57x/ch57x_hal_adc.c",
-        "drivers/adc/adc.c",
         "arch/riscv/core/isr.S",
         "drivers/timer/sys_timer.c",
         "samples/drivers/uart/src/build",
@@ -45,7 +43,8 @@
         "samples/drivers/uart",
         "samples/drivers/timer_rtc",
         "samples/subsys",
-        "samples/bluetooth/peripheral_hr"
+        "samples/bluetooth/peripheral_hr",
+        "samples/drivers"
       ],
       "toolchain": "RISCV_GCC",
       "compileConfig": {

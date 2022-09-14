@@ -25,6 +25,10 @@ extern const struct device DEVICE_NAME_GET(uart2);
 extern const struct device DEVICE_NAME_GET(uart3);
 #endif
 
+/* ADC */
+#ifdef CONFIG_ADC
+extern const struct device DEVICE_NAME_GET(adc);
+#endif
 
 /* RTC */
 extern const struct device DEVICE_NAME_GET(rtc);

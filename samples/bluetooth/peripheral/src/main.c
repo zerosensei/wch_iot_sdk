@@ -24,12 +24,12 @@ int main(void)
     gpio_pin_configure(gpioa, 5, GPIO_OUTPUT_HIGH);
 
     ble_init();
-    hal_init();
+    ble_hal_init();
 
     GAPRole_PeripheralInit();
     perip_process_init();
 
-    // llRecvDataDisable |= 2;
+    llRecvDataDisable |= 2;
     main_process();
 
     return 0;

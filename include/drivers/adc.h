@@ -8,6 +8,21 @@
  * @{
  */
 
+/** Acquisition time is expressed in microseconds. */
+#define ADC_ACQ_TIME_MICROSECONDS  (1)
+/** Acquisition time is expressed in nanoseconds. */
+#define ADC_ACQ_TIME_NANOSECONDS   (2)
+/** Acquisition time is expressed in ADC ticks. */
+#define ADC_ACQ_TIME_TICKS         (3)
+/** Macro for composing the acquisition time value in given units. */
+#define ADC_ACQ_TIME(unit, value)  (((unit) << 14) | ((value) & BIT_MASK(14)))
+/** Value indicating that the default acquisition time should be used. */
+#define ADC_ACQ_TIME_DEFAULT       0
+#define ADC_ACQ_TIME_MAX           BIT_MASK(14)
+
+#define ADC_ACQ_TIME_UNIT(time)    (((time) >> 14) & BIT_MASK(2))
+#define ADC_ACQ_TIME_VALUE(time)   ((time) & BIT_MASK(14))
+
 /** @brief ADC channel gain factors. */
 enum adc_gain {
 	ADC_GAIN_1_6, /**< x 1/6. */
@@ -32,33 +47,6 @@ enum adc_gain {
 	ADC_GAIN_128, /**< x 128. */
 };
 
-/**
- * @brief Invert the application of gain to a measurement value.
- *
- *
- * @param gain the gain used to amplify the input signal.
- *
- * @param value a pointer to a value that initially has the effect of
- * the applied gain but has that effect removed when this function
- * successfully returns.  If the gain cannot be reversed the value
- * remains unchanged.
- *
- * @retval 0 if the gain was successfully reversed
- * @retval -EINVAL if the gain could not be interpreted
- */
-int adc_wch_gain_invert(enum adc_gain gain,
-		    int32_t *value);
-
-/** @brief ADC references. */
-enum adc_reference {
-	ADC_REF_VDD_1,     /**< VDD. */
-	ADC_REF_VDD_1_2,   /**< VDD/2. */
-	ADC_REF_VDD_1_3,   /**< VDD/3. */
-	ADC_REF_VDD_1_4,   /**< VDD/4. */
-	ADC_REF_INTERNAL,  /**< Internal. */
-	ADC_REF_EXTERNAL0, /**< External, input 0. */
-	ADC_REF_EXTERNAL1, /**< External, input 1. */
-};
 
 /**
  * @brief Structure for specifying the configuration of an ADC channel.
@@ -67,9 +55,27 @@ struct adc_channel_cfg {
 	/** Gain selection. */
 	enum adc_gain gain;
 
-	/** Reference selection. */
-	enum adc_reference reference;
-	
+	/**
+	 * Acquisition time.
+	 * Use the ADC_ACQ_TIME macro to compose the value for this field or
+	 * pass ADC_ACQ_TIME_DEFAULT to use the default setting for a given
+	 * hardware (e.g. when the hardware does not allow to configure the
+	 * acquisition time).
+	 * Particular drivers do not necessarily support all the possible units.
+	 * Value range is 0-16383 for a given unit.
+	 */
+	uint16_t acquisition_time;
+
+	/**
+	 * Perform calibration before the reading is taken if requested.
+	 *
+	 * The impact of channel configuration on the calibration
+	 * process is specific to the underlying hardware.  ADC
+	 * implementations that do not support calibration should
+	 * ignore this flag.
+	 */
+	bool calibrate;
+
 	/**
 	 * Channel identifier.
 	 * This value primarily identifies the channel within the ADC API - when
@@ -83,10 +89,83 @@ struct adc_channel_cfg {
 	uint8_t differential : 1;
 };
 
+/* Forward declaration of the adc_sequence structure. */
+struct adc_sequence;
+
+/**
+ * @brief Action to be performed after a sampling is done.
+ */
+enum adc_action {
+	/** The sequence should be continued normally. */
+	ADC_ACTION_CONTINUE = 0,
+
+	/**
+	 * The sampling should be repeated. New samples or sample should be
+	 * read from the ADC and written in the same place as the recent ones.
+	 */
+	ADC_ACTION_REPEAT,
+
+	/** The sequence should be finished immediately. */
+	ADC_ACTION_FINISH,
+};
+
+/**
+ * @brief Type definition of the optional callback function to be called after
+ *        a requested sampling is done.
+ *
+ * @param dev             Pointer to the device structure for the driver
+ *                        instance.
+ * @param sequence        Pointer to the sequence structure that triggered
+ *                        the sampling. This parameter points to a copy of
+ *                        the structure that was supplied to the call that
+ *                        started the sampling sequence, thus it cannot be
+ *                        used with the CONTAINER_OF() macro to retrieve
+ *                        some other data associated with the sequence.
+ *                        Instead, the adc_sequence_options::user_data field
+ *                        should be used for such purpose.
+ *
+ * @param sampling_index  Index (0-65535) of the sampling done.
+ *
+ * @returns Action to be performed by the driver. See @ref adc_action.
+ */
+typedef enum adc_action (*adc_sequence_callback)(const struct device *dev,
+						 const struct adc_sequence *sequence,
+						 uint16_t sampling_index);
+
+/**
+ * @brief Structure defining additional options for an ADC sampling sequence.
+ */
+struct adc_sequence_options {
+
+	/**
+	 * Callback function to be called after each sampling is done.
+	 * Optional - set to NULL if it is not needed.
+	 */
+	adc_sequence_callback callback;
+
+	/**
+	 * Pointer to user data. It can be used to associate the sequence
+	 * with any other data that is needed in the callback function.
+	 */
+	void *user_data;
+
+	/**
+	 * Number of extra samplings to perform (the total number of samplings
+	 * is 1 + extra_samplings).
+	 */
+	uint16_t extra_samplings;
+};
+
 /**
  * @brief Structure defining an ADC sampling sequence.
  */
 struct adc_sequence {
+	/**
+	 * Pointer to a structure defining additional options for the sequence.
+	 * If NULL, the sequence consists of a single sampling.
+	 */
+	const struct adc_sequence_options *options;
+	
 	/**
 	 * Bit-mask indicating the channels to be included in each sampling
 	 * of this sequence.
@@ -113,23 +192,6 @@ struct adc_sequence {
 	 * turns out to be not large enough to hold all the requested samples.
 	 */
 	size_t buffer_size;
-
-	/**
-	 * ADC resolution.
-	 * For single-ended channels the sample values are from range:
-	 *   0 .. 2^resolution - 1,
-	 */
-	uint8_t resolution;
-
-	/**
-	 * Perform calibration before the reading is taken if requested.
-	 *
-	 * The impact of channel configuration on the calibration
-	 * process is specific to the underlying hardware.  ADC
-	 * implementations that do not support calibration should
-	 * ignore this flag.
-	 */
-	bool calibrate;
 };
 
 /**
@@ -139,6 +201,14 @@ struct adc_sequence {
 typedef int (*adc_api_channel_setup)(const struct device *dev,
 				     const struct adc_channel_cfg *channel_cfg);
 
+
+/**
+ * @brief Type definition of ADC API function for getting the channel configuration.
+ * See adc_channel_config_get() for argument descriptions.
+ */
+typedef struct adc_channel_cfg (*adc_api_channel_config_get)(
+					const struct device *dev);
+
 /**
  * @brief Type definition of ADC API function for setting a read request.
  * See adc_read() for argument descriptions.
@@ -147,13 +217,15 @@ typedef int (*adc_api_read)(const struct device *dev,
 			    const struct adc_sequence *sequence);
 
 /**
- * @brief Type definition of ADC API function for setting an asynchronous
- *        read request.
- * See adc_read_async() for argument descriptions.
+ * @brief Type definition of ADC API function for checking 
+ * if the read request is complete.
+ * See adc_read_is_completed() for argument descriptions.
  */
-typedef int (*adc_api_read_async)(const struct device *dev,
-				  const struct adc_sequence *sequence,
-				  struct k_poll_signal *async);
+typedef bool (*adc_api_is_completed)(const struct device *dev);
+
+typedef int (*adc_api_convert)(const struct device *dev,
+				const struct adc_channel_cfg *channel_cfg, 
+				int32_t *pval);
 
 /**
  * @brief ADC driver API
@@ -161,12 +233,11 @@ typedef int (*adc_api_read_async)(const struct device *dev,
  * This is the mandatory API any ADC driver needs to expose.
  */
 struct adc_driver_api {
-	adc_api_channel_setup channel_setup;
-	adc_api_read          read;
-#ifdef CONFIG_ADC_ASYNC
-	adc_api_read_async    read_async;
-#endif
-	uint16_t ref_internal;	/* mV */
+	adc_api_channel_setup 		channel_setup;
+	adc_api_channel_config_get	get_config;
+	adc_api_read          		read;
+	adc_api_is_completed  		is_completed;
+	adc_api_convert		  		convert;
 };
 
 /**
@@ -191,13 +262,25 @@ static inline int adc_channel_setup(const struct device *dev,
 }
 
 /**
+ * @brief Get the ADC channel configuration.
+ * 
+ * @param dev 	Pointer to the device structure for the driver instance.
+ * 
+ * @return 		Channel configuration.
+ */
+static inline struct adc_channel_cfg adc_channel_config_get(const struct device *dev)
+{
+	const struct adc_driver_api *api =
+				(const struct adc_driver_api *)dev->api;
+
+	return api->get_config(dev);
+}
+
+/**
  * @brief Set a read request.
  *
  * @param dev       Pointer to the device structure for the driver instance.
  * @param sequence  Structure specifying requested sequence of samplings.
- *
- * If invoked from user mode, any sequence struct options for callback must
- * be NULL.
  *
  * @retval 0        On success.
  * @retval -EINVAL  If a parameter with an invalid value has been provided.
@@ -220,97 +303,38 @@ static inline int adc_read(const struct device *dev,
 	return api->read(dev, sequence);
 }
 
-/**
- * @brief Set an asynchronous read request.
- *
- * @note This function is available only if @kconfig{CONFIG_ADC_ASYNC}
- * is selected.
- *
- * If invoked from user mode, any sequence struct options for callback must
- * be NULL.
- *
- * @param dev       Pointer to the device structure for the driver instance.
- * @param sequence  Structure specifying requested sequence of samplings.
- * @param async     Pointer to a valid and ready to be signaled struct
- *                  k_poll_signal. (Note: if NULL this function will not notify
- *                  the end of the transaction, and whether it went successfully
- *                  or not).
- *
- * @returns 0 on success, negative error code otherwise.
- *          See adc_read() for a list of possible error codes.
- *
- */
-static inline int adc_read_async(const struct device *dev,
-					const struct adc_sequence *sequence,
-					struct k_poll_signal *async)
-{
-#ifdef CONFIG_ADC_ASYNC
-	const struct adc_driver_api *api =
-				(const struct adc_driver_api *)dev->api;
-
-	return api->read_async(dev, sequence, async);
-#else
-	ARG_UNUSED(dev);
-	ARG_UNUSED(sequence);
-	ARG_UNUSED(async);
-	return -ENOTSUP;
-#endif
-}
 
 /**
- * @brief Get the internal reference voltage.
- *
- * Returns the voltage corresponding to @ref ADC_REF_INTERNAL,
- * measured in millivolts.
- *
- * @return a positive value is the reference voltage value.  Returns
- * zero if reference voltage information is not available.
+ * @brief Check if the read request is complete.
+ * 
+ * @param dev 		Pointer to the device structure for the driver instance.
+ * 
+ * @return true 	The read request completed.
+ * @return false 	The read request not completed.
  */
-static inline uint16_t adc_ref_internal(const struct device *dev)
+static inline bool adc_read_is_completed(const struct device *dev)
 {
 	const struct adc_driver_api *api =
 				(const struct adc_driver_api *)dev->api;
 
-	return api->ref_internal;
-}
+	return api->is_completed(dev);
+} 
 
 /**
- * @brief Convert a raw ADC value to millivolts.
+ * @brief Convert a raw ADC value to millivolts or celsius.
  *
- * This function performs the necessary conversion to transform a raw
- * ADC measurement to a voltage in millivolts.
- *
- * @param ref_mv the reference voltage used for the measurement, in
- * millivolts.  This may be from adc_ref_internal() or a known
- * external reference.
- *
- * @param gain the ADC gain configuration used to sample the input
- *
- * @param resolution the number of bits in the absolute value of the
- * sample.  For differential sampling this needs to be one less than the
- * resolution in struct adc_sequence.
- *
- * @param valp pointer to the raw measurement value on input, and the
- * corresponding millivolt value on successful conversion.  If
- * conversion fails the stored value is left unchanged.
  *
  * @retval 0 on successful conversion
  * @retval -EINVAL if the gain is not reversible
  */
-static inline int adc_raw_to_millivolts(int32_t ref_mv,
-					enum adc_gain gain,
-					uint8_t resolution,
-					int32_t *valp)
+static inline int adc_convert(const struct device *dev,
+					const struct adc_channel_cfg *channel_cfg, 
+					int32_t *pval)
 {
-	int32_t adc_mv = *valp * ref_mv;
-	int ret = adc_gain_invert(gain, &adc_mv);
+	const struct adc_driver_api *api =
+				(const struct adc_driver_api *)dev->api;
 
-	if (ret == 0) {
-		*valp = (adc_mv >> resolution);
-	}
-
-	return ret;
+	return api->convert(dev, channel_cfg, pval);
 }
-
 
 #endif /* INCLUDE_DRIVERS_ADC_H */

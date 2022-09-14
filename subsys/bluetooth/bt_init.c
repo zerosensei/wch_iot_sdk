@@ -6,83 +6,62 @@
 
 #include <kernel.h>
 #include <bluetooth/bluetooth.h>
-#include <drivers/eeprom.h>
 #include <drivers/timer/system_timer.h>
 #include <logging/log.h>
 #include <pm/pm.h>
 #include <random/rand32.h>
 #include <string.h>
 
+//TODO: 文件包含问题
+#ifdef CONFIG_BT
+
 LOG_MODULE_REGISTER(ble_init, CONFIG_BT_LOG_LEVEL);
 
 __attribute__((aligned(4))) uint8_t _bt_heap[CONFIG_BT_STACK_SIZE];
 
-extern const struct pm_state_info soc_pm_state;
-uint32_t exit_latency_tick;
-uint32_t min_residency_tick;
+// extern const struct pm_state_info soc_pm_state;
+// uint32_t exit_latency_tick;
+// uint32_t min_residency_tick;
 
-uint32_t ble_flash_read_cb(uint32_t addr, uint32_t num, uint32_t *pBuf)
-{
-    const struct device *eeprom = DEVICE_GET(eeprom);
 
-    if (!device_is_ready(eeprom)) {
-        LOG_ERR("eeprom is not ready\n");
-    }
+// uint32_t ble_idle(uint32_t tick)
+// {
+//     uint32_t sleep_tick;
+//     int key = irq_lock();
+//     uint32_t curr_tick = k_cycle_get_32();
 
-    return eeprom_read(eeprom, addr, pBuf, num);
-}
+//     irq_unlock(key);
 
-uint32_t ble_flash_write_cb(uint32_t addr, uint32_t num, uint32_t *pBuf)
-{
-    const struct device *eeprom = DEVICE_GET(eeprom);
+//     if (tick >= curr_tick) {
+//         sleep_tick = tick - curr_tick;
+//     } else {
+//         sleep_tick = tick + 
+//                 (CONFIG_SOC_RTC_MAX_TICK - curr_tick);
+//     }
 
-    if (!device_is_ready(eeprom)) {
-        LOG_ERR("eeprom is not ready\n");
-    }
+//     if (sleep_tick <= exit_latency_tick + 
+//                   min_residency_tick) {
+//         if(sleep_tick < min_residency_tick) {
+//             return 2;
+//         }
 
-    return eeprom_write(eeprom, addr, pBuf, num);
+//         sys_clock_set_ticks(tick, true);
+//         pm_state_set(PM_STATE_RUNTIME_IDLE, 0);
 
-    return 0;
-}
+//         return 1;
+//     }
 
-uint32_t ble_idle(uint32_t tick)
-{
-    uint32_t sleep_tick;
-    int key = irq_lock();
-    uint32_t curr_tick = k_cycle_get_32();
+//     sys_clock_set_ticks(tick - exit_latency_tick, true);
 
-    irq_unlock(key);
+//     pm_state_set(PM_STATE_SUSPEND_TO_RAM, 0);
 
-    if (tick >= curr_tick) {
-        sleep_tick = tick - curr_tick;
-    } else {
-        sleep_tick = tick + 
-                (CONFIG_SOC_RTC_MAX_TICK - curr_tick);
-    }
+//     sys_clock_set_ticks(tick, true);
+//     pm_state_set(PM_STATE_SUSPEND_TO_IDLE, 0);
 
-    if (sleep_tick <= exit_latency_tick + 
-                  min_residency_tick) {
-        if(sleep_tick < min_residency_tick) {
-            return 2;
-        }
+//     pm_state_exit_post_ops(PM_STATE_SUSPEND_TO_RAM, 0);
 
-        sys_clock_set_ticks(tick, true);
-        pm_state_set(PM_STATE_RUNTIME_IDLE, 0);
-
-        return 1;
-    }
-
-    sys_clock_set_ticks(tick - exit_latency_tick, true);
-
-    pm_state_set(PM_STATE_SUSPEND_TO_RAM, 0);
-
-    sys_clock_set_ticks(tick, true);
-    pm_state_set(PM_STATE_SUSPEND_TO_IDLE, 0);
-
-    pm_state_exit_post_ops(PM_STATE_SUSPEND_TO_RAM, 0);
-
-    return 0;
-}
+//     return 0;
+// }
 
 void LIBStatusCallback( uint8_t code, uint32_t status )
 {
@@ -171,8 +150,8 @@ void ble_init(void)
     cfg.TxPower = (uint32_t)BLE_TX_POWER_DEFAULT;
 #if(defined(CONFIG_BT_SNV)) && (CONFIG_BT_SNV_ADDR)
     cfg.SNVAddr = (uint32_t)CONFIG_BT_SNV_ADDR;
-    cfg.readFlashCB = ble_flash_read_cb;
-    cfg.writeFlashCB = ble_flash_write_cb;
+    cfg.readFlashCB = ble_flash_read;
+    cfg.writeFlashCB = ble_flash_write;
 #endif
 #if (defined CONFIG_SOC_LSE_32768)
     cfg.SelRTCClock = 0;
@@ -184,13 +163,13 @@ void ble_init(void)
     cfg.ConnectNumber = (CONFIG_BT_PERIPHERAL_MAX_CONNECTION & 3) | 
                     (CONFIG_BT_CENTRAL_MAX_CONNECTION << 2);
     cfg.srandCB = sys_rand32_get;
-#if(defined CONFIG_BT_TEM_SAMPLE)
-    cfg.tsCB = HAL_GetInterTempValue; //TODO: temp
+#if(defined CONFIG_BT_TEMP_SAMPLE)
+    cfg.tsCB = ble_hal_get_inter_temp;
 #if(defined CONFIG_SOC_LSI_32000) || (defined CONFIG_SOC_LSI_32768)
-    cfg.rcCB = hal_clk_lsi_calibrate; 
+    cfg.rcCB = ble_hal_lsi_calibrate; 
 #endif
 #endif
-    // cfg.staCB = LIBStatusCallback;
+    cfg.staCB = LIBStatusCallback;
 #if defined(CONFIG_PM)
     cfg.WakeUpTime = 1;
     // cfg.sleepCB = ble_idle;
@@ -198,19 +177,18 @@ void ble_init(void)
     // min_residency_tick = soc_pm_state.min_residency_ticks;
     cfg.sleepCB = pm_system_suspend;
 #endif
-#if(defined(CONFIG_BT_CUSTOM_ADDRESS))
-    for(int i = 0; i < 6; i++) {
-        cfg.MacAddr[i] = MacAddr[5 - i];
-    }
-#else
-    __attribute__((aligned(4))) uint8_t MacAddr[6];
+    __attribute__((aligned(4))) uint8_t mac_addr[6];
 
-    GetMACAddress(MacAddr);
-    tmos_memcpy(cfg.MacAddr, MacAddr, 6);
+#if(defined(CONFIG_BT_CUSTOM_ADDRESS))
+    //TODO: default MAC
+    tmos_memcpy(cfg.MacAddr, mac_addr, 6);
+#else
+    GetMACAddress(mac_addr);
+    tmos_memcpy(cfg.MacAddr, mac_addr, 6);
 #endif
     printk("MAC: ");
     for(int i = 0; i < 6; i++) {
-        printk("%#x ", MacAddr[i]);
+        printk("%#x ", mac_addr[i]);
     }
     printk("\n");
 
@@ -229,3 +207,5 @@ void ble_init(void)
         while(1);
     }
 }
+
+#endif

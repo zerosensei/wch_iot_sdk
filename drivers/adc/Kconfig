@@ -1,0 +1,21 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+menuconfig ADC
+    bool "ADC drivers"
+    help
+      Enable ADC drivers.
+
+if ADC
+
+config ADC_CHANNEL_MAP
+    hex "ADC channel map"
+    help
+      Bit-mask indicating the channels to be supported by the driver.
+      
+
+module = ADC
+module-str = ADC
+source "subsys/logging/Kconfig.template.log_config"
+
+endif

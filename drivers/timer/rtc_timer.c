@@ -17,6 +17,8 @@
 
 static uint32_t last_count = 0;
 
+
+//TODO: 专门写个rtc 和systic 的驱动 与sys无关 CH573可以用timer代替systick
 static inline void set_rtc_alarm(uint32_t time)
 {
     hal_rtc_set_alarm(time);

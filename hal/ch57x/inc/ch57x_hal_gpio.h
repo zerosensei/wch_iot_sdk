@@ -56,19 +56,19 @@ typedef struct
 #define GPIO_Pin_All    (0xFFFFFFFF) /*!< All pins selected */
 
 typedef enum {
-    GPIO_MODE_IN_FLOATING,			//浮空输入
-    GPIO_MODE_IN_PU,					//上拉输入
-    GPIO_MODE_IN_PD,					//下拉输入
-    GPIO_MODE_OUT_PP_5MA,			//推挽输出最大5mA
-    GPIO_MODE_OUT_PP_20MA,			//推挽输出最大20mA
+    GPIO_MODE_IN_FLOATING,
+    GPIO_MODE_IN_PU,	
+    GPIO_MODE_IN_PD,	
+    GPIO_MODE_OUT_PP_5MA,
+    GPIO_MODE_OUT_PP_20MA,
     GPIO_MODE_ANALOG,
 } gpio_mode_t;
 
 typedef enum {
-    GPIO_IT_MODE_LOWLEVEL,			//低电平触发
-    GPIO_IT_MODE_HIGHLEVEL,			//高电平触发
-    GPIO_IT_MODE_FALLEDGE,			//下降沿触发
-    GPIO_IT_MODE_RISEEDGE,			//上升沿触发
+    GPIO_IT_MODE_LOWLEVEL,	
+    GPIO_IT_MODE_HIGHLEVEL,	
+    GPIO_IT_MODE_FALLEDGE,	
+    GPIO_IT_MODE_RISEEDGE,	
 } gpio_int_mode_t;
 
 typedef enum {

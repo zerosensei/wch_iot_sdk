@@ -9,6 +9,8 @@
 #include <drivers/gpio.h>
 #include <drivers/pinctrl.h>
 
+#if CONFIG_UART
+
 struct uart_wch_config {
     WCH_UART_Type *uart;
     struct uart_config uart_cfg;
@@ -562,7 +564,7 @@ static const struct uart_driver_api uart_wch_driver_api = {
 #endif /* CONFIG_UART_SUPPORT_INTERRUPT */
 };  
 
-#define UART_INTI(index)   \
+#define UART_INIT(index)   \
     static void uart_wch_irq_cfg_func_##index(const struct device *dev)     \
     {       \
         irq_enable(DEV_CFG_GET_IRQ(uart##index));       \
@@ -588,17 +590,19 @@ static const struct uart_driver_api uart_wch_driver_api = {
             1);     
 
 #ifdef CONFIG_UART_0
-UART_INTI(0);
+UART_INIT(0);
 #endif
 
 #ifdef CONFIG_UART_1
-UART_INTI(1);
+UART_INIT(1);
 #endif
 
 #ifdef CONFIG_UART_2
-UART_INTI(2);
+UART_INIT(2);
 #endif
 
 #ifdef CONFIG_UART_3
-UART_INTI(3);
+UART_INIT(3);
 #endif
+
+#endif /* CONFIG_UART */

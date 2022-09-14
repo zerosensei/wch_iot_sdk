@@ -5,13 +5,18 @@
  */
 
 #include <kernel.h>
+#include <drivers/eeprom.h>
+#include <drivers/adc.h>
 #include <pm/pm.h>
 #include <pm/device.h>
 #include "hal.h"
+#include <logging/log.h>
 
-tmosTaskID hal_taskid = INVALID_TASK_ID;
+LOG_MODULE_REGISTER(ble_init, CONFIG_BT_LOG_LEVEL);
 
-static void hal_process_tmosmsg(tmos_event_hdr_t *pmsg)
+tmosTaskID ble_hal_taskid = INVALID_TASK_ID;
+
+static void ble_hal_process_tmosmsg(tmos_event_hdr_t *pmsg)
 {
     switch (pmsg->event) {
 
@@ -20,13 +25,13 @@ static void hal_process_tmosmsg(tmos_event_hdr_t *pmsg)
     }
 }
 
-static tmosEvents hal_process_event(tmosTaskID task_id, tmosEvents events)
+static tmosEvents ble_hal_process_event(tmosTaskID task_id, tmosEvents events)
 {
     if (events & SYS_EVENT_MSG) {
         uint8_t *msg = tmos_msg_receive(task_id);
 
         if (msg) {
-            hal_process_tmosmsg((tmos_event_hdr_t *)msg);
+            ble_hal_process_tmosmsg((tmos_event_hdr_t *)msg);
             /* De-allocate */
             tmos_msg_deallocate(msg);
         }
@@ -39,7 +44,7 @@ static tmosEvents hal_process_event(tmosTaskID task_id, tmosEvents events)
         /* rf calibration */
         BLE_RegInit();  
 #if (defined CONFIG_SOC_LSI_32000) || (defined CONFIG_SOC_LSI_32768)
-        hal_clk_lsi_calibrate();
+        ble_hal_lsi_calibrate();
 #endif
         return events ^ HAL_REG_INIT_EVENT;
     }
@@ -48,17 +53,16 @@ static tmosEvents hal_process_event(tmosTaskID task_id, tmosEvents events)
     return 0;
 }
 
-void hal_init(void)
+void ble_hal_init(void)
 {
-    hal_taskid = TMOS_ProcessEventRegister(hal_process_event);
+    ble_hal_taskid = TMOS_ProcessEventRegister(ble_hal_process_event);
 
-    __ASSERT_NO_MSG(hal_taskid != INVALID_TASK_ID);
+    __ASSERT_NO_MSG(ble_hal_taskid != INVALID_TASK_ID);
 
-    //TODO: tmos use rtc irq?
     TMOS_TimerInit(0);
 
 #if defined CONFIG_BT_CALIBRATION
-    tmos_start_reload_task(hal_taskid, HAL_REG_INIT_EVENT, 
+    tmos_start_reload_task(ble_hal_taskid, HAL_REG_INIT_EVENT, 
             MS1_TO_SYSTEM_TIME(CONFIG_BT_CALIBRATION_PERIOD));
 #endif 
 
@@ -67,4 +71,61 @@ void hal_init(void)
     __ASSERT(pm_device_wakeup_is_enabled(DEVICE_GET(rtc)), 
             "wakeup source is not enabled");
 #endif
+}
+
+uint16_t ble_hal_get_inter_temp(void)
+{
+    uint16_t raw_adc;
+
+    const struct adc_channel_cfg channel_cfg = {
+        .channel_id = 15,
+    };
+
+    struct adc_channel_cfg cfg_save;
+    struct adc_sequence seq_temp = {
+        .buffer = &raw_adc,
+        .buffer_size = sizeof(raw_adc),
+        .channels = BIT(15),
+    };
+
+    cfg_save = adc_channel_config_get(DEVICE_GET(adc));
+    adc_channel_setup(DEVICE_GET(adc), &channel_cfg);
+    adc_read(DEVICE_GET(adc), &seq_temp);
+
+    while(!adc_read_is_completed(DEVICE_GET(adc))) {
+        ;
+    }
+
+    adc_channel_setup(DEVICE_GET(adc), &cfg_save);
+
+    return raw_adc;
+}
+
+void ble_hal_lsi_calibrate(void)
+{
+    hal_clk_lsi_calibrate();
+}
+
+uint32_t ble_flash_read(uint32_t addr, uint32_t num, uint32_t *pBuf)
+{
+    const struct device *eeprom = DEVICE_GET(eeprom);
+
+    if (!device_is_ready(eeprom)) {
+        LOG_ERR("eeprom is not ready\n");
+    }
+
+    return eeprom_read(eeprom, addr, pBuf, num);
+}
+
+uint32_t ble_flash_write(uint32_t addr, uint32_t num, uint32_t *pBuf)
+{
+    const struct device *eeprom = DEVICE_GET(eeprom);
+
+    if (!device_is_ready(eeprom)) {
+        LOG_ERR("eeprom is not ready\n");
+    }
+
+    return eeprom_write(eeprom, addr, pBuf, num);
+
+    return 0;
 }

@@ -67,3 +67,12 @@ config SYS_CLOCK_HW_CYCLES_PER_SEC
 
 config SYS_CLOCK_TICKS_PER_SEC
     default 32768
+
+config ADC_CHANNEL_MAP
+    default 0xF33F if SOC_CH573X
+    default 0xF03F if SOC_CH573F
+    default 0xC03F if SOC_CH571F || SOC_CH571D
+    default 0xC03C if SOC_CH571K
+
+config BT_SNV_ADDR
+    default 0x3EC00
