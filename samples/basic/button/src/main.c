@@ -29,7 +29,7 @@ struct gpio_wch_config {
 void button_pressed(const struct device *dev, struct gpio_callback *cb,
 		    uint32_t pins)
 {
-	printk("Button pressed at %" PRIu32 "\n", k_uptime_get_32());
+	printk("Button pressed\n");
 }
 
 int main(void)
@@ -78,7 +78,7 @@ int main(void)
 			gpio_pin_set(led, LED_PIN, val);
 		}
 
-		k_mdelay(10);
+		k_busy_wait(10*1000);
 	}
 
     return 0;

@@ -38,13 +38,14 @@
         "samples/drivers/uart/src/build",
         "subsys/pm/device_runtime.c",
         "subsys/pm/pm copy.c",
-        "samples/basic",
         "samples/hello_world",
         "samples/drivers/uart",
         "samples/drivers/timer_rtc",
         "samples/subsys",
         "samples/bluetooth/peripheral_hr",
-        "samples/drivers"
+        "samples/drivers",
+        "samples/bluetooth",
+        "subsys/bluetooth"
       ],
       "toolchain": "RISCV_GCC",
       "compileConfig": {

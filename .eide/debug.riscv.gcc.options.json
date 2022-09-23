@@ -6,7 +6,7 @@
             "disable": false,
             "abortAfterFailed": false,
             "stopBuildAfterFailed": true,
-            "command": "python ${ProjectRoot}\\script\\kconfig.py ${ProjectRoot}\\Kconfig ${OutDir}\\.config ${OutDir}\\auto_config.h ${OutDir}\\source.txt ${ProjectRoot}\\samples\\bluetooth\\peripheral\\prj.conf"
+            "command": "python ${ProjectRoot}\\script\\kconfig\\kconfig.py ${ProjectRoot}\\Kconfig ${OutDir}\\.config ${OutDir}\\auto_config.h ${OutDir}\\source.txt ${ProjectRoot}\\samples\\basic\\button\\prj.conf"
         }
     ],
     "afterBuildTasks": [

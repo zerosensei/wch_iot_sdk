@@ -1,2 +1,2 @@
 cd %SRCTREE%\build\Debug
-python ..\..\script\menuconfig.py
+python ..\..\script\kconfig\menuconfig.py

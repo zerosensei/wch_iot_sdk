@@ -2,7 +2,7 @@
 # SPDX-License-Identifier: Apache-2.0
 
 import argparse
-from command import Command
+from commands.command import Command
 
 BUILD_USAGE = '''\
 west build [-h] 
