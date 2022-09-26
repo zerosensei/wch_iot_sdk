@@ -1,7 +1,6 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
-message("top")
+include_guard(GLOBAL)
 
-set(CMAKE_EXECUTABLE_SUFFIX .elf)
-
+message("project here")

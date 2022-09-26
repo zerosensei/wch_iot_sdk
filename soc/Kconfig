@@ -23,11 +23,11 @@ choice
 endchoice
 
 if SOC_SERIES_CH57X
-    source "soc/ch57x/Kconfig.soc"
+    osource "soc/$(ARCH)/ch57x/Kconfig.ch57x"
 endif
 
 if SOC_SERIES_CH58X
-    source "soc/ch58x/Kconfig.soc"
+    osource "soc/$(ARCH)/ch58x/Kconfig.ch58x"
 endif
 
 module = SOC

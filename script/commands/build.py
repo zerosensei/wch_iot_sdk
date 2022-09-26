@@ -51,7 +51,7 @@ class Build(Command):
             usage=BUILD_USAGE)
 
         parser.add_argument('-S', '--SOC', 
-                            help='SOC to build for with optional SOC revision')
+                            help='SOC serious to build')
 
         parser.add_argument('-s', '--source-dir', help='source directory to use')
 
@@ -123,6 +123,11 @@ class Build(Command):
         self.build_dir = build_dir
 
     def _find_source_dir(self):
+        if self.args.SOC:
+            self.args.cmake_opts = ['-DSOC={}'.format(self.args.SOC)]
+        else:
+            log.die('no defined SOC')
+
         if self.args.source_dir:
             source_dir = self.args.source_dir
         else:

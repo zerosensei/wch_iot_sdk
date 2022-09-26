@@ -10,7 +10,6 @@
     "samples",
     "subsys",
     "tools",
-    "soc/ch57x",
     "hal",
     "arch"
   ],
