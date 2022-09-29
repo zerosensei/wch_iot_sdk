@@ -3,32 +3,16 @@
 
 menu "SoC Configration"
 
-choice
-    prompt "SoC Series"
 
-    config SOC_SERIES_CH57X
-        bool "WCH CH57X series MCU"
-        select RISCV
-        select TICKLESS_CAPABLE
-        help
-          Enable support for CH57X series MCU
+config SOC_SERIES
+    string
+    help
+      SoC series name which can be found under soc/<arch>/<series>.
+	  This option holds the directory name used by the build system to locate
+	  the correct linker and header files.
 
-    config SOC_SERIES_CH58X
-        bool "WCH CH58X series MCU"
-        select RISCV
-        select TICKLESS_CAPABLE
-        help
-          Enable support for CH58X series MCU
 
-endchoice
-
-if SOC_SERIES_CH57X
-    osource "soc/$(ARCH)/ch57x/Kconfig.ch57x"
-endif
-
-if SOC_SERIES_CH58X
-    osource "soc/$(ARCH)/ch58x/Kconfig.ch58x"
-endif
+source "soc/$(ARCH)/*/Kconfig.$(SOC)"
 
 module = SOC
 module-str = SOC

@@ -14,6 +14,8 @@ file(MAKE_DIRECTORY ${PROJECT_BINARY_DIR}/kconfig)
 set(DOTCONFIG ${PROJECT_BINARY_DIR}/Kconfig/.config)
 set(KCONFIG_SOURCES_TXT ${PROJECT_BINARY_DIR}/Kconfig/source.txt)
 
+
+#TODO: other config file?
 file(GLOB config_file ${APPLICATION_SOURCE_DIR}/*.conf)
 list(SORT config_file)
 set(append_config_files 
@@ -44,3 +46,4 @@ execute_process(
     RESULT_VARIABLE ret
 )
 
+import_kconfig("CONFIG" ${DOTCONFIG})

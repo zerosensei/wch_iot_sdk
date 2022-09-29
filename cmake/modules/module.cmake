@@ -17,6 +17,7 @@ list(APPEND cmake_modules arch)
 
 list(APPEND cmake_modules kconfig)
 
+list(APPEND cmake_modules toolchain)
 
 foreach(module IN LISTS cmake_modules)
   # Ensures any module of type `${module}` are properly expanded to list before
@@ -30,4 +31,4 @@ foreach(module IN LISTS cmake_modules)
 endforeach()
 
 
-include(../project)
+include(../kernel)

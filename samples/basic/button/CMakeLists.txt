@@ -6,4 +6,5 @@ find_package(WCH REQUIRED HINTS $ENV{WCH_BASE})
 
 project(button)
 
-# target_sources(app PRIVATE src/main.c)
+message("project name app: " ${PROJECT_NAME})
+target_sources(app PRIVATE src/main.c)
