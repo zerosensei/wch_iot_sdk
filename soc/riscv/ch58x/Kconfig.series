@@ -1,0 +1,7 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+config SOC_SERIES_CH58X
+    bool
+    select RISCV
+    select HAS_RISCV_PMP

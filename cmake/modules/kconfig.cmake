@@ -15,10 +15,16 @@ set(DOTCONFIG ${PROJECT_BINARY_DIR}/Kconfig/.config)
 set(KCONFIG_SOURCES_TXT ${PROJECT_BINARY_DIR}/Kconfig/source.txt)
 
 
+
+
+set_ifndef(SOC_DEFCONFIG    
+    ${ENV_WCH_BASE}/soc/${ARCH}/${SOC_SERIES}/${SOC_SERIES}_defconfig)
+
 #TODO: other config file?
 file(GLOB config_file ${APPLICATION_SOURCE_DIR}/*.conf)
 list(SORT config_file)
 set(append_config_files 
+    ${SOC_DEFCONFIG}
     ${config_file}
 )
 
@@ -27,10 +33,35 @@ set(INPUT_CONFIGS ${append_config_files})
 
 set(COMMON_KCONFIG_ENV_SETTINGS
     PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
+    ARCH=${ARCH}
+    SOC_SERIES=${SOC_SERIES}
 )
 
-message("base: " ${ENV_WCH_BASE})
+set(EXTRA_KCONFIG_TARGET_COMMAND_FOR_menuconfig
+  ${ENV_WCH_BASE}/script/kconfig/menuconfig.py
+  )
 
+set(EXTRA_KCONFIG_TARGET_COMMAND_FOR_guiconfig
+  ${ENV_WCH_BASE}/script/kconfig/guiconfig.py
+  )
+
+set_ifndef(KCONFIG_TARGETS menuconfig guiconfig)
+
+foreach(kconfig_target ${KCONFIG_TARGETS})
+    add_custom_target(
+        ${kconfig_target}
+        ${CMAKE_COMMAND} -E env
+        ${COMMON_KCONFIG_ENV_SETTINGS}
+        ${PYTHON_EXECUTABLE}
+        ${EXTRA_KCONFIG_TARGET_COMMAND_FOR_${kconfig_target}}
+        WORKING_DIRECTORY ${PROJECT_BINARY_DIR}/kconfig
+        USES_TERMINAL
+        COMMAND_EXPAND_LISTS
+    )
+    
+endforeach()
+
+message("input files " ${INPUT_CONFIGS})
 
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E env

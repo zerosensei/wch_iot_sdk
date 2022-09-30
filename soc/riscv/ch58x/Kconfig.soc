@@ -1,12 +1,11 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
-config SOC_SERIES
-    string "ch58x"
+config SOC_SERIES_CH58X
+    default y
 
 choice
-    prompt "WCH MCU Selection"
-    depends on SOC_SERIES_CH58X
+    prompt "CH58x MCU Selection"
 
 config SOC_CH583M
     bool "CH583M"

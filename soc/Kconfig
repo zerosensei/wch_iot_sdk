@@ -1,21 +1,20 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
-menu "SoC Configration"
 
+# choice
+#     prompt "SoC Configration Selection"
 
-config SOC_SERIES
-    string
-    help
-      SoC series name which can be found under soc/<arch>/<series>.
-	  This option holds the directory name used by the build system to locate
-	  the correct linker and header files.
+# source "soc/$(ARCH)/*/Kconfig.series"
 
+# endchoice
 
-source "soc/$(ARCH)/*/Kconfig.$(SOC)"
+source "soc/$(ARCH)/$(SOC_SERIES)/Kconfig.series"
 
-module = SOC
-module-str = SOC
-source "subsys/logging/Kconfig.template.log_config"
+menu "Hardware Configuration"
+    source "soc/$(ARCH)/$(SOC_SERIES)/Kconfig.soc"
 
+    module = SOC
+    module-str = SOC
+    source "subsys/logging/Kconfig.template.log_config"
 endmenu

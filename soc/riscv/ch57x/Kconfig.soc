@@ -1,31 +1,27 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
-config SOC_SERIES
-    string "ch57x"
+config SOC_SERIES_CH57X
+    default y
 
 choice
-    prompt "SoC"
+    prompt "CH57x MCU Selection"
+    default SOC_CH573F
 
     config SOC_CH573X
         bool "CH573X"
-        depends on SOC_SERIES_CH57X
 
     config SOC_CH573F
         bool "CH573F"
-        depends on SOC_SERIES_CH57X
 
     config SOC_CH571F
         bool "CH571F"
-        depends on SOC_SERIES_CH57X
 
     config SOC_CH571D
         bool "CH571D"
-        depends on SOC_SERIES_CH57X
 
     config SOC_CH571K
         bool "CH571K"
-        depends on SOC_SERIES_CH57X
 
 endchoice
 

@@ -13,13 +13,12 @@ config ARM
     help
       ARM architecture
 
-if RISCV
-    source "arch/riscv/Kconfig"
-endif
+config ARCH
+    string
+    help
+      Architecture string
 
-if ARM
-    source "arch/arm/Kconfig"
-endif
+source "arch/$(ARCH)/Kconfig"
 
 module = ARCH
 module-str = arch

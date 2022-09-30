@@ -31,7 +31,9 @@ def run_cmake(args):
         raise subprocess.CalledProcessError(p.returncode, p.args)
 
 def run_build(build_dir, **kwargs):
-    return run_cmake(['--build', build_dir], **kwargs)
+    extra_args = kwargs.pop('extra_args', [])
+
+    return run_cmake(['--build', build_dir] + extra_args, **kwargs)
 
 def _ensure_min_version(cmake):
     cmd = [cmake, '--version']

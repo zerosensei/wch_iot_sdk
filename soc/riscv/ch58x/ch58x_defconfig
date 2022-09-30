@@ -1,0 +1,7 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+CONFIG_SOC_SERIES_CH58X=y
+CONFIG_GPIO=y
+CONFIG_UART=y
+CONFIG_PINCTRL=y

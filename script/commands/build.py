@@ -50,8 +50,8 @@ class Build(Command):
             formatter_class=argparse.RawDescriptionHelpFormatter,
             usage=BUILD_USAGE)
 
-        parser.add_argument('-S', '--SOC', 
-                            help='SOC serious to build')
+        parser.add_argument('-S', '--soc-series', 
+                            help='SoC series to build')
 
         parser.add_argument('-s', '--source-dir', help='source directory to use')
 
@@ -61,6 +61,10 @@ class Build(Command):
         parser.add_argument('-p', '--pristine', choices=['auto', 'always',
                             'never'], action=AlwaysIfMissing, nargs='?',
                             help='pristine build folder setting')
+
+        parser.add_argument('-t', '--target',
+                            help='run build target TARGET')
+
         return parser
 
     def do_run(self, args, remainder):
@@ -81,14 +85,17 @@ class Build(Command):
         if pristine == 'always':
             self._clear_build()
             self.run_cmake = True
-        if pristine == 'auto':
-            self.run_cmake = True
-        if pristine == 'never':
-            self.run_cmake = False
+        else:
+            if (self.args.cmake_opts):
+                self.run_cmake = True
+            if pristine == 'never':
+                self.run_cmake = False
+
+        print('self run cmake: {}'.format(self.run_cmake))
 
         self._run_cmake(self.args.cmake_opts)
 
-        self._run_build()
+        self._run_build(args.target)
 
 
 
@@ -123,10 +130,8 @@ class Build(Command):
         self.build_dir = build_dir
 
     def _find_source_dir(self):
-        if self.args.SOC:
-            self.args.cmake_opts = ['-DSOC={}'.format(self.args.SOC)]
-        else:
-            log.die('no defined SOC')
+        if self.args.soc_series:
+            self.args.cmake_opts = ['-DSOC_SERIES={}'.format(self.args.soc_series)]
 
         if self.args.source_dir:
             source_dir = self.args.source_dir
@@ -169,5 +174,12 @@ class Build(Command):
         run_cmake(cmake_opts)
 
 
-    def _run_build(self):
-        run_build(self.build_dir)
+    def _run_build(self, target):
+        if target:
+            log.inf('-- WCH build: running target {}'.format(target))
+        elif self.run_cmake:
+            log.inf('-- WCH build: building application')
+
+        extra_args = ['--target', target] if target else []
+
+        run_build(self.build_dir, extra_args=extra_args)

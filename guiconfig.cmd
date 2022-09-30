@@ -1,2 +1,2 @@
-cd %SRCTREE%\build\Debug
-python ..\..\script\kconfig\guiconfig.py
+cd %SRCTREE%\build
+python ..\script\kconfig\guiconfig.py
