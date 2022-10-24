@@ -1,0 +1,6 @@
+add_subdirectory_ifdef(CONFIG_BT bluetooth)
+add_subdirectory(logging)
+add_subdirectory(pm)
+add_subdirectory(random)
+# add_subdirectory(usb)
+add_subdirectory(buf)

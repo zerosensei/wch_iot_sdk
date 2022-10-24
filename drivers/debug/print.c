@@ -4,7 +4,6 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <auto_config.h>
 #include <sys/printk.h>
 #include <soc.h>
 #include <drivers/uart.h>

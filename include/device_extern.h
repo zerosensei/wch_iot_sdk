@@ -1,7 +1,5 @@
 #ifndef INCLUDE_DEVICE_EXTERN_H
 #define INCLUDE_DEVICE_EXTERN_H
-
-#include <auto_config.h>
 #include <dev_cfg.h>
 
 /* GPIO */

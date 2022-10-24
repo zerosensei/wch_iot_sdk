@@ -10,7 +10,6 @@
 #include <stdint.h>
 #include <stddef.h>
 #include <stdbool.h>
-#include <auto_config.h>
 #include "CH573SFR.h"
 #include "ISP573.h"
 

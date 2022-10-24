@@ -274,6 +274,4 @@ static inline uint64_t k_cycle_get_64(void)
 }
 
 
-#include <auto_config.h>
-
 #endif /* INCLUDE_KERNEL_H */

@@ -7,7 +7,6 @@
 #ifndef ZEPHYR_INCLUDE_TOOLCHAIN_GCC_H_
 #define ZEPHYR_INCLUDE_TOOLCHAIN_GCC_H_
 
-#include <auto_config.h>
 
 /**
  * @file

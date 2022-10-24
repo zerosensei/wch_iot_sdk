@@ -2,9 +2,8 @@
 # SPDX-License-Identifier: Apache-2.0
 
 cmake_minimum_required(VERSION 3.20.0)
-find_package(WCH REQUIRED HINTS $ENV{WCH_BASE})
+find_package(wch REQUIRED HINTS $ENV{WCH_BASE})
 
 project(button)
 
-message("project name app: " ${PROJECT_NAME})
 target_sources(app PRIVATE src/main.c)

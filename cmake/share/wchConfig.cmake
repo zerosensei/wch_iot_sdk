@@ -24,7 +24,7 @@ macro(include_modules location)
     message("set app src dir " ${APPLICATION_SOURCE_DIR})
     message("set app bin dir " ${CMAKE_CURRENT_BINARY_DIR})
     
-    set(__build_dir ${APPLICATION_BINARY_DIR})
+    set(__build_dir ${APPLICATION_BINARY_DIR}/wch)
     set(PROJECT_BINARY_DIR ${__build_dir})
 
     message("Loading modules (${location}).")

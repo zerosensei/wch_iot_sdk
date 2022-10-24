@@ -7,7 +7,6 @@
 #ifndef SUBSYS_BLUETOOTH_HAL_CONFIG_H
 #define SUBSYS_BLUETOOTH_HAL_CONFIG_H
 
-#include <auto_config.h>
 
 #ifdef CONFIG_SOC_SERIES_CH57X
 #include <CH57xBLE_LIB.h>

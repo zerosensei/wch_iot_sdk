@@ -169,6 +169,7 @@ class Build(Command):
         cmake_opts.extend(['-B{}'.format(self.build_dir)])
         # TODO: ¿ÉÑ¡
         cmake_opts.extend(['-GNinja'])
+        # cmake_opts.extend(['-GMinGW Makefiles'])
 
         log.dbg('cmake_opts: {}'.format(cmake_opts))
         run_cmake(cmake_opts)
