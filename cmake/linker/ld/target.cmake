@@ -85,12 +85,6 @@ function(toolchain_ld_link_elf)
     ${ARGN}                                                   # input args to parse
   )
 
-  message("TOOLCHAIN_LD_LINK_ELF_TARGET_ELF: " ${TOOLCHAIN_LD_LINK_ELF_TARGET_ELF})
-  message("TOOLCHAIN_LD_LINK_ELF_LIBRARIES_PRE_SCRIPT: " ${TOOLCHAIN_LD_LINK_ELF_LIBRARIES_PRE_SCRIPT})
-  message("TOOLCHAIN_LD_LINK_ELF_LINKER_SCRIPT: " ${TOOLCHAIN_LD_LINK_ELF_LINKER_SCRIPT})
-  message("TOOLCHAIN_LD_LINK_ELF_LIBRARIES_POST_SCRIPT: " ${TOOLCHAIN_LD_LINK_ELF_LIBRARIES_POST_SCRIPT})
-  message("TOOLCHAIN_LD_LINK_ELF_DEPENDENCIES: " ${TOOLCHAIN_LD_LINK_ELF_DEPENDENCIES})
-
   if(${CMAKE_LINKER} STREQUAL "${CROSS_COMPILE}ld.bfd")
     # ld.bfd was found so let's explicitly use that for linking, see #32237
     set(use_linker "-fuse-ld=bfd")

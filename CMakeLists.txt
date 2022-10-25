@@ -23,12 +23,15 @@ library_set_named(wch)
 
 # set_target_properties(wch PROPERTIES LINKER_LANGUAGE C CXX ASM)
 
-include_directories(
+add_include_directories(
     include
-    ${PROJECT_BINARY_DIR}
+    ${PROJECT_BINARY_DIR}/wch/kconfig
+
 )
 
-include_directories(${SOC_DIR})
+message("PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
+
+add_include_directories(${SOC_DIR})
 
 # @Intent: Set compiler specific flag for disabling strict aliasing rule
 add_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,no_strict_aliasing>>)
@@ -70,7 +73,7 @@ add_compile_options(${OPTIMIZATION_FLAG})
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,required>>)
 
 # @Intent: Set compiler specific macro inclusion of AUTOCONF_H
-add_compile_options("SHELL: $<TARGET_PROPERTY:compiler,imacros> ${AUTOCONF_H}")
+add_compile_options($<TARGET_PROPERTY:compiler,imacros>-imacros ${AUTOCONF_H})
 
 # @Intent: Set compiler specific flag for tentative definitions, no-common
 add_compile_options($<TARGET_PROPERTY:compiler,no_common>)
@@ -102,18 +105,7 @@ toolchain_ld_base()
 #   _ConfigAbsSyms
 # )
 
-set(LINKER_SCRIPT  ${ENV_WCH_BASE}/soc/${ARCH}/${SOC_SERIES}/Link.ld)
-if(NOT EXISTS ${LINKER_SCRIPT})
-  message(FATAL_ERROR "Could not find linker script: '${LINKER_SCRIPT}'. Corrupted configuration?")
-endif()
 
-add_link_options(-nostartfiles 
-                -Xlinker --gc-sections  
-                -Wl,--print-memory-usage
-                -Wl,-Map,${PROJECT_NAME}.map 
-                --specs=nano.specs 
-                --specs=nosys.specs)
-add_link_options(-T ${LINKER_SCRIPT})
 
 
 
@@ -171,19 +163,16 @@ set_ifndef(  TOPT -Wl,-T) # clang doesn't pick -T for some reason and complains,
 # get_include_directories_for_lang(C ZEPHYR_INCLUDES)
 
 
-# add_subdirectory(arch)
-# add_subdirectory(drivers)
-# add_subdirectory(hal)
-# add_subdirectory(lib)
-
-# message("SOC DIR: " ${SOC_DIR})
+add_subdirectory(arch)
+add_subdirectory(drivers)
+add_subdirectory(hal)
+add_subdirectory(lib)
 add_subdirectory(${SOC_DIR})
-
 add_subdirectory(subsys)
 
 
-get_target_property(TEST wch SOURCES)
-message("test: " ${TEST})
+# get_target_property(TEST wch SOURCES)
+# message("test: " ${TEST})
 
 # get_include_directories_for_lang(C
 #   ZEPHYR_INCLUDE_DIRS
@@ -234,7 +223,7 @@ get_property(TOPT GLOBAL PROPERTY TOPT)
 set_ifndef(  TOPT -Wl,-T) # clang doesn't pick -T for some reason and complains,
                           # while -Wl,-T works for both, gcc and clang
 
-add_executable(${ZEPHYR_LINK_STAGE_EXECUTABLE} misc/empty_file.c )
+add_executable(${ZEPHYR_LINK_STAGE_EXECUTABLE} misc/empty_file.c)
 toolchain_ld_link_elf(
   TARGET_ELF            ${ZEPHYR_LINK_STAGE_EXECUTABLE}
   OUTPUT_MAP            ${PROJECT_BINARY_DIR}/${ZEPHYR_LINK_STAGE_EXECUTABLE}.map
@@ -242,6 +231,11 @@ toolchain_ld_link_elf(
   # LINKER_SCRIPT         ${PROJECT_BINARY_DIR}/${ZEPHYR_CURRENT_LINKER_CMD}
   DEPENDENCIES          ${CODE_RELOCATION_DEP}
 )
+
+
+# target_link_libraries(${ZEPHYR_LINK_STAGE_EXECUTABLE} PUBLIC ${WCH_LIBS_PROPERTY})
+
+
 
 # configure_linker_script(
 #   ${ZEPHYR_CURRENT_LINKER_CMD}
@@ -260,7 +254,3 @@ toolchain_ld_link_elf(
 # Note, the compile flags are moved, but the system include is still present here.
 add_compile_options($<TARGET_PROPERTY:compiler,nostdinc>)
 target_include_directories(wch_interface SYSTEM INTERFACE $<TARGET_PROPERTY:compiler,nostdinc_include>)
-
-
-get_target_property(TEST wch SOURCES)
-message("test: " ${TEST})
