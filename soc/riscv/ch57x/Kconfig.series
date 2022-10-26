@@ -4,3 +4,5 @@
 config SOC_SERIES_CH57X
     bool
     select RISCV
+    select RISCV_ISA_EXT_M
+    select RISCV_ISA_EXT_A

@@ -32,4 +32,6 @@ config PMP_SLOTS
 
 endif
 
+rsource "Kconfig.isa"
+
 endmenu
