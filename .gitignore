@@ -10,3 +10,5 @@ build
 *.eide-template
 
 *.pyc
+
+.vscode
