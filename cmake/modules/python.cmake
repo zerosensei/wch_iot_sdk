@@ -45,5 +45,3 @@ endforeach()
 
 find_package(Python3 ${PYTHON_MINIMUM_REQUIRED} REQUIRED ${PYTHON_EXACT})
 set(PYTHON_EXECUTABLE ${Python3_EXECUTABLE})
-
-message(${PYTHON_EXECUTABLE})

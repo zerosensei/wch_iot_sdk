@@ -12,5 +12,7 @@ add_sources(
     startup_CH573.S
 )
 
-
-# TODO: linker
+add_ld_options(
+    --specs=nosys.specs
+    -nostartfiles
+  )

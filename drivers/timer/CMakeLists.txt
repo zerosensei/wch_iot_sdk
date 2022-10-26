@@ -3,9 +3,4 @@
 
 set_library()
 
-library_include_directories(include)
-
-library_sources(device.c
-        fatal.c
-        init.c
-        timeout.c)
+library_sources(rtc_timer.c)

@@ -5,8 +5,6 @@ set_ifndef(C++ g++)
 # Configures CMake for using GCC, this script is re-used by several
 # GCC-based toolchains
 
-message("gcc target cmake")
-
 if("${SPARSE}" STREQUAL "y")
   find_program(CMAKE_C_COMPILER cgcc)
   find_program(REAL_CC ${CROSS_COMPILE}${CC} PATHS ${TOOLCHAIN_HOME} NO_DEFAULT_PATH)
@@ -127,7 +125,7 @@ endforeach()
 # toolchain-specific flags at generation time.
 list(APPEND CMAKE_REQUIRED_FLAGS
   -nostartfiles
-  -nostdlib
+  # -nostdlib
   ${isystem_include_flags}
   -Wl,--unresolved-symbols=ignore-in-object-files
   -Wl,--entry=0 # Set an entry point to avoid a warning

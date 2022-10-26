@@ -89,3 +89,96 @@ config MISRA_SANE
 	  arrays are not permitted (and gcc will enforce this).
 
 endmenu
+
+
+menu "Build Options"
+
+config KERNEL_BIN_NAME
+	string "The kernel binary name"
+	default "wch"
+	help
+	  This option sets the name of the generated kernel binary.
+
+config OUTPUT_STAT
+	bool "Create a statistics file"
+	default y
+	help
+	  Create a stat file using readelf -e <elf>
+
+config OUTPUT_SYMBOLS
+	bool "Create a symbol file"
+	help
+	  Create a symbol file using nm <elf>
+
+config OUTPUT_DISASSEMBLY
+	bool "Create a disassembly file"
+	default y
+	help
+	  Create an .lst file with the assembly listing of the firmware.
+
+config OUTPUT_DISASSEMBLE_ALL
+	bool "Disassemble all sections with source. Fill zeros."
+	default n
+	depends on OUTPUT_DISASSEMBLY
+	help
+	  The .lst file will contain complete disassembly of the firmware
+	  not just those expected to contain instructions including zeros
+
+config OUTPUT_PRINT_MEMORY_USAGE
+	bool "Print memory usage to stdout"
+	default y
+	help
+	  If the toolchain supports it, this option will pass
+	  --print-memory-region to the linker when it is doing it's first
+	  linker pass. Note that the memory regions are symbolic concepts
+	  defined by the linker scripts and do not necessarily map
+	  directly to the real physical address space. Take also note that
+	  some platforms do two passes of the linker so the results do not
+	  match exactly to the final elf file. See also rom_report,
+	  ram_report and
+	  https://sourceware.org/binutils/docs/ld/MEMORY.html
+
+config BUILD_NO_GAP_FILL
+	bool "Don't fill gaps in generated hex/bin/s19 files."
+
+config BUILD_OUTPUT_HEX
+	bool "Build a binary in HEX format"
+	help
+	  Build an Intel HEX binary zephyr/zephyr.hex in the build directory.
+	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
+
+config BUILD_OUTPUT_BIN
+	bool "Build a binary in BIN format"
+	default y
+	help
+	  Build a "raw" binary zephyr/zephyr.bin in the build directory.
+	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
+
+config BUILD_OUTPUT_EXE
+	bool "Build a binary in ELF format with .exe extension"
+	help
+	  Build an ELF binary that can run in the host system at
+	  zephyr/zephyr.exe in the build directory.
+	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
+
+config BUILD_OUTPUT_S19
+	bool "Build a binary in S19 format"
+	help
+	  Build an S19 binary zephyr/zephyr.s19 in the build directory.
+	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
+
+config BUILD_OUTPUT_STRIPPED
+	bool "Build a stripped binary"
+	help
+	  Build a stripped binary zephyr/zephyr.strip in the build directory.
+	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
+
+
+config MAKEFILE_EXPORTS
+	bool "Generate build metadata files named Makefile.exports"
+	help
+	  Generates a file with build information that can be read by
+	  third party Makefile-based build systems.
+
+
+endmenu

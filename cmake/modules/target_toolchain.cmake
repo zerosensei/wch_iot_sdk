@@ -18,15 +18,17 @@ add_custom_target(compiler)
 add_custom_target(compiler-cpp)
 add_custom_target(linker)
 
+# The 'generic' compiler and the 'target' compiler might be different,
+# so we unset the 'generic' one and thereby force the 'target' to
+# re-set it.
+unset(CMAKE_C_COMPILER)
+unset(CMAKE_C_COMPILER CACHE)
 
+add_custom_target(bintools)
 
-
-
-message("target COMPILER:" ${COMPILER})
 include(${ENV_WCH_BASE}/cmake/compiler/${COMPILER}/target.cmake OPTIONAL)
-message("target LINKER:" ${LINKER})
 include(${ENV_WCH_BASE}/cmake/linker/${LINKER}/target.cmake OPTIONAL)
-message("target BINTOOLS:" ${BINTOOLS})
+include(${ENV_WCH_BASE}/cmake/bintools/bintools_template.cmake)
 include(${ENV_WCH_BASE}/cmake/bintools/${BINTOOLS}/target.cmake OPTIONAL)
 
 

@@ -15,15 +15,6 @@ define_property(GLOBAL PROPERTY INTERFACE_LIBS
 zephyr_interface_library_named() appends libs to this list.")
 set_property(GLOBAL PROPERTY INTERFACE_LIBS "")
 
-define_property(GLOBAL PROPERTY GENERATED_APP_SOURCE_FILES
-  BRIEF_DOCS "Source files that are generated after Zephyr has been linked once."
-  FULL_DOCS "\
-Source files that are generated after Zephyr has been linked once.\
-May include dev_handles.c etc."
-  )
-set_property(GLOBAL PROPERTY GENERATED_APP_SOURCE_FILES "")
-
-
 file(TO_CMAKE_PATH "ENV_WCH_BASE" PROJECT_SOURCE_DIR)
 
 set(WCH_BINARY_DIR ${PROJECT_BINARY_DIR})
@@ -32,21 +23,16 @@ if(${CMAKE_CURRENT_SOURCE_DIR} STREQUAL ${CMAKE_CURRENT_BINARY_DIR})
     message(FATAL_ERROR "Source directory equals build directory.")
 endif()
 
-# TODO: pristine ?
-
 project(wch-project VERSION ${PROJECT_VERSION})
 list(APPEND CMAKE_ASM_SOURCE_FILE_EXTENSIONS "S")
 enable_language(C CXX ASM)
 
+include(${ENV_WCH_BASE}/cmake/compiler_flags_template.cmake)
 
-# include(${ENV_WCH_BASE}/cmake/compiler_flags_template.cmake)
-
-
-set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR})
+set(PROJECT_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/wch)
 set(PROJECT_SOURCE_DIR ${ENV_WCH_BASE})
 
-# set(KERNEL_NAME     ${CONFIG_KERNEL_BIN_NAME})
-set(KERNEL_NAME     kernel_name_test)
+set(KERNEL_NAME     ${CONFIG_KERNEL_BIN_NAME})
 
 set(KERNEL_ELF_NAME   ${KERNEL_NAME}.elf)
 set(KERNEL_BIN_NAME   ${KERNEL_NAME}.bin)
@@ -68,8 +54,6 @@ library_set_named(app)
 set_property(TARGET app PROPERTY ARCHIVE_OUTPUT_DIRECTORY app)
 
 add_subdirectory(${ENV_WCH_BASE} ${__build_dir})
-message("ENV_WCH_BASE: " ${ENV_WCH_BASE})
-message("__build_dir: " ${__build_dir})
 
 # Link 'app' with the interface libraries.
 get_property(INTERFACE_LIBS_PROPERTY GLOBAL PROPERTY INTERFACE_LIBS)

@@ -3,8 +3,6 @@
 
 include_guard(GLOBAL)
 
-message("module here")
-
 list(APPEND cmake_modules python)
 
 list(APPEND cmake_modules version)

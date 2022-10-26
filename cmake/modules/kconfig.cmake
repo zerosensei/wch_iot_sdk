@@ -61,8 +61,6 @@ foreach(kconfig_target ${KCONFIG_TARGETS})
     
 endforeach()
 
-message("input files " ${INPUT_CONFIGS})
-
 execute_process(
     COMMAND ${CMAKE_COMMAND} -E env
     ${COMMON_KCONFIG_ENV_SETTINGS}

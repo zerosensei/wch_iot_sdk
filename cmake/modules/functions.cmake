@@ -570,3 +570,46 @@ function(set_compiler_property)
   set_property(TARGET compiler ${APPEND} PROPERTY ${COMPILER_PROPERTY_PROPERTY})
   set_property(TARGET compiler-cpp ${APPEND} PROPERTY ${COMPILER_PROPERTY_PROPERTY})
 endfunction()
+
+
+# 'check_set_compiler_property' is a function that check the provided compiler
+# flag and only set the compiler or compiler-cpp property if the check succeeds
+#
+# This function is similar in nature to the CMake set_property function, but
+# with the extension that it will check that the compiler supports the flag
+# before setting the property on compiler or compiler-cpp targets.
+#
+# APPEND: Flag indicated that the property should be appended to the existing
+#         value list for the property.
+# PROPERTY: Name of property with the value(s) following immediately after
+#           property name
+function(check_set_compiler_property)
+  set(options APPEND)
+  set(multi_args  PROPERTY)
+  cmake_parse_arguments(COMPILER_PROPERTY "${options}" "${single_args}" "${multi_args}" ${ARGN})
+  if(COMPILER_PROPERTY_APPEND)
+   set(APPEND "APPEND")
+   set(APPEND-CPP "APPEND")
+  endif()
+
+  list(GET COMPILER_PROPERTY_PROPERTY 0 property)
+  list(REMOVE_AT COMPILER_PROPERTY_PROPERTY 0)
+
+  foreach(option ${COMPILER_PROPERTY_PROPERTY})
+    if(CONFIG_CPLUSPLUS)
+      zephyr_check_compiler_flag(CXX ${option} check)
+
+      if(${check})
+        set_property(TARGET compiler-cpp ${APPEND-CPP} PROPERTY ${property} ${option})
+        set(APPEND-CPP "APPEND")
+      endif()
+    endif()
+
+    zephyr_check_compiler_flag(C ${option} check)
+
+    if(${check})
+      set_property(TARGET compiler ${APPEND} PROPERTY ${property} ${option})
+      set(APPEND "APPEND")
+    endif()
+  endforeach()
+endfunction()

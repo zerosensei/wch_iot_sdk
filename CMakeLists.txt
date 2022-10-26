@@ -1,10 +1,8 @@
 # SPDX-License-Identifier: Apache-2.0
-
-
 set(CMAKE_EXECUTABLE_SUFFIX .elf)
 
 
-set(FINAL_EXECUTABLE wch_final)
+set(CMAKE_EXECUTABLE wch_final)
 
 define_property(GLOBAL PROPERTY PROPERTY_OUTPUT_FORMAT BRIEF_DOCS " " FULL_DOCS " ")
 set_property(   GLOBAL PROPERTY PROPERTY_OUTPUT_FORMAT elf32-little${ARCH}) # BFD format
@@ -25,11 +23,8 @@ library_set_named(wch)
 
 add_include_directories(
     include
-    ${PROJECT_BINARY_DIR}/wch/kconfig
-
+    ${PROJECT_BINARY_DIR}/kconfig
 )
-
-message("PROJECT_BINARY_DIR: " ${PROJECT_BINARY_DIR})
 
 add_include_directories(${SOC_DIR})
 
@@ -73,7 +68,7 @@ add_compile_options(${OPTIMIZATION_FLAG})
 add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,required>>)
 
 # @Intent: Set compiler specific macro inclusion of AUTOCONF_H
-add_compile_options($<TARGET_PROPERTY:compiler,imacros>-imacros ${AUTOCONF_H})
+add_compile_options("SHELL: $<TARGET_PROPERTY:compiler,imacros> ${AUTOCONF_H}")
 
 # @Intent: Set compiler specific flag for tentative definitions, no-common
 add_compile_options($<TARGET_PROPERTY:compiler,no_common>)
@@ -99,15 +94,6 @@ add_compile_options(
 
 # @Intent: Set fundamental linker specific flags
 toolchain_ld_base()
-
-# toolchain_ld_force_undefined_symbols(
-#   _OffsetAbsSyms
-#   _ConfigAbsSyms
-# )
-
-
-
-
 
 # @Intent: Add the basic toolchain warning flags
 add_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_base>>)
@@ -148,10 +134,6 @@ add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,war
 # # 'cmake -DEXTRA_CFLAGS="-Werror -Wno-deprecated-declarations" ..'
 # include(cmake/extra_flags.cmake)
 
-# zephyr_cc_option(-fno-asynchronous-unwind-tables)
-# zephyr_cc_option(-fno-pie)
-# zephyr_cc_option(-fno-pic)
-
 separate_arguments(COMPILER_OPT_AS_LIST UNIX_COMMAND ${CONFIG_COMPILER_OPT})
 add_compile_options(${COMPILER_OPT_AS_LIST})
 
@@ -159,9 +141,10 @@ get_property(TOPT GLOBAL PROPERTY TOPT)
 set_ifndef(  TOPT -Wl,-T) # clang doesn't pick -T for some reason and complains,
                           # while -Wl,-T works for both, gcc and clang
 
-
-# get_include_directories_for_lang(C ZEPHYR_INCLUDES)
-
+set(LINKER_SCRIPT  ${ENV_WCH_BASE}/soc/${ARCH}/${SOC_SERIES}/Link.ld)
+if(NOT EXISTS ${LINKER_SCRIPT})
+  message(FATAL_ERROR "Could not find linker script: '${LINKER_SCRIPT}'. Corrupted configuration?")
+endif()
 
 add_subdirectory(arch)
 add_subdirectory(drivers)
@@ -169,46 +152,12 @@ add_subdirectory(hal)
 add_subdirectory(lib)
 add_subdirectory(${SOC_DIR})
 add_subdirectory(subsys)
-
-
-# get_target_property(TEST wch SOURCES)
-# message("test: " ${TEST})
-
-# get_include_directories_for_lang(C
-#   ZEPHYR_INCLUDE_DIRS
-#   STRIP_PREFIX # Don't use a -I prefix
-#   )
-
 add_subdirectory(kernel)
-
 
 get_property(WCH_LIBS_PROPERTY GLOBAL PROPERTY WCH_LIBS)
 
-message("wch libs: " ${WCH_LIBS_PROPERTY})
-# foreach(wch_lib ${WCH_LIBS_PROPERTY})
-#   get_property(lib_type TARGET ${wch_lib} PROPERTY TYPE)
-
-#   if(${lib_type} STREQUAL STATIC_LIBRARY 
-#       AND NOT ${wch_lib} STREQUAL app
-#   )
-#     get_property(source_list TARGET ${wch_lib} PROPERTY SOURCES)
-#     get_property(lib_imported TARGET ${wch_lib} PROPERTY IMPORTED)
-
-#     if(NOT source_list 
-#       AND NOT ${lib_imported}
-#     )
-
-#     endif()
-
-
-#   endif()
-
-# endforeach()
-
-
-
 get_property(CSTD GLOBAL PROPERTY CSTD)
-set_ifndef(CSTD -std=c99)
+set_ifndef(CSTD c99)
 
 # @Intent: Obtain compiler specific flag for specifying the c standard
 add_compile_options(
@@ -216,37 +165,253 @@ add_compile_options(
 )
 set(CMAKE_C_COMPILE_FEATURES ${compile_features_${CSTD}} PARENT_SCOPE)
 
-set(ZEPHYR_LINK_STAGE_EXECUTABLE zephyr_test)
-
-
 get_property(TOPT GLOBAL PROPERTY TOPT)
 set_ifndef(  TOPT -Wl,-T) # clang doesn't pick -T for some reason and complains,
                           # while -Wl,-T works for both, gcc and clang
 
-add_executable(${ZEPHYR_LINK_STAGE_EXECUTABLE} misc/empty_file.c)
+add_executable(${CMAKE_EXECUTABLE} misc/empty_file.c )
 toolchain_ld_link_elf(
-  TARGET_ELF            ${ZEPHYR_LINK_STAGE_EXECUTABLE}
-  OUTPUT_MAP            ${PROJECT_BINARY_DIR}/${ZEPHYR_LINK_STAGE_EXECUTABLE}.map
+  TARGET_ELF            ${CMAKE_EXECUTABLE}
+  OUTPUT_MAP            ${PROJECT_BINARY_DIR}/${CMAKE_EXECUTABLE}.map
   LIBRARIES_PRE_SCRIPT  ""
-  # LINKER_SCRIPT         ${PROJECT_BINARY_DIR}/${ZEPHYR_CURRENT_LINKER_CMD}
+  LINKER_SCRIPT         ${LINKER_SCRIPT}
   DEPENDENCIES          ${CODE_RELOCATION_DEP}
 )
 
+set(logical_target_for_elf ${CMAKE_EXECUTABLE})
 
-# target_link_libraries(${ZEPHYR_LINK_STAGE_EXECUTABLE} PUBLIC ${WCH_LIBS_PROPERTY})
+# Export the variable to the application's scope to allow the
+# application to know what the name of the final elf target is.
+set(logical_target_for_elf ${logical_target_for_elf} PARENT_SCOPE)
+
+# Override the base name of the last, "logical" .elf output (and last .map) so:
+# 1. it doesn't depend on the number of passes above and the
+#    post_build_commands below can always find it no matter which is it;
+# 2. it can be defined in Kconfig
+set_target_properties(${logical_target_for_elf} PROPERTIES OUTPUT_NAME ${KERNEL_NAME})
+
+set(post_build_commands "")
+set(post_build_byproducts "")
+
+list(APPEND
+  post_build_commands
+  COMMAND
+  ${CMAKE_COMMAND} -E copy ${logical_target_for_elf}.map ${KERNEL_MAP_NAME}
+)
+list(APPEND post_build_byproducts ${KERNEL_MAP_NAME})
+
+if(NOT CONFIG_BUILD_NO_GAP_FILL)
+  set(GAP_FILL "$<TARGET_PROPERTY:bintools,elfconvert_flag_gapfill>0xff")
+endif()
+
+if(CONFIG_OUTPUT_PRINT_MEMORY_USAGE)
+  target_link_libraries(${logical_target_for_elf} $<TARGET_PROPERTY:linker,memusage>)
+
+  get_property(memusage_build_command TARGET bintools PROPERTY memusage_command)
+
+  if(memusage_build_command)
+    # Note: The use of generator expressions allows downstream extensions to add/change the post build.
+    # Unfortunately, the BYPRODUCTS does not allow for generator expression, so question is if we
+    # should remove the downstream ability from start.
+    # Or fix the output name, by the use of `get_property`
+    list(APPEND
+      post_build_commands
+      COMMAND $<TARGET_PROPERTY:bintools,memusage_command>
+              $<TARGET_PROPERTY:bintools,memusage_flag>
+              $<TARGET_PROPERTY:bintools,memusage_infile>${KERNEL_ELF_NAME}
+      )
+
+    # For now, the byproduct can only be supported upstream on byproducts name,
+    # cause byproduct does not support generator expressions
+    get_property(memusage_byproducts TARGET bintools PROPERTY memusage_byproducts)
+    list(APPEND
+      post_build_byproducts
+      ${memusage_byproducts}
+      )
+  endif()
+endif()
+
+if(CONFIG_BUILD_OUTPUT_HEX)
+  get_property(elfconvert_formats TARGET bintools PROPERTY elfconvert_formats)
+  if(ihex IN_LIST elfconvert_formats)
+    list(APPEND
+      post_build_commands
+      COMMAND $<TARGET_PROPERTY:bintools,elfconvert_command>
+              $<TARGET_PROPERTY:bintools,elfconvert_flag>
+              ${GAP_FILL}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_outtarget>ihex
+              ${remove_sections_argument_list}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_infile>${KERNEL_ELF_NAME}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_outfile>${KERNEL_HEX_NAME}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_final>
+      )
+    list(APPEND
+      post_build_byproducts
+      ${KERNEL_HEX_NAME}
+      )
+  endif()
+endif()
+
+if(CONFIG_BUILD_OUTPUT_BIN)
+  get_property(elfconvert_formats TARGET bintools PROPERTY elfconvert_formats)
+  if(binary IN_LIST elfconvert_formats)
+    list(APPEND
+      post_build_commands
+      COMMAND $<TARGET_PROPERTY:bintools,elfconvert_command>
+              $<TARGET_PROPERTY:bintools,elfconvert_flag>
+              ${GAP_FILL}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_outtarget>binary
+              ${remove_sections_argument_list}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_infile>${KERNEL_ELF_NAME}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_outfile>${KERNEL_BIN_NAME}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_final>
+      )
+    list(APPEND
+      post_build_byproducts
+      ${KERNEL_BIN_NAME}
+      # ${out_hex_byprod} # Is this needed ?
+      )
+  endif()
+endif()
+
+if(CONFIG_BUILD_OUTPUT_S19)
+  get_property(elfconvert_formats TARGET bintools PROPERTY elfconvert_formats)
+  if(srec IN_LIST elfconvert_formats)
+    # Should we print a warning if case the tools does not support converting to s19 ?
+    list(APPEND
+      post_build_commands
+      COMMAND $<TARGET_PROPERTY:bintools,elfconvert_command>
+              $<TARGET_PROPERTY:bintools,elfconvert_flag>
+              ${GAP_FILL}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_outtarget>srec
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_srec_len>1
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_infile>${KERNEL_ELF_NAME}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_outfile>${KERNEL_S19_NAME}
+              $<TARGET_PROPERTY:bintools,elfconvert_flag_final>
+      )
+    list(APPEND
+      post_build_byproducts
+      ${KERNEL_S19_NAME}
+
+      )
+  endif()
+endif()
+
+if(CONFIG_OUTPUT_DISASSEMBLY)
+  if(CONFIG_OUTPUT_DISASSEMBLE_ALL)
+    set(disassembly_type "$<TARGET_PROPERTY:bintools,disassembly_flag_all>")
+  else()
+    set(disassembly_type "$<TARGET_PROPERTY:bintools,disassembly_flag_inline_source>")
+  endif()
+  list(APPEND
+    post_build_commands
+    COMMAND $<TARGET_PROPERTY:bintools,disassembly_command>
+            $<TARGET_PROPERTY:bintools,disassembly_flag>
+            ${disassembly_type}
+            $<TARGET_PROPERTY:bintools,disassembly_flag_infile>${KERNEL_ELF_NAME}
+            $<TARGET_PROPERTY:bintools,disassembly_flag_outfile>${KERNEL_LST_NAME}
+            $<TARGET_PROPERTY:bintools,disassembly_flag_final>
+    )
+  list(APPEND
+    post_build_byproducts
+    ${KERNEL_LST_NAME}
+#    ${out_disassembly_byprod} # Needed ??
+    )
+endif()
+
+if(CONFIG_OUTPUT_SYMBOLS)
+  list(APPEND
+    post_build_commands
+    COMMAND $<TARGET_PROPERTY:bintools,symbols_command>
+            $<TARGET_PROPERTY:bintools,symbols_flag>
+            $<TARGET_PROPERTY:bintools,symbols_infile>${KERNEL_ELF_NAME}
+            $<TARGET_PROPERTY:bintools,symbols_outfile>${KERNEL_SYMBOLS_NAME}
+            $<TARGET_PROPERTY:bintools,symbols_final>
+    )
+  list(APPEND
+    post_build_byproducts
+    ${KERNEL_SYMBOLS_NAME}
+    )
+endif()
+
+if(CONFIG_OUTPUT_STAT)
+  list(APPEND
+    post_build_commands
+    COMMAND $<TARGET_PROPERTY:bintools,readelf_command>
+            $<TARGET_PROPERTY:bintools,readelf_flag>
+            $<TARGET_PROPERTY:bintools,readelf_flag_headers>
+            $<TARGET_PROPERTY:bintools,readelf_flag_infile>${KERNEL_ELF_NAME}
+            $<TARGET_PROPERTY:bintools,readelf_flag_outfile>${KERNEL_STAT_NAME}
+            $<TARGET_PROPERTY:bintools,readelf_flag_final>
+    )
+  list(APPEND
+    post_build_byproducts
+    ${KERNEL_STAT_NAME}
+    )
+endif()
+
+if(CONFIG_BUILD_OUTPUT_STRIPPED)
+  list(APPEND
+    post_build_commands
+    COMMAND $<TARGET_PROPERTY:bintools,strip_command>
+            $<TARGET_PROPERTY:bintools,strip_flag>
+            $<TARGET_PROPERTY:bintools,strip_flag_all>
+            $<TARGET_PROPERTY:bintools,strip_flag_infile>${KERNEL_ELF_NAME}
+            $<TARGET_PROPERTY:bintools,strip_flag_outfile>${KERNEL_STRIP_NAME}
+            $<TARGET_PROPERTY:bintools,strip_flag_final>
+    )
+  list(APPEND
+    post_build_byproducts
+    ${KERNEL_STRIP_NAME}
+    )
+endif()
+
+if(CONFIG_BUILD_OUTPUT_EXE)
+  list(APPEND
+    post_build_commands
+    COMMAND
+    ${CMAKE_COMMAND} -E copy ${KERNEL_ELF_NAME} ${KERNEL_EXE_NAME}
+    )
+  list(APPEND
+    post_build_byproducts
+    ${KERNEL_EXE_NAME}
+    )
+endif()
 
 
+get_property(extra_post_build_commands
+  GLOBAL PROPERTY
+  extra_post_build_commands
+  )
 
-# configure_linker_script(
-#   ${ZEPHYR_CURRENT_LINKER_CMD}
-#   "${LINKER_PASS_${ZEPHYR_CURRENT_LINKER_PASS}_DEFINE}"
-#   ${APP_SMEM_ALIGNED_DEP}
-#   ${KOBJECT_LINKER_DEP}
-#   ${CODE_RELOCATION_DEP}
-#   zephyr_generated_headers
-#   )
+list(APPEND
+  post_build_commands
+  ${extra_post_build_commands}
+  )
 
+get_property(extra_post_build_byproducts
+  GLOBAL PROPERTY
+  extra_post_build_byproducts
+  )
 
+list(APPEND
+  post_build_byproducts
+  ${extra_post_build_byproducts}
+  )
+
+# Add post_build_commands to post-process the final .elf file produced by
+# either the ZEPHYR_LINK_STAGE_EXECUTABLE or the KERNEL_ELF executable
+# targets above.
+add_custom_command(
+  TARGET ${logical_target_for_elf}
+  POST_BUILD
+  ${post_build_commands}
+  BYPRODUCTS
+  ${post_build_byproducts}
+  COMMENT "Generating files from ${KERNEL_ELF_NAME} for board: ${BOARD}"
+  COMMAND_EXPAND_LISTS
+  # NB: COMMENT only works for some CMake-Generators
+  )
 
 # @Intent: Set compiler specific flags for standard C/C++ includes
 # Done at the very end, so any other system includes which may
@@ -254,3 +419,8 @@ toolchain_ld_link_elf(
 # Note, the compile flags are moved, but the system include is still present here.
 add_compile_options($<TARGET_PROPERTY:compiler,nostdinc>)
 target_include_directories(wch_interface SYSTEM INTERFACE $<TARGET_PROPERTY:compiler,nostdinc_include>)
+
+# add_subdirectory_ifdef(
+#   CONFIG_MAKEFILE_EXPORTS
+#   cmake/makefile_exports
+#   )

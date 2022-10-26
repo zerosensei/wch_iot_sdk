@@ -91,8 +91,6 @@ class Build(Command):
             if pristine == 'never':
                 self.run_cmake = False
 
-        print('self run cmake: {}'.format(self.run_cmake))
-
         self._run_cmake(self.args.cmake_opts)
 
         self._run_build(args.target)
