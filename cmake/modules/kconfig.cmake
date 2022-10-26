@@ -35,6 +35,7 @@ set(COMMON_KCONFIG_ENV_SETTINGS
     PYTHON_EXECUTABLE=${PYTHON_EXECUTABLE}
     ARCH=${ARCH}
     SOC_SERIES=${SOC_SERIES}
+    srctree=${ENV_WCH_BASE}
 )
 
 set(EXTRA_KCONFIG_TARGET_COMMAND_FOR_menuconfig
@@ -74,5 +75,9 @@ execute_process(
     WORKING_DIRECTORY ${APPLICATION_SOURCE_DIR}
     RESULT_VARIABLE ret
 )
+
+if(NOT "${ret}" STREQUAL "0")
+  message(FATAL_ERROR "command failed with return code: ${ret}")
+endif()
 
 import_kconfig("CONFIG" ${DOTCONFIG})
