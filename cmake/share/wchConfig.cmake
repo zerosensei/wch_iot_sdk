@@ -29,9 +29,10 @@ endmacro()
 
 set(ENV_WCH_BASE $ENV{WCH_BASE})
 
+file(TO_CMAKE_PATH ${ENV_WCH_BASE} ENV_WCH_BASE)
+
 if(DEFINED ENV_WCH_BASE)
     include_modules("WCH base")
-
 else()
     message("not found")
 endif()
