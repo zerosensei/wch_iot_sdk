@@ -1,0 +1,4 @@
+colorama
+packaging
+sphinx~=5.0
+sphinx-tabs
