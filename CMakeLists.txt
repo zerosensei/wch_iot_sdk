@@ -21,24 +21,24 @@ library_set_named(wch)
 
 # set_target_properties(wch PROPERTIES LINKER_LANGUAGE C CXX ASM)
 
-add_include_directories(
+wch_include_directories(
     include
     ${PROJECT_BINARY_DIR}/kconfig
 )
 
-add_include_directories(${SOC_DIR})
+wch_include_directories(${SOC_DIR})
 
 # @Intent: Set compiler specific flag for disabling strict aliasing rule
-add_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,no_strict_aliasing>>)
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,no_strict_aliasing>>)
+wch_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,no_strict_aliasing>>)
+wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,no_strict_aliasing>>)
 
 # @Intent: Set compiler flags to enable buffer overflow checks in libc functions
 # @config in CONFIG_NO_OPTIMIZATIONS optional : Optimizations may affect security
-add_compile_definitions($<TARGET_PROPERTY:compiler,security_fortify> )
+wch_compile_definitions($<TARGET_PROPERTY:compiler,security_fortify> )
 
 # @Intent: Set compiler flags to detect general stack overflows across all functions
 # if(CONFIG_STACK_CANARIES)
-#   add_compile_options($<TARGET_PROPERTY:compiler,security_canaries>)
+#   wch_compile_options($<TARGET_PROPERTY:compiler,security_canaries>)
 # endif()
 
 # @Intent: Obtain compiler optimizations flags and store in variables
@@ -62,33 +62,33 @@ else()
 endif()
 
 # Apply the final optimization flag(s)
-add_compile_options(${OPTIMIZATION_FLAG})
+wch_compile_options(${OPTIMIZATION_FLAG})
 
 # @Intent: Obtain compiler specific flags related to C++ that are not influenced by kconfig
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,required>>)
+wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,required>>)
 
 # @Intent: Set compiler specific macro inclusion of AUTOCONF_H
-add_compile_options("SHELL: $<TARGET_PROPERTY:compiler,imacros> ${AUTOCONF_H}")
+wch_compile_options("SHELL: $<TARGET_PROPERTY:compiler,imacros> ${AUTOCONF_H}")
 
 # @Intent: Set compiler specific flag for tentative definitions, no-common
-add_compile_options($<TARGET_PROPERTY:compiler,no_common>)
+wch_compile_options($<TARGET_PROPERTY:compiler,no_common>)
 
 # @Intent: Set compiler specific flag for production of debug information
-add_compile_options($<TARGET_PROPERTY:compiler,debug>)
+wch_compile_options($<TARGET_PROPERTY:compiler,debug>)
 
 # @Intent: Set compiler specific flag for diagnostic messages
-add_compile_options($<TARGET_PROPERTY:compiler,diagnostic>)
+wch_compile_options($<TARGET_PROPERTY:compiler,diagnostic>)
 
-add_compile_options(
+wch_compile_options(
   ${TOOLCHAIN_C_FLAGS}
 )
 
 # @Intent: Obtain compiler specific flags related to assembly
 # ToDo: Remember to get feedback from Oticon on this, as they might use the `ASM_BASE_FLAG` since this is done this way.
-add_compile_options($<$<COMPILE_LANGUAGE:ASM>:$<TARGET_PROPERTY:asm,required>>)
+wch_compile_options($<$<COMPILE_LANGUAGE:ASM>:$<TARGET_PROPERTY:asm,required>>)
 
 # Common toolchain-agnostic assembly flags
-add_compile_options(
+wch_compile_options(
   $<$<COMPILE_LANGUAGE:ASM>:-D_ASMLANGUAGE>
 )
 
@@ -96,8 +96,8 @@ add_compile_options(
 toolchain_ld_base()
 
 # @Intent: Add the basic toolchain warning flags
-add_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_base>>)
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_base>>)
+wch_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_base>>)
+wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_base>>)
 
 # ==========================================================================
 #
@@ -109,33 +109,33 @@ add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,war
 # ==========================================================================
 # @Intent: Add cmake -DW toolchain supported warnings, if any
 if(W MATCHES "1")
-  add_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_dw_1>>)
-  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_dw_1>>)
+  wch_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_dw_1>>)
+  wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_dw_1>>)
 endif()
 
 if(W MATCHES "2")
-  add_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_dw_2>>)
-  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_dw_2>>)
+  wch_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_dw_2>>)
+  wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_dw_2>>)
 endif()
 
 if(W MATCHES "3")
-  add_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_dw_3>>)
-  add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_dw_3>>)
+  wch_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_dw_3>>)
+  wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_dw_3>>)
 endif()
 
 # @Intent: Add extended, more specific, toolchain warning flags
-add_compile_options($<TARGET_PROPERTY:compiler,warning_extended>)
+wch_compile_options($<TARGET_PROPERTY:compiler,warning_extended>)
 
 # @Intent: Trigger an error when a declaration does not specify a type
-add_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_error_implicit_int>>)
-add_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_error_implicit_int>>)
+wch_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_error_implicit_int>>)
+wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,warning_error_implicit_int>>)
 
 # # Allow the user to inject options when calling cmake, e.g.
 # # 'cmake -DEXTRA_CFLAGS="-Werror -Wno-deprecated-declarations" ..'
 # include(cmake/extra_flags.cmake)
 
 separate_arguments(COMPILER_OPT_AS_LIST UNIX_COMMAND ${CONFIG_COMPILER_OPT})
-add_compile_options(${COMPILER_OPT_AS_LIST})
+wch_compile_options(${COMPILER_OPT_AS_LIST})
 
 get_property(TOPT GLOBAL PROPERTY TOPT)
 set_ifndef(  TOPT -Wl,-T) # clang doesn't pick -T for some reason and complains,
@@ -160,7 +160,7 @@ get_property(CSTD GLOBAL PROPERTY CSTD)
 set_ifndef(CSTD c99)
 
 # @Intent: Obtain compiler specific flag for specifying the c standard
-add_compile_options(
+wch_compile_options(
   $<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,cstd>${CSTD}>
 )
 set(CMAKE_C_COMPILE_FEATURES ${compile_features_${CSTD}} PARENT_SCOPE)
@@ -417,7 +417,7 @@ add_custom_command(
 # Done at the very end, so any other system includes which may
 # be added by wch components were first in list.
 # Note, the compile flags are moved, but the system include is still present here.
-add_compile_options($<TARGET_PROPERTY:compiler,nostdinc>)
+wch_compile_options($<TARGET_PROPERTY:compiler,nostdinc>)
 target_include_directories(wch_interface SYSTEM INTERFACE $<TARGET_PROPERTY:compiler,nostdinc_include>)
 
 # add_subdirectory_ifdef(

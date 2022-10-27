@@ -10,19 +10,19 @@ macro(toolchain_ld_base)
 
   # TOOLCHAIN_LD_FLAGS comes from compiler/gcc/target.cmake
   # LINKERFLAGPREFIX comes from linker/ld/target.cmake
-  add_ld_options(
+  wch_ld_options(
     -no-pie
     ${TOOLCHAIN_LD_FLAGS}
   )
 
-  add_ld_options(
+  wch_ld_options(
     ${LINKERFLAGPREFIX},--gc-sections
     ${LINKERFLAGPREFIX},--build-id=none
   )
 
   # Sort the common symbols and each input section by alignment
   # in descending order to minimize padding between these symbols.
-  add_ld_option_ifdef(
+  wch_ld_option_ifdef(
     CONFIG_LINKER_SORT_BY_ALIGNMENT
     ${LINKERFLAGPREFIX},--sort-common=descending
     ${LINKERFLAGPREFIX},--sort-section=alignment

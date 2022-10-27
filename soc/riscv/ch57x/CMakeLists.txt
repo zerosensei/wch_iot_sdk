@@ -1,9 +1,9 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
-add_include_directories(${ENV_WCH_BASE}/hal/${SOC_SERIES}/inc)
+wch_include_directories(${ENV_WCH_BASE}/hal/${SOC_SERIES}/inc)
 
-add_sources(
+wch_sources(
     dev_cfg.c
     pin_cfg.c
     power.c
@@ -12,7 +12,7 @@ add_sources(
     startup_CH573.S
 )
 
-add_ld_options(
+wch_ld_options(
     --specs=nosys.specs
     -nostartfiles
   )

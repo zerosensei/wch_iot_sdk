@@ -2,5 +2,5 @@
 # SPDX-License-Identifier: Apache-2.0
 
 if(CONFIG_LOG)
-    add_sources(assert.c log.c)
+    wch_sources(assert.c log.c)
 endif()

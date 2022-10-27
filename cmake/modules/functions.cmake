@@ -98,7 +98,7 @@ function(process_flags lang input output)
 endfunction()
 
 
-# library
+# wch library
 macro(set_library)
   library_get_current_dir_name(${ENV_WCH_BASE} lib_name)
   library_set_named(${lib_name})
@@ -146,7 +146,7 @@ endfunction()
 
 
 # https://cmake.org/cmake/help/latest/command/target_sources.html
-function(add_sources)
+function(wch_sources)
   foreach(arg ${ARGV})
     if(IS_DIRECTORY ${arg})
       message(FATAL_ERROR "add_sources() was called on a directory")
@@ -156,40 +156,42 @@ function(add_sources)
 endfunction()
 
 # https://cmake.org/cmake/help/latest/command/target_include_directories.html
-function(add_include_directories)
+function(wch_include_directories)
   target_include_directories(wch_interface INTERFACE ${ARGV})
 endfunction()
 
 # https://cmake.org/cmake/help/latest/command/target_include_directories.html
-function(add_system_include_directories)
+function(wch_system_include_directories)
   target_include_directories(wch_interface SYSTEM INTERFACE ${ARGV})
 endfunction()
 
 # https://cmake.org/cmake/help/latest/command/target_compile_definitions.html
-function(add_compile_definitions)
+function(wch_compile_definitions)
   target_compile_definitions(wch_interface INTERFACE ${ARGV})
 endfunction()
 
 # https://cmake.org/cmake/help/latest/command/target_compile_options.html
-function(add_compile_options)
+function(wch_compile_options)
   target_compile_options(wch_interface INTERFACE ${ARGV})
 endfunction()
 
 # https://cmake.org/cmake/help/latest/command/target_link_libraries.html
-function(add_link_libraries)
+function(wch_link_libraries)
   target_link_libraries(wch_interface INTERFACE ${ARGV})
 endfunction()
 
-function(add_ld_options)
+function(wch_ld_options)
   target_ld_options(wch_interface INTERFACE ${ARGV})  
 endfunction()
 
-function(add_ld_option_ifdef feature_toggle)
+function(wch_ld_option_ifdef feature_toggle)
   if(${${feature_toggle}})
-    add_ld_options(${ARGN})
+    wch_ld_options(${ARGN})
   endif()
 endfunction()
 
+
+# library
 function(library_include_directories)
   target_include_directories(${CURRENT_LIBRARY} PRIVATE ${ARGN})
 endfunction()
