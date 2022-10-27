@@ -7,7 +7,7 @@
 #include <kernel.h>
 #include <inttypes.h>
 #include <logging/log.h>
-LOG_MODULE_REGISTER(arch_ricv_fatal, 3);
+LOG_MODULE_REGISTER(arch_ricv_fatal, CONFIG_KERNEL_LOG_LEVEL);
 
 #if __riscv_xlen == 32
  #define PR_REG "%08" PRIxPTR
@@ -39,8 +39,10 @@ FUNC_NORETURN void z_riscv_fatal_error(unsigned int reason,
 	z_fatal_error(reason, esf);
 	CODE_UNREACHABLE;
 }
-
-static char *cause_str(unsigned long cause)
+#ifdef CONFIG_KERNEL_LOG_LEVEL
+static 
+#endif
+char *cause_str(unsigned long cause)
 {
 	switch (cause) {
 	case 0:

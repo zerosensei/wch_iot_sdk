@@ -34,7 +34,10 @@ __weak void k_sys_fatal_error_handler(unsigned int reason,
 	CODE_UNREACHABLE; 
 }
 
-static const char *reason_to_str(unsigned int reason)
+#ifdef CONFIG_KERNEL_LOG_LEVEL
+static 
+#endif
+const char *reason_to_str(unsigned int reason)
 {
 	switch (reason) {
 	case K_ERR_CPU_EXCEPTION:
