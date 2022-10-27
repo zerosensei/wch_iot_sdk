@@ -97,10 +97,11 @@ WCH_IOT_SDK以及Python依赖项安装
 
         #. 设置WCH_IOT_SDK所需要的环境变量
 
-            打开 **高级系统设置** 中的 **环境变量** ， 
-            添加变量 ``WCH_BASE`` 为 ``wch_iot_sdk`` 所在位置，
-            添加变量 ``WCH_TOOLCHAIN_PATH`` 为WCH工具链所在位置。
-            （暂定）
+            #. 打开 **高级系统设置** 中的 **环境变量** 
+
+            #. 添加变量 ``WCH_BASE`` 为 ``wch_iot_sdk`` 文件夹所在位置
+
+            #. 添加变量 ``WCH_TOOLCHAIN_PATH`` 为WCH工具链所在位置 （暂定）
 
         #. 导出WCH CMake包
 
