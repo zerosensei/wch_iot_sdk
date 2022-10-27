@@ -15,9 +15,7 @@ list(APPEND cmake_modules arch)
 
 list(APPEND cmake_modules kconfig)
 
-list(APPEND cmake_modules generic_toolchain)
-
-list(APPEND cmake_modules target_toolchain)
+list(APPEND cmake_modules toolchain)
 
 foreach(module IN LISTS cmake_modules)
   # Ensures any module of type `${module}` are properly expanded to list before
