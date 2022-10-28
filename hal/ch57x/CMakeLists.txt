@@ -3,9 +3,7 @@
 
 set_library()
 
-
 library_include_directories(inc)
-
 
 library_sources(
     ch57x_hal_adc.c

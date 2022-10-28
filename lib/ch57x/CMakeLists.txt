@@ -1,4 +1,10 @@
 # Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
-library_include_directories(.)
+wch_link_libraries(
+    -L${ENV_WCH_BASE}/lib/${SOC_SERIES}
+)
+
+wch_link_libraries(ISP573)
+
+wch_link_libraries_ifdef(CONFIG_BT CH57xBLE)

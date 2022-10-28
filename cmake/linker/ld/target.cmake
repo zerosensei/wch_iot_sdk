@@ -108,6 +108,3 @@ function(toolchain_ld_link_elf)
 endfunction(toolchain_ld_link_elf)
 
 include(${ENV_WCH_BASE}/cmake/linker/${LINKER}/target_base.cmake)
-# include(${ENV_WCH_BASE}/cmake/linker/${LINKER}/target_baremetal.cmake)
-# include(${ENV_WCH_BASE}/cmake/linker/${LINKER}/target_cpp.cmake)
-# include(${ENV_WCH_BASE}/cmake/linker/${LINKER}/target_relocation.cmake)

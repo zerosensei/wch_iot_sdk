@@ -12,8 +12,6 @@
 #include <random/rand32.h>
 #include <string.h>
 
-//TODO: 文件包含问题
-#ifdef CONFIG_BT
 
 LOG_MODULE_REGISTER(ble_init, CONFIG_BT_LOG_LEVEL);
 
@@ -193,9 +191,9 @@ void ble_init(void)
     printk("\n");
 
     __ASSERT(cfg.MEMAddr, "MEMAddr invalid");
-    __ASSERT_NO_MSG(cfg.MEMLen >= 4 * 1024);
+    __ASSERT_NO_MSG(cfg.MEMLen >= 3 * 1024);
 
-    if(!cfg.MEMAddr || cfg.MEMLen < 4 * 1024) {
+    if(!cfg.MEMAddr || cfg.MEMLen < 3 * 1024) {
         while(1);
     }
 
@@ -207,5 +205,3 @@ void ble_init(void)
         while(1);
     }
 }
-
-#endif

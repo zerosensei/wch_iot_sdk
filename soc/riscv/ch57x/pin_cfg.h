@@ -43,19 +43,19 @@
 
 
 
-#ifdef CONFIG_UART_0
+#ifdef CONFIG_UART_0_ENABLE
 extern const struct pinctrl_dev_config __pinctrl_uart0;;
 #endif
 
-#ifdef CONFIG_UART_1
+#ifdef CONFIG_UART_1_ENABLE
 extern const struct pinctrl_dev_config __pinctrl_uart1;
 #endif
 
-#ifdef CONFIG_UART_2
+#ifdef CONFIG_UART_2_ENABLE
 extern const struct pinctrl_dev_config __pinctrl_uart2;;
 #endif
 
-#ifdef CONFIG_UART_3
+#ifdef CONFIG_UART_3_ENABLE
 extern const struct pinctrl_dev_config __pinctrl_uart3;;
 #endif
 

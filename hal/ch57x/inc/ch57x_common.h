@@ -11,7 +11,7 @@
 #include <stddef.h>
 #include <stdbool.h>
 #include "CH573SFR.h"
-#include "ISP573.h"
+#include <ISP573.h>
 
 #define __WCH_INT_FAST          __attribute__((interrupt("WCH-Interrupt-fast")))
 #define __HIGHCODE              __attribute__((section(".highcode")))

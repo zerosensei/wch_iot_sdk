@@ -141,7 +141,7 @@ struct uart_driver_api {
 			 const struct uart_config *cfg);
 	int (*config_get)(const struct device *dev, struct uart_config *cfg);
 
-#ifdef CONFIG_UART_INTERRUPT_DRIVEN
+#ifdef CONFIG_UART_SUPPORT_INTERRUPT
 	/** Interrupt driven FIFO fill function */
 	int (*fifo_fill)(const struct device *dev, const uint8_t *tx_data,
 			 int len);

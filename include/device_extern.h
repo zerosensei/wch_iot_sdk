@@ -7,19 +7,19 @@ extern const struct device DEVICE_NAME_GET(gpioa);
 extern const struct device DEVICE_NAME_GET(gpiob);
 
 /* UART */
-#ifdef CONFIG_UART_0
+#ifdef CONFIG_UART_0_ENABLE
 extern const struct device DEVICE_NAME_GET(uart0);
 #endif
 
-#ifdef CONFIG_UART_1
+#ifdef CONFIG_UART_1_ENABLE
 extern const struct device DEVICE_NAME_GET(uart1);
 #endif
 
-#ifdef CONFIG_UART_2
+#ifdef CONFIG_UART_2_ENABLE
 extern const struct device DEVICE_NAME_GET(uart2);
 #endif
 
-#ifdef CONFIG_UART_3
+#ifdef CONFIG_UART_3_ENABLE
 extern const struct device DEVICE_NAME_GET(uart3);
 #endif
 

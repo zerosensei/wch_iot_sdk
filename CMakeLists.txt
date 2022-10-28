@@ -24,6 +24,8 @@ library_set_named(wch)
 wch_include_directories(
     include
     ${PROJECT_BINARY_DIR}/kconfig
+    lib/${SOC_SERIES}
+    subsys
 )
 
 wch_include_directories(${SOC_DIR})
@@ -429,8 +431,3 @@ add_custom_command(
 # Note, the compile flags are moved, but the system include is still present here.
 wch_compile_options($<TARGET_PROPERTY:compiler,nostdinc>)
 target_include_directories(wch_interface SYSTEM INTERFACE $<TARGET_PROPERTY:compiler,nostdinc_include>)
-
-add_subdirectory_ifdef(
-  CONFIG_MAKEFILE_EXPORTS
-  cmake/makefile_exports
-  )

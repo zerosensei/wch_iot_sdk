@@ -2,33 +2,33 @@
 # SPDX-License-Identifier: Apache-2.0
 
 config UART_CH57X
-    bool "WCH CH57x MCU serial driver"
+    bool "CH57x uart drivers"
     default y
     depends on SOC_SERIES_CH57X
-    select SERIAL_HAS_DRIVER
-    select SERIAL_SUPPORT_INTERRUPT
+    select UART_HAS_DRIVER
+    select UART_SUPPORT_INTERRUPT
     help
       Enable the CH57x MCU driver.
 
 if UART_CH57X
 
-config UART_0
+config UART_0_ENABLE
     bool "Uart 0"
     help
       Enable uart 0.
 
-config UART_1
+config UART_1_ENABLE
     bool "Uart 1"
     default y
     help
       Enable uart 1.
 
-config UART_2
+config UART_2_ENABLE
     bool "Uart 2"
     help
       Enable uart 2.
 
-config UART_3
+config UART_3_ENABLE
     bool "Uart 3"
     help
       Enable uart 3.

@@ -18,16 +18,16 @@
 LOG_MODULE_REGISTER(buf, CONFIG_BUF_LOG_LEVEL);
 
 #if defined(CONFIG_BUF_LOG)
-#define BUF_DBG(fmt, ...) LOG_DBG(fmt, ##__VA_ARGS__)
-#define BUF_ERR(fmt, ...) LOG_ERR(fmt, ##__VA_ARGS__)
-#define BUF_WARN(fmt, ...) LOG_WRN(fmt, ##__VA_ARGS__)
-#define BUF_INFO(fmt, ...) LOG_INF(fmt, ##__VA_ARGS__)
+#define BUF_SIMPLE_DBG(fmt, ...) LOG_DBG(fmt, ##__VA_ARGS__)
+#define BUF_BUF_SIMPLE_ERR(fmt, ...) LOG_ERR(fmt, ##__VA_ARGS__)
+#define BUF_BUF_SIMPLE_WARN(fmt, ...) LOG_WRN(fmt, ##__VA_ARGS__)
+#define BUF_BUF_SIMPLE_INFO(fmt, ...) LOG_INF(fmt, ##__VA_ARGS__)
 #else
 
-#define BUF_DBG(fmt, ...)
-#define BUF_ERR(fmt, ...)
-#define BUF_WARN(fmt, ...)
-#define BUF_INFO(fmt, ...)
+#define BUF_SIMPLE_DBG(fmt, ...)
+#define BUF_SIMPLE_ERR(fmt, ...)
+#define BUF_SIMPLE_WARN(fmt, ...)
+#define BUF_SIMPLE_INFO(fmt, ...)
 #endif /* CONFIG_BUF_LOG */
 
 #define BUF_ASSERT(cond, ...) __ASSERT(cond, "" __VA_ARGS__)
@@ -40,18 +40,6 @@ void buf_simple_init_with_data(struct buf_simple *buf,
 	buf->size  = size;
 	buf->len   = size;
 }
-
-#if defined(CONFIG_BUF_SIMPLE_LOG)
-#define BUF_SIMPLE_DBG(fmt, ...) BUF_DBG(fmt, ##__VA_ARGS__)
-#define BUF_SIMPLE_ERR(fmt, ...) BUF_ERR(fmt, ##__VA_ARGS__)
-#define BUF_SIMPLE_WARN(fmt, ...) BUF_WARN(fmt, ##__VA_ARGS__)
-#define BUF_SIMPLE_INFO(fmt, ...) BUF_INFO(fmt, ##__VA_ARGS__)
-#else
-#define BUF_SIMPLE_DBG(fmt, ...)
-#define BUF_SIMPLE_ERR(fmt, ...)
-#define BUF_SIMPLE_WARN(fmt, ...)
-#define BUF_SIMPLE_INFO(fmt, ...)
-#endif /* CONFIG_BUF_SIMPLE_LOG */
 
 void buf_simple_clone(const struct buf_simple *original,
 			  struct buf_simple *clone)

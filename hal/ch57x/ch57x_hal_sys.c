@@ -8,8 +8,7 @@
 
 __HIGHCODE void hal_sys_reset(void)
 {
-    //TODO: flash link
-    // FLASH_ROM_SW_RESET();
+    FLASH_ROM_SW_RESET();
     sys_safe_access_enable();
     R8_RST_WDOG_CTRL |= RB_SOFTWARE_RESET;
     sys_safe_access_disable();

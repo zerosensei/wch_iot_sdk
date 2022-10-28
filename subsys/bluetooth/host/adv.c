@@ -62,7 +62,7 @@ int ble_adv_enable(const struct ble_adv_param *param,
     if (sd) {
         buf_simple_reset(&adv_data);
 
-        for (int i = 0; i < ad_len; i++) {
+        for (int i = 0; i < sd_len; i++) {
             (void)buf_simple_add_u8(&adv_data, sd[i].len + sizeof(sd[i].type));
             (void)buf_simple_add_u8(&adv_data, sd[i].type);
             (void)buf_simple_add_mem(&adv_data, sd[i].data, sd[i].len);

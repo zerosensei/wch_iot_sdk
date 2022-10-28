@@ -16,7 +16,7 @@ __attribute__((noinline)) __HIGHCODE void main_process(void)
         TMOS_SystemProcess();
     }
 }
-extern uint32_t llRecvDataDisable;
+// extern uint32_t llRecvDataDisable;
 int main(void)
 {
     printk("BLE peripheral sample\n");
@@ -29,7 +29,7 @@ int main(void)
     GAPRole_PeripheralInit();
     perip_process_init();
 
-    llRecvDataDisable |= 2;
+    // llRecvDataDisable |= 2;
     main_process();
 
     return 0;

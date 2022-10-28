@@ -20,4 +20,10 @@ macro(toolchain_ld_base)
     ${LINKERFLAGPREFIX},--build-id=none
   )
 
+  # wch_ld_options(
+  #   # CONFIG_LINKER_SORT_BY_ALIGNMENT
+  #   ${LINKERFLAGPREFIX},--sort-common=descending
+  #   ${LINKERFLAGPREFIX},--sort-section=alignment
+  # )
+
 endmacro()

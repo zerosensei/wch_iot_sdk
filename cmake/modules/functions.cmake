@@ -177,6 +177,12 @@ function(wch_link_libraries)
   target_link_libraries(wch_interface INTERFACE ${ARGV})
 endfunction()
 
+function(wch_link_libraries_ifdef feature_toggle item)
+  if(${${feature_toggle}})
+  wch_link_libraries(${item})
+  endif()
+endfunction()
+
 function(wch_ld_options)
   target_ld_options(wch_interface INTERFACE ${ARGV})  
 endfunction()
@@ -197,9 +203,26 @@ function(library_link_libraries item)
   target_link_libraries(${CURRENT_LIBRARY} PUBLIC ${item} ${ARGN})
 endfunction()
 
+function(library_link_libraries_ifdef feature_toggle item)
+  if(${${feature_toggle}})
+  library_link_libraries(${item})
+  endif()
+endfunction()
+
 function(library_compile_definitions item)
   target_compile_definitions(${CURRENT_LIBRARY} PRIVATE ${item} ${ARGN})
 endfunction()
+
+function(library_sources source)
+  target_sources(${CURRENT_LIBRARY} PRIVATE ${source} ${ARGN})
+endfunction()
+
+function(library_sources_ifdef feature_toggle source)
+  if(${${feature_toggle}})
+    library_sources(${source} ${ARGN})
+  endif()
+endfunction()
+
 
 function(add_subdirectory_ifdef feature_toggle source_dir)
   if(${${feature_toggle}})
@@ -243,15 +266,7 @@ function(target_compile_option_ifdef feature_toggle target scope option)
   endif()
 endfunction()
 
-function(library_sources source)
-  target_sources(${CURRENT_LIBRARY} PRIVATE ${source} ${ARGN})
-endfunction()
 
-function(library_sources_ifdef feature_toggle source)
-  if(${${feature_toggle}})
-    library_sources(${source} ${ARGN})
-  endif()
-endfunction()
 
 
 # This function writes a dict to it's output parameter
