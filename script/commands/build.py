@@ -58,9 +58,15 @@ class Build(Command):
         parser.add_argument('-d', '--build-dir',
                             help='build directory to create or use')
 
+        parser.add_argument('-o', '--build-opt', default=[], action='append',
+                            help='options to pass to the build tool' )
+
         parser.add_argument('-p', '--pristine', choices=['auto', 'always',
                             'never'], action=AlwaysIfMissing, nargs='?',
                             help='pristine build folder setting')
+
+        parser.add_argument('-G', '--generator', default='Ninja',
+                            help='select CMake generator')
 
         parser.add_argument('-t', '--target',
                             help='run build target TARGET')
@@ -106,7 +112,7 @@ class Build(Command):
             return   
 
     def _setup_build_dir(self):
-        # Î´Ö¸¶¨build dir Ê¹ÓÃdefault
+        # æœªæŒ‡å®šbuild dir ä½¿ç”¨default
         build_dir = DEFAULT_BUILD_DIR
         if self.args.build_dir:
             build_dir = self.args.build_dir
@@ -134,7 +140,7 @@ class Build(Command):
         if self.args.source_dir:
             source_dir = self.args.source_dir
         else:
-            # ÈçºÎÃ»ÓĞ´«ÈëÔ´ÎÄ¼ş£¬Ôòµ±Ç°ÎÄ¼şÎªÔ´ÎÄ¼ş
+            # å¦‚ä½•æ²¡æœ‰ä¼ å…¥æºæ–‡ä»¶ï¼Œåˆ™å½“å‰æ–‡ä»¶ä¸ºæºæ–‡ä»¶
             source_dir = os.getcwd()
         
         self.source_dir = os.path.abspath(source_dir)
@@ -165,9 +171,11 @@ class Build(Command):
         
         cmake_opts.extend(['-S{}'.format(self.source_dir)])
         cmake_opts.extend(['-B{}'.format(self.build_dir)])
-        # TODO: ¿ÉÑ¡
-        cmake_opts.extend(['-GNinja'])
-        # cmake_opts.extend(['-GMinGW Makefiles'])
+
+        if self.args.generator:
+            cmake_opts.extend(['-G{}'.format(self.args.generator)])
+        else :
+            cmake_opts.extend(['-GNinja'])
 
         log.dbg('cmake_opts: {}'.format(cmake_opts))
         run_cmake(cmake_opts)
@@ -180,5 +188,8 @@ class Build(Command):
             log.inf('-- WCH build: building application')
 
         extra_args = ['--target', target] if target else []
+        if self.args.build_opt:
+                extra_args.append('--')
+                extra_args.extend(self.args.build_opt)
 
         run_build(self.build_dir, extra_args=extra_args)
