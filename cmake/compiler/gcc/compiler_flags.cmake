@@ -103,14 +103,6 @@ set_compiler_property(PROPERTY warning_error_coding_guideline
 # GCC compiler flags for C standard. The specific standard must be appended by user.
 set_compiler_property(PROPERTY cstd -std=)
 
-if (NOT CONFIG_NEWLIB_LIBC AND
-    NOT COMPILER STREQUAL "xcc" AND
-    NOT CONFIG_HAS_ESPRESSIF_HAL AND
-    NOT CONFIG_NATIVE_APPLICATION)
-  # set_compiler_property(PROPERTY nostdinc -nostdinc)
-  set_compiler_property(APPEND PROPERTY nostdinc_include ${NOSTDINC})
-endif()
-
 set_compiler_property(TARGET compiler-cpp PROPERTY nostdincxx "-nostdinc++")
 
 # Required C++ flags when using gcc

@@ -2,16 +2,7 @@
 
 set_ifndef(C++ g++)
 
-# Configures CMake for using GCC, this script is re-used by several
-# GCC-based toolchains
-
-if("${SPARSE}" STREQUAL "y")
-  find_program(CMAKE_C_COMPILER cgcc)
-  find_program(REAL_CC ${CROSS_COMPILE}${CC} PATHS ${TOOLCHAIN_HOME} NO_DEFAULT_PATH)
-  set(ENV{REAL_CC} ${REAL_CC})
-else()
-  find_program(CMAKE_C_COMPILER ${CROSS_COMPILE}${CC} PATHS ${TOOLCHAIN_HOME} NO_DEFAULT_PATH)
-endif()
+find_program(CMAKE_C_COMPILER ${CROSS_COMPILE}${CC} PATHS ${TOOLCHAIN_HOME} NO_DEFAULT_PATH)
 
 if(${CMAKE_C_COMPILER} STREQUAL CMAKE_C_COMPILER-NOTFOUND)
   message(FATAL_ERROR "C compiler ${CROSS_COMPILE}${CC} not found - Please check your toolchain installation")
@@ -52,37 +43,10 @@ endforeach()
 
 if("${ARCH}" STREQUAL "arm")
   include(${ZEPHYR_BASE}/cmake/compiler/gcc/target_arm.cmake)
-elseif("${ARCH}" STREQUAL "arm64")
-  include(${ZEPHYR_BASE}/cmake/compiler/gcc/target_arm64.cmake)
-elseif("${ARCH}" STREQUAL "arc")
-  list(APPEND TOOLCHAIN_C_FLAGS
-    -mcpu=${GCC_M_CPU}
-    )
 elseif("${ARCH}" STREQUAL "riscv")
   include(${CMAKE_CURRENT_LIST_DIR}/target_riscv.cmake)
-elseif("${ARCH}" STREQUAL "x86")
-  include(${CMAKE_CURRENT_LIST_DIR}/target_x86.cmake)
-elseif("${ARCH}" STREQUAL "sparc")
-  include(${CMAKE_CURRENT_LIST_DIR}/target_sparc.cmake)
-elseif("${ARCH}" STREQUAL "mips")
-  include(${CMAKE_CURRENT_LIST_DIR}/target_mips.cmake)
 endif()
 
-if(SYSROOT_DIR)
-  # The toolchain has specified a sysroot dir, pass it to the compiler
-  list(APPEND TOOLCHAIN_C_FLAGS
-    --sysroot=${SYSROOT_DIR}
-    )
-
-  # Use sysroot dir to set the libc path's
-  execute_process(
-    COMMAND ${CMAKE_C_COMPILER} ${TOOLCHAIN_C_FLAGS} --print-multi-directory
-    OUTPUT_VARIABLE NEWLIB_DIR
-    OUTPUT_STRIP_TRAILING_WHITESPACE
-    )
-
-  set(LIBC_LIBRARY_DIR "\"${SYSROOT_DIR}\"/lib/${NEWLIB_DIR}")
-endif()
 
 # This libgcc code is partially duplicated in compiler/*/target.cmake
 execute_process(
@@ -90,7 +54,6 @@ execute_process(
   OUTPUT_VARIABLE LIBGCC_FILE_NAME
   OUTPUT_STRIP_TRAILING_WHITESPACE
   )
-
 
 if(NOT EXISTS ${LIBGCC_FILE_NAME})
   message(FATAL_ERROR "No such file or directory: LIBGCC_FILE_NAME: ${LIBGCC_FILE_NAME}")
@@ -109,23 +72,15 @@ LIST(APPEND TOOLCHAIN_LIBS gcc)
 # toolchain we need to give CMake the necessary flags to compile and
 # link a dummy C file.
 #
-# CMake checks compiler flags with check_c_compiler_flag() (Which we
-# wrap with target_cc_option() in extensions.cmake)
+# CMake checks compiler flags with check_c_compiler_flag()
 foreach(isystem_include_dir ${NOSTDINC})
   list(APPEND isystem_include_flags -isystem "\"${isystem_include_dir}\"")
 endforeach()
 
-# The CMAKE_REQUIRED_FLAGS variable is used by check_c_compiler_flag()
-# (and other commands which end up calling check_c_source_compiles())
-# to add additional compiler flags used during checking. These flags
-# are unused during "real" builds of Zephyr source files linked into
-# the final executable.
-#
 # Appending onto any existing values lets users specify
 # toolchain-specific flags at generation time.
 list(APPEND CMAKE_REQUIRED_FLAGS
   -nostartfiles
-  # -nostdlib
   ${isystem_include_flags}
   -Wl,--unresolved-symbols=ignore-in-object-files
   -Wl,--entry=0 # Set an entry point to avoid a warning

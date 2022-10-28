@@ -67,6 +67,11 @@ wch_compile_options(${OPTIMIZATION_FLAG})
 # @Intent: Obtain compiler specific flags related to C++ that are not influenced by kconfig
 wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,required>>)
 
+if(CONFIG_CODING_GUIDELINE_CHECK)
+  # @Intent: Obtain toolchain compiler flags relating to coding guideline
+  wch_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,warning_error_coding_guideline>>)
+endif()
+
 # @Intent: Set compiler specific macro inclusion of AUTOCONF_H
 wch_compile_options("SHELL: $<TARGET_PROPERTY:compiler,imacros> ${AUTOCONF_H}")
 
@@ -78,6 +83,11 @@ wch_compile_options($<TARGET_PROPERTY:compiler,debug>)
 
 # @Intent: Set compiler specific flag for diagnostic messages
 wch_compile_options($<TARGET_PROPERTY:compiler,diagnostic>)
+
+if(CONFIG_COMPILER_COLOR_DIAGNOSTICS)
+  # @Intent: Set compiler specific flag for diagnostic messages
+  wch_compile_options($<TARGET_PROPERTY:compiler,diagnostic>)
+endif()
 
 wch_compile_options(
   ${TOOLCHAIN_C_FLAGS}

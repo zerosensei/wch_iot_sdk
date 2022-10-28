@@ -13,7 +13,7 @@ source "drivers/Kconfig"
 
 source "subsys/Kconfig"
 
-
+menu "Build an Compiler Features"
 menu "Compiler Options"
 
 config CODING_GUIDELINE_CHECK
@@ -22,16 +22,8 @@ config CODING_GUIDELINE_CHECK
 	  Use available compiler flags to check coding guideline rules during
 	  the build.
 
-config NATIVE_APPLICATION
-	bool "Build as a native host application"
-	help
-	  Build as a native application that can run on the host and using
-	  resources and libraries provided by the host.
-
 choice COMPILER_OPTIMIZATIONS
 	prompt "Optimization level"
-	default NO_OPTIMIZATIONS    if COVERAGE
-	default DEBUG_OPTIMIZATIONS if DEBUG
 	default SIZE_OPTIMIZATIONS
 	help
 	  Note that these flags shall only control the compiler
@@ -79,14 +71,6 @@ config COMPILER_OPT
 	  predefined set of compiler supplied by the build system,
 	  and can be used to change compiler optimization, warning and error
 	  messages, and so on.
-
-config MISRA_SANE
-	bool "MISRA standards compliance features"
-	help
-	  Causes the source code to build in "MISRA" mode, which
-	  disallows some otherwise-permitted features of the C
-	  standard for safety reasons.  Specifically variable length
-	  arrays are not permitted (and gcc will enforce this).
 
 endmenu
 
@@ -180,5 +164,7 @@ config MAKEFILE_EXPORTS
 	  Generates a file with build information that can be read by
 	  third party Makefile-based build systems.
 
+
+endmenu
 
 endmenu
