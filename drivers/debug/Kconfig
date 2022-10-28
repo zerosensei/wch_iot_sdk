@@ -56,7 +56,7 @@ endif # ASSERT
 config FORCE_NO_ASSERT
 	bool "Force-disable no assertions"
 	help
-	  This boolean option disables Zephyr assertion testing even
+	  This boolean option disables assertion testing even
 	  in circumstances (twister) where it is enabled via
 	  CFLAGS and not Kconfig.  Added solely to be able to work
 	  around compiler bugs for specific tests.

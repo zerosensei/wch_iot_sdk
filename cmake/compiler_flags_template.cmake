@@ -7,7 +7,7 @@
 #    the MD5 will also change (as example toolchain upgrade in same folder)
 #  * The CMAKE_C_COMPILER itself. This may be a symlink, but it ensures that
 #    multiple symlinks pointing to same executable will generate different
-#    signatures, as example: clang, gcc, arm-zephyr-eabi-gcc, links pointing to
+#    signatures, as example: clang, gcc, links pointing to
 #    ccache will generate unique signatures
 #  * CMAKE_C_COMPILER_ID is taking the CMake compiler id for extra signature.
 #  * CMAKE_C_COMPILER_VERSION will ensure that even when using the previous
@@ -26,7 +26,7 @@ set(TOOLCHAIN_SIGNATURE ${TOOLCHAIN_SIGNATURE}_${COMPILER_SIGNATURE})
 
 # Load the compile features file which will provide compile features lists for
 # various C / CXX language dialects that can then be exported based on current
-# Zephyr Kconfig settings or the CSTD global property.
+# Kconfig settings or the CSTD global property.
 include(${CMAKE_CURRENT_LIST_DIR}/compiler/compiler_features.cmake)
 
 # Loading of templates are strictly not needed as they do not set any

@@ -1,18 +1,17 @@
-# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
 # SPDX-License-Identifier: Apache-2.0
 
 include_guard(GLOBAL)
 
 define_property(GLOBAL PROPERTY WCH_LIBS
-    BRIEF_DOCS "Global list of all Zephyr CMake libs that should be linked in"
-    FULL_DOCS  "Global list of all Zephyr CMake libs that should be linked in.
-zephyr_library() appends libs to this list.")
+    BRIEF_DOCS "Global list of all wch CMake libs that should be linked in"
+    FULL_DOCS  "Global list of all wch CMake libs that should be linked in.
+set_library() appends libs to this list.")
 set_property(GLOBAL PROPERTY WCH_LIBS "")
 
 define_property(GLOBAL PROPERTY INTERFACE_LIBS
-    BRIEF_DOCS "Global list of all Zephyr interface libs that should be linked in."
-    FULL_DOCS  "Global list of all Zephyr interface libs that should be linked in.
-zephyr_interface_library_named() appends libs to this list.")
+    BRIEF_DOCS "Global list of all wch interface libs that should be linked in."
+    FULL_DOCS  "Global list of all wch interface libs that should be linked in.
+interface_library_set_named() appends libs to this list.")
 set_property(GLOBAL PROPERTY INTERFACE_LIBS "")
 
 file(TO_CMAKE_PATH "ENV_WCH_BASE" PROJECT_SOURCE_DIR)

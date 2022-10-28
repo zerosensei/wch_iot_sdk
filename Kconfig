@@ -128,41 +128,33 @@ config BUILD_NO_GAP_FILL
 config BUILD_OUTPUT_HEX
 	bool "Build a binary in HEX format"
 	help
-	  Build an Intel HEX binary zephyr/zephyr.hex in the build directory.
+	  Build an Intel HEX binary in the build directory.
 	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
 
 config BUILD_OUTPUT_BIN
 	bool "Build a binary in BIN format"
 	default y
 	help
-	  Build a "raw" binary zephyr/zephyr.bin in the build directory.
+	  Build a "raw" binary in the build directory.
 	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
 
 config BUILD_OUTPUT_EXE
 	bool "Build a binary in ELF format with .exe extension"
 	help
-	  Build an ELF binary that can run in the host system at
-	  zephyr/zephyr.exe in the build directory.
+	  Build an ELF binary that can run in the host system in the build directory.
 	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
 
 config BUILD_OUTPUT_S19
 	bool "Build a binary in S19 format"
 	help
-	  Build an S19 binary zephyr/zephyr.s19 in the build directory.
+	  Build an S19 binary in the build directory.
 	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
 
 config BUILD_OUTPUT_STRIPPED
 	bool "Build a stripped binary"
 	help
-	  Build a stripped binary zephyr/zephyr.strip in the build directory.
+	  Build a stripped binary in the build directory.
 	  The name of this file can be customized with CONFIG_KERNEL_BIN_NAME.
-
-
-config MAKEFILE_EXPORTS
-	bool "Generate build metadata files named Makefile.exports"
-	help
-	  Generates a file with build information that can be read by
-	  third party Makefile-based build systems.
 
 
 endmenu

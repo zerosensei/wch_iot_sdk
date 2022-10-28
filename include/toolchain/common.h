@@ -135,11 +135,6 @@
 /* Additionally used as a sentinel by gen_syscalls.py to identify what
  * functions are system calls
  *
- * Note POSIX unit tests don't still generate the system call stubs, so
- * until https://github.com/zephyrproject-rtos/zephyr/issues/5006 is
- * fixed via possibly #4174, we introduce this hack -- which will
- * disallow us to test system calls in POSIX unit testing (currently
- * not used).
  */
 #ifndef ZTEST_UNITTEST
 #define __syscall static inline

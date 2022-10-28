@@ -114,7 +114,7 @@ macro(library_get_current_dir_name base lib_name)
   # Replace / with __ (driver/serial => driver__serial)
   string(REGEX REPLACE "/" "__" name ${name})
 
-  # Replace : with __ (C:/zephyrproject => C____zephyrproject)
+  # Replace : with __ (C:/project => C____project)
   string(REGEX REPLACE ":" "__" name ${name})
 
   set(${lib_name} ${name})  
@@ -131,16 +131,13 @@ macro(library_set_named name)
   target_link_libraries(${name} PUBLIC wch_interface)
 endmacro()
 
+macro(interface_library_set_named name)
+  add_library(${name} INTERFACE)
+  set_property(GLOBAL APPEND PROPERTY INTERFACE_LIBS ${name})
+endmacro()
+
+
 function(append_cmake_library library)
-  # if(TARGET zephyr_prebuilt)
-  #   message(WARNING
-  #     "zephyr_library() or zephyr_library_named() called in Zephyr CMake "
-  #     "application mode. `${library}` will not be treated as a Zephyr library."
-  #     "To create a Zephyr library in Zephyr CMake kernel mode consider "
-  #     "creating a Zephyr module. See more here: "
-  #     "https://docs.zephyrproject.org/latest/guides/modules.html"
-  #   )
-  # endif()
   set_property(GLOBAL APPEND PROPERTY WCH_LIBS ${library})
 endfunction()
 
@@ -433,7 +430,7 @@ function(check_set_linker_property)
 
   set(SAVED_CMAKE_REQUIRED_FLAGS ${CMAKE_REQUIRED_FLAGS})
   set(CMAKE_REQUIRED_FLAGS "${CMAKE_REQUIRED_FLAGS} ${option}")
-  zephyr_check_compiler_flag(C "" ${check})
+  wch_check_compiler_flag(C "" ${check})
   set(CMAKE_REQUIRED_FLAGS ${SAVED_CMAKE_REQUIRED_FLAGS})
 
   if(${check})
@@ -441,10 +438,10 @@ function(check_set_linker_property)
   endif()
 endfunction()
 
-function(zephyr_check_compiler_flag lang option check)
+function(wch_check_compiler_flag lang option check)
   # Check if the option is covered by any hardcoded check before doing
   # an automated test.
-  zephyr_check_compiler_flag_hardcoded(${lang} "${option}" check exists)
+  wch_check_compiler_flag_hardcoded(${lang} "${option}" check exists)
   if(exists)
     set(check ${check} PARENT_SCOPE)
     return()
@@ -452,7 +449,7 @@ function(zephyr_check_compiler_flag lang option check)
 
   # Locate the cache directory
   set_ifndef(
-    ZEPHYR_TOOLCHAIN_CAPABILITY_CACHE_DIR
+    TOOLCHAIN_CAPABILITY_CACHE_DIR
     ${USER_CACHE_DIR}/ToolchainCapabilityDatabase
     )
 
@@ -481,7 +478,7 @@ function(zephyr_check_compiler_flag lang option check)
   string(MD5 key ${key_string})
 
   # Check the cache
-  set(key_path ${ZEPHYR_TOOLCHAIN_CAPABILITY_CACHE_DIR}/${key})
+  set(key_path ${TOOLCHAIN_CAPABILITY_CACHE_DIR}/${key})
   if(EXISTS ${key_path})
     file(READ
     ${key_path}   # File to be read
@@ -540,13 +537,13 @@ function(zephyr_check_compiler_flag lang option check)
     # result, and the toolchain test.
     file(
       APPEND
-      ${ZEPHYR_TOOLCHAIN_CAPABILITY_CACHE_DIR}/log.txt
+      ${TOOLCHAIN_CAPABILITY_CACHE_DIR}/log.txt
       "${inner_check} ${key} ${key_string}\n"
       )
   endif()
 endfunction()
 
-function(zephyr_check_compiler_flag_hardcoded lang option check exists)
+function(wch_check_compiler_flag_hardcoded lang option check exists)
   # Various flags that are not supported for CXX may not be testable
   # because they would produce a warning instead of an error during
   # the test.  Exclude them by toolchain-specific blocklist.
@@ -557,7 +554,7 @@ function(zephyr_check_compiler_flag_hardcoded lang option check exists)
     # There does not exist a hardcoded check for this option.
     set(exists 0 PARENT_SCOPE)
   endif()
-endfunction(zephyr_check_compiler_flag_hardcoded)
+endfunction(wch_check_compiler_flag_hardcoded)
 
 
 function(set_compiler_property)
@@ -599,7 +596,7 @@ function(check_set_compiler_property)
 
   foreach(option ${COMPILER_PROPERTY_PROPERTY})
     if(CONFIG_CPLUSPLUS)
-      zephyr_check_compiler_flag(CXX ${option} check)
+      wch_check_compiler_flag(CXX ${option} check)
 
       if(${check})
         set_property(TARGET compiler-cpp ${APPEND-CPP} PROPERTY ${property} ${option})
@@ -607,7 +604,7 @@ function(check_set_compiler_property)
       endif()
     endif()
 
-    zephyr_check_compiler_flag(C ${option} check)
+    wch_check_compiler_flag(C ${option} check)
 
     if(${check})
       set_property(TARGET compiler ${APPEND} PROPERTY ${property} ${option})

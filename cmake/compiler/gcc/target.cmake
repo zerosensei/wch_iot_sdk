@@ -42,7 +42,7 @@ foreach(file_name include/stddef.h include-fixed/limits.h)
 endforeach()
 
 if("${ARCH}" STREQUAL "arm")
-  include(${ZEPHYR_BASE}/cmake/compiler/gcc/target_arm.cmake)
+  include(${ENV_WCH_BASE}/cmake/compiler/gcc/target_arm.cmake)
 elseif("${ARCH}" STREQUAL "riscv")
   include(${CMAKE_CURRENT_LIST_DIR}/target_riscv.cmake)
 endif()

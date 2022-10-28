@@ -25,7 +25,7 @@ set_compiler_property(PROPERTY optimization_size  -Os)
 # This section covers flags related to warning levels #
 #######################################################
 
-# GCC Option standard warning base in Zephyr
+# GCC Option standard warning 
 check_set_compiler_property(PROPERTY warning_base
     -Wall
     "SHELL:-Wformat -Wformat-security"

@@ -410,7 +410,7 @@ list(APPEND
   )
 
 # Add post_build_commands to post-process the final .elf file produced by
-# either the ZEPHYR_LINK_STAGE_EXECUTABLE or the KERNEL_ELF executable
+# either the LINK_STAGE_EXECUTABLE or the KERNEL_ELF executable
 # targets above.
 add_custom_command(
   TARGET ${logical_target_for_elf}
@@ -430,7 +430,7 @@ add_custom_command(
 wch_compile_options($<TARGET_PROPERTY:compiler,nostdinc>)
 target_include_directories(wch_interface SYSTEM INTERFACE $<TARGET_PROPERTY:compiler,nostdinc_include>)
 
-# add_subdirectory_ifdef(
-#   CONFIG_MAKEFILE_EXPORTS
-#   cmake/makefile_exports
-#   )
+add_subdirectory_ifdef(
+  CONFIG_MAKEFILE_EXPORTS
+  cmake/makefile_exports
+  )

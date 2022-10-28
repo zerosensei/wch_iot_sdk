@@ -17,11 +17,11 @@ set_compiler_property(PROPERTY optimization_size)
 # This section covers flags related to warning levels #
 #######################################################
 
-# Property for standard warning base in Zephyr, this will always bet set when compiling.
+# Property for standard warning , this will always bet set when compiling.
 set_compiler_property(PROPERTY warning_base)
 
 # GCC options for warning levels 1, 2, 3, when using `-DW=[1|2|3]`
-# Property for warning levels 1, 2, 3 in Zephyr when using `-DW=[1|2|3]`
+# Property for warning levels 1, 2, 3 when using `-DW=[1|2|3]`
 set_compiler_property(PROPERTY warning_dw_1)
 
 set_compiler_property(PROPERTY warning_dw_2)

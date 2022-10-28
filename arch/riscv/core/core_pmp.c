@@ -98,8 +98,6 @@ static struct riscv_pmp_region static_regions[] = {
  * default (like U-mode default). We need to use a lowest priority PMP
  * region (MPRV region) to permit memory access of whole memory.
  *
- * p.s. Zephyr User/Supervisor mode maps to RISC-V U-mode/M-mode.
- * p.s. MPRV region only used in CONFIG_PMP_STACK_GUARD.
  */
 static const struct riscv_pmp_region mprv_region = {
 	/*
