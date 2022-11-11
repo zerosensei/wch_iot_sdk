@@ -55,8 +55,8 @@ class Build(Command):
 
         parser.add_argument('-s', '--source-dir', help='source directory to use')
 
-        parser.add_argument('-d', '--build-dir',
-                            help='build directory to create or use')
+        parser.add_argument('-d', '--build-dir', default=DEFAULT_BUILD_DIR,
+                            help='build directory to create or use, default: ./build')
 
         parser.add_argument('-o', '--build-opt', default=[], action='append',
                             help='options to pass to the build tool' )
@@ -112,8 +112,6 @@ class Build(Command):
             return   
 
     def _setup_build_dir(self):
-        # 未指定build dir 使用default
-        build_dir = DEFAULT_BUILD_DIR
         if self.args.build_dir:
             build_dir = self.args.build_dir
 
