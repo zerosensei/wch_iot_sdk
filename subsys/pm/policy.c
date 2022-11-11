@@ -14,8 +14,6 @@
 #include <sys/atomic.h>
 #include <toolchain.h>
 
-#ifdef CONFIG_PM
-
 /** State lock reference counting */
 static atomic_t state_lock_cnt[PM_STATE_COUNT];
 
@@ -79,5 +77,3 @@ bool pm_policy_state_lock_is_active(enum pm_state state)
 {
 	return (atomic_get(&state_lock_cnt[state]) != 0);
 }
-
-#endif /* CONFIG_PM */

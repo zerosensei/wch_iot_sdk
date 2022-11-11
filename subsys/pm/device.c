@@ -7,8 +7,6 @@
 #include <device.h>
 #include <pm/device.h>
 
-#ifdef CONFIG_PM
-
 extern void pm_device_wakeup_source(const struct device *dev, bool enable);
 
 bool pm_device_wakeup_enable(const struct device *dev, bool enable)
@@ -61,5 +59,3 @@ bool pm_device_wakeup_is_capable(const struct device *dev)
 	return atomic_test_bit(&pm->flags,
 			       PM_DEVICE_FLAG_WS_CAPABLE);
 }
-
-#endif /* CONFIG_PM */

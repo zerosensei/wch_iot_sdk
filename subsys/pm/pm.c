@@ -16,7 +16,6 @@
 
 #include <drivers/gpio.h>
 
-#ifdef CONFIG_PM
 
 static ATOMIC_DEFINE(z_post_ops_required, 1);
 static sys_slist_t pm_notifiers = SYS_SLIST_STATIC_INIT(&pm_notifiers);
@@ -151,5 +150,3 @@ const struct pm_state_info *pm_state_next_get(uint8_t cpu)
 	return &z_pm_state;
 }
 
-
-#endif /* CONFIG_PM */
