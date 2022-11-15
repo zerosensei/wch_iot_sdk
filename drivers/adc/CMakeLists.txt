@@ -3,4 +3,4 @@
 
 set_library()
 
-library_sources(adc.c)
+library_sources_ifdef(CONFIG_ADC adc.c)

@@ -5,6 +5,10 @@
 		}
 	],
 	"settings": {
-		"esbonio.sphinx.confDir": ""
+		"esbonio.sphinx.confDir": "",
+		"files.associations": {
+			"log.h": "c",
+			"gpio.h": "c"
+		}
 	}
 }

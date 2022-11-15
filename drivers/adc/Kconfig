@@ -13,6 +13,12 @@ config ADC_CHANNEL_MAP
     help
       Bit-mask indicating the channels to be supported by the driver.
       
+config ADC_SUPPORT_INTERRUPT
+    bool
+    help
+      This is an option to be enabled by individual ADC driver
+	    to signal that the driver and hardware supports interrupts.
+
 
 module = ADC
 module-str = ADC

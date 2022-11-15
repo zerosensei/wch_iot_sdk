@@ -10,7 +10,7 @@
 
 const struct device *gpioa = DEVICE_GET(gpioa);
 
-__attribute__((noinline)) __HIGHCODE void main_process(void)
+__HIGHCODE __attribute__((noinline)) void main_process(void)
 {
     while(1) {
         TMOS_SystemProcess();

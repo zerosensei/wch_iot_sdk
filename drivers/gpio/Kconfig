@@ -9,8 +9,15 @@ menuconfig GPIO
 
 if GPIO
 
+config GPIO_SUPPORT_INTERRUPT
+	bool "GPIO interrupt"
+	help
+	  This is an option to be enabled by individual GPIO driver
+	  to signal that the driver and hardware supports interrupts.
+
 config GPIO_INIT_PRIORITY
 	int "GPIO init priority"
+	depends on GPIO_SUPPORT_INTERRUPT
 	default 0
 	help
 	  GPIO driver device initialization priority.

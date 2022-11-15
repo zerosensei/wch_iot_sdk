@@ -4,7 +4,7 @@
 set_library()
 
 library_sources(
-    # dis.c
+    dis.c
     # hrs.c
     sps.c
 )

@@ -27,9 +27,18 @@ void hal_clk_periph_clk_disable(uint16_t per)
     sys_safe_access_disable();
 }
 
+static inline bool hal_clk_pwr_pll_is_on(void)
+{
+    return (R8_HFCK_PWR_CTRL & RB_CLK_PLL_PON) ? true : false;
+}
+
+static inline bool hal_clk_pwr_xt32m_is_on(void)
+{
+    return (R8_HFCK_PWR_CTRL & RB_CLK_XT32M_PON) ? true : false;
+}
 
 //TODO: usb需要开启pll
-__HIGHCODE void hal_clk_pwr_pll_on(void)
+static inline void hal_clk_pwr_pll_on(void)
 {
     sys_safe_access_enable();
     R8_HFCK_PWR_CTRL |= RB_CLK_PLL_PON;
@@ -41,14 +50,14 @@ __HIGHCODE void hal_clk_pwr_pll_on(void)
     }
 }
 
-__HIGHCODE void hal_clk_pwr_pll_off(void)
+static inline void hal_clk_pwr_pll_off(void)
 {
     sys_safe_access_enable();
     R8_HFCK_PWR_CTRL &= ~RB_CLK_PLL_PON;  
     sys_safe_access_disable();
 }
 
-__HIGHCODE void hal_clk_pwr_xt32m_on(void)
+static inline void hal_clk_pwr_xt32m_on(void)
 {
     sys_safe_access_enable();
     R8_HFCK_PWR_CTRL |= RB_CLK_XT32M_PON;
@@ -60,14 +69,14 @@ __HIGHCODE void hal_clk_pwr_xt32m_on(void)
     }
 }
 
-__HIGHCODE void hal_clk_pwr_xt32m_off(void)
+static inline void hal_clk_pwr_xt32m_off(void)
 {
     sys_safe_access_enable();
     R8_HFCK_PWR_CTRL &= ~RB_CLK_XT32M_PON;
     sys_safe_access_disable();
 }
 
-__HIGHCODE static void hal_clk_sys_config(sys_clk_mode_t clk_mode, uint8_t div)
+static inline void hal_clk_sys_config(sys_clk_mode_t clk_mode, uint8_t div)
 {
     uint8_t cfg = ((clk_mode << SYS_CLK_MODE_POS) & SYS_CLK_MODE_MSK) 
             | ((div << SYS_CLK_DIV_POS) & SYS_CLK_DIV_MSK);
@@ -98,7 +107,6 @@ __HIGHCODE void hal_clk_sys_setup(sys_clk_source_t clk)
         hal_clk_sys_config(CLK_MODE_32K, 5U);
         break;
     case CLK_MODE_PLL:
-        hal_clk_sys_config(CLK_MODE_PLL, clk & SYS_CLK_DIV_MSK);
         
         if (!hal_clk_pwr_xt32m_is_on()) {
             hal_clk_pwr_xt32m_on();
@@ -108,17 +116,20 @@ __HIGHCODE void hal_clk_sys_setup(sys_clk_source_t clk)
             hal_clk_pwr_pll_on();
         }
 
+        hal_clk_sys_config(CLK_MODE_PLL, clk & SYS_CLK_DIV_MSK);
+
         sys_safe_access_enable();
         R8_FLASH_CFG = 0x53;
         sys_safe_access_disable();
         break;
     case CLK_MODE_32M:
     default:
-        hal_clk_sys_config(CLK_MODE_32M, clk & SYS_CLK_DIV_MSK);
 
         if (!hal_clk_pwr_xt32m_is_on()) {
             hal_clk_pwr_xt32m_on();
         }
+
+        hal_clk_sys_config(CLK_MODE_32M, clk & SYS_CLK_DIV_MSK);
 
         sys_safe_access_enable();
         R8_FLASH_CFG = 0x51;

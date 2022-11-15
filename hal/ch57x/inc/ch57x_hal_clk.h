@@ -151,16 +151,6 @@ typedef enum {
 } lse_capacitance_t;
 
 
-static inline bool hal_clk_pwr_pll_is_on(void)
-{
-    return (R8_HFCK_PWR_CTRL & RB_CLK_PLL_PON) ? true : false;
-}
-
-static inline bool hal_clk_pwr_xt32m_is_on(void)
-{
-    return (R8_HFCK_PWR_CTRL & RB_CLK_XT32M_PON) ? true : false;
-}
-
 extern uint16_t int32k_tune_flash;
 extern uint16_t int32k_tune_ram;
 
@@ -172,10 +162,6 @@ extern uint16_t int32k_tune_ram;
  */
 void hal_clk_periph_clk_enable(uint16_t per);
 void hal_clk_periph_clk_disable(uint16_t per);
-void hal_clk_sys_pwr_pll_on(void);
-void hal_clk_sys_pwr_pll_off(void);
-void hal_clk_sys_pwr_xt32m_on(void);
-void hal_clk_sys_pwr_xt32m_off(void);
 void hal_clk_sys_setup(sys_clk_source_t clk);
 uint32_t hal_clk_sys_get(void);
 void hal_clk_lf_source_select(low_freq_source_t src);

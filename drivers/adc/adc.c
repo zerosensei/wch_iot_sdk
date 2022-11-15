@@ -10,8 +10,6 @@
 #include <logging/log.h>
 #include "adc_context.h"
 
-#if CONFIG_ADC
-
 LOG_MODULE_REGISTER(wch_adc, CONFIG_ADC_LOG_LEVEL);
 
 struct adc_wch_config {
@@ -27,6 +25,7 @@ struct adc_wch_data {
 	uint16_t *repeat_buffer;
 };
 
+#ifdef CONFIG_ADC_SUPPORT_INTERRUPT
 static inline void adc_wch_handler(const struct device *dev)
 {
     struct adc_wch_data *data = dev->data;
@@ -52,6 +51,8 @@ void ADC_IRQHandler(void)
 {
     adc_wch_handler(DEVICE_GET(adc));
 }
+
+#endif /* CONFIG_ADC_SUPPORT_INTERRUPT */
 
 static void adc_context_start_sampling(struct adc_context *ctx)
 {
@@ -254,9 +255,11 @@ static int adc_wch_init(const struct device *dev)
     const struct adc_wch_config *cfg = dev->cfg;
 
     hal_adc_init();
-
+#ifdef CONFIG_ADC_SUPPORT_INTERRUPT
     cfg->irq_config_func();
-
+#else
+    ARG_UNUSED(cfg);
+#endif
     return 0;
 }
 
@@ -281,6 +284,4 @@ static int adc_wch_init(const struct device *dev)
                 1)
 
 ADC_INIT();
-
-#endif /* CONFIG_ADC */
 

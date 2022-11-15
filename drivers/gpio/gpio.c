@@ -24,6 +24,7 @@ struct gpio_wch_data {
 	sys_slist_t cb;
 };
 
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
 __WCH_INT_FAST __HIGHCODE void GPIOA_IRQHandler(void)
 {
     const struct gpio_wch_config *config = DEVICE_GET(gpioa)->cfg;
@@ -47,7 +48,7 @@ __WCH_INT_FAST __HIGHCODE void GPIOB_IRQHandler(void)
 
     gpio_fire_callbacks(&data->cb, DEVICE_GET(gpiob), int_pins);
 }
-
+#endif /* CONFIG_GPIO_SUPPORT_INTERRUPT */
 
 static int gpio_wch_flags_to_cfg(uint32_t flag, int *pin_cfg)
 {
@@ -157,6 +158,7 @@ static int gpio_wch_pin_configure(const struct device *port, gpio_pin_t pin,
     return 0;
 }
 
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
 static int gpio_wch_pin_interrupt_configure(const struct device *port, gpio_pin_t pin,
                                             enum gpio_int_mode mode, 
                                             enum gpio_int_trig trig)
@@ -203,6 +205,7 @@ static uint32_t gpio_wch_get_pending_int(const struct device *port)
 
     return 0;
 }
+#endif
 
 static const struct gpio_driver_api gpio_wch_driver_api = {
     .pin_configure = gpio_wch_pin_configure,
@@ -211,16 +214,22 @@ static const struct gpio_driver_api gpio_wch_driver_api = {
     .port_set_bits_raw = gpio_wch_port_set_bits_raw,
     .port_clear_bits_raw = gpio_wch_port_clear_bits_raw,
     .port_toggle_bits = gpio_wch_port_toggle_bits,
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
     .pin_interrupt_configure = gpio_wch_pin_interrupt_configure,
     .manage_callback = gpio_wch_manage_callback,
     .get_pending_int = gpio_wch_get_pending_int,
+#endif
 };
 
 static int gpio_wch_init(const struct device *dev)
 {
     const struct gpio_wch_config *cfg = dev->cfg;
 
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
     cfg->irq_config_func(dev);
+#else
+    ARG_UNUSED(cfg);
+#endif /* CONFIG_GPIO_SUPPORT_INTERRUPT */
 
     for(int i = 0; i < 32; i++) {
         gpio_wch_pin_configure(dev, i, GPIO_INPUT | GPIO_PULL_UP);

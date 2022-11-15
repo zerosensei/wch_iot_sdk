@@ -18,7 +18,7 @@
 static uint32_t last_count = 0;
 
 
-//TODO: ×¨ÃÅĞ´¸örtc ºÍsystic µÄÇı¶¯ ÓësysÎŞ¹Ø CH573¿ÉÒÔÓÃtimer´úÌæsystick
+//TODO: ä¸“é—¨å†™ä¸ªrtc å’Œsystic çš„é©±åŠ¨ ä¸sysæ— å…³ CH573å¯ä»¥ç”¨timerä»£æ›¿systick
 static inline void set_rtc_alarm(uint32_t time)
 {
     hal_rtc_set_alarm(time);

@@ -419,6 +419,7 @@ struct gpio_driver_api {
 				   gpio_port_pins_t pins);
 	int (*port_toggle_bits)(const struct device *port,
 				gpio_port_pins_t pins);
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
 	int (*pin_interrupt_configure)(const struct device *port,
 				       gpio_pin_t pin,
 				       enum gpio_int_mode, enum gpio_int_trig);
@@ -426,6 +427,7 @@ struct gpio_driver_api {
 			       struct gpio_callback *cb,
 			       bool set);
 	uint32_t (*get_pending_int)(const struct device *dev);
+#endif
 };
 
 /**
@@ -456,6 +458,7 @@ static inline int gpio_pin_interrupt_configure(const struct device *port,
 					   gpio_pin_t pin,
 					   gpio_flags_t flags)
 {
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
 	const struct gpio_driver_api *api =
 		(const struct gpio_driver_api *)port->api;
 	const struct gpio_driver_config *const cfg =
@@ -498,6 +501,13 @@ static inline int gpio_pin_interrupt_configure(const struct device *port,
 	mode = (enum gpio_int_mode)(flags & (GPIO_INT_EDGE | GPIO_INT_DISABLE | GPIO_INT_ENABLE));
 
 	return api->pin_interrupt_configure(port, pin, mode, trig);
+#else
+	ARG_UNUSED(port);
+	ARG_UNUSED(pin);
+	ARG_UNUSED(flags);
+
+	return -ENOTSUP;
+#endif
 }
 
 /**
@@ -1017,6 +1027,7 @@ static inline void gpio_init_callback(struct gpio_callback *callback,
 static inline int gpio_add_callback(const struct device *port,
 				    struct gpio_callback *callback)
 {
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
 	const struct gpio_driver_api *api =
 		(const struct gpio_driver_api *)port->api;
 
@@ -1025,6 +1036,12 @@ static inline int gpio_add_callback(const struct device *port,
 	}
 
 	return api->manage_callback(port, callback, true);
+#else 
+	ARG_UNUSED(port);
+	ARG_UNUSED(callback);
+
+	return -ENOTSUP;
+#endif
 }
 
 /**
@@ -1046,6 +1063,7 @@ static inline int gpio_add_callback(const struct device *port,
 static inline int gpio_remove_callback(const struct device *port,
 				       struct gpio_callback *callback)
 {
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
 	const struct gpio_driver_api *api =
 		(const struct gpio_driver_api *)port->api;
 
@@ -1054,6 +1072,12 @@ static inline int gpio_remove_callback(const struct device *port,
 	}
 
 	return api->manage_callback(port, callback, false);
+#else
+	ARG_UNUSED(port);
+	ARG_UNUSED(callback);
+
+	return -ENOTSUP;
+#endif
 }
 
 /**
@@ -1071,6 +1095,7 @@ static inline int gpio_remove_callback(const struct device *port,
  */
 static inline int gpio_get_pending_int(const struct device *dev)
 {
+#ifdef CONFIG_GPIO_SUPPORT_INTERRUPT
 	const struct gpio_driver_api *api =
 		(const struct gpio_driver_api *)dev->api;
 
@@ -1079,6 +1104,11 @@ static inline int gpio_get_pending_int(const struct device *dev)
 	}
 
 	return api->get_pending_int(dev);
+#else
+	ARG_UNUSED(dev);
+
+	return -ENOTSUP;
+#endif
 }
 
 void gpio_init(void);
