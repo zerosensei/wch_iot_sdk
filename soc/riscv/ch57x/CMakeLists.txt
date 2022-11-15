@@ -15,4 +15,5 @@ wch_sources(
 wch_ld_options(
     --specs=nosys.specs
     -nostartfiles
+    --specs=nano.specs
   )
