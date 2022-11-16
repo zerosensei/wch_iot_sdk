@@ -195,7 +195,11 @@ static int adc_wch_read(const struct device *dev,
 
     data->buffer = sequence->buffer;
 
+#ifdef CONFIG_ADC_SUPPORT_INTERRUPT
     adc_context_start_read(&data->ctx, sequence);
+#else
+    *data->buffer = hal_adc_read_raw() + data->offset;
+#endif
 
     return 0;
 }
@@ -203,8 +207,13 @@ static int adc_wch_read(const struct device *dev,
 static bool adc_wch_is_completed(const struct device *dev)
 {
     struct adc_wch_data *data = dev->data;
-
+#ifdef CONFIG_ADC_SUPPORT_INTERRUPT
     return adc_context_status(&data->ctx) == 0 ? true : false; 
+#else
+    ARG_UNUSED(data);
+
+    return true;
+#endif
 }
 
 
