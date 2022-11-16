@@ -80,8 +80,6 @@ void pm_system_resume(void)
 __attribute__((section(".highcode")))
 uint32_t pm_system_suspend(uint32_t ticks)
 {
-    gpio_pin_set(DEVICE_GET(gpioa), 5, 1);
-
 	uint32_t sleep_ticks;
     int key = irq_lock();
     uint32_t now = k_cycle_get_32();
@@ -108,7 +106,6 @@ uint32_t pm_system_suspend(uint32_t ticks)
 
 	pm_state_notify(true);
 	atomic_set_bit(z_post_ops_required, 0);
-    gpio_pin_set(DEVICE_GET(gpioa), 5, 0);
 
 	pm_state_set(z_pm_state.state, z_pm_state.substate_id);
 
