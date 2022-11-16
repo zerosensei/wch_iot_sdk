@@ -3,4 +3,4 @@
 
 set_library()
 
-library_sources(uart.c)
+library_sources_ifdef(CONFIG_UART uart.c)

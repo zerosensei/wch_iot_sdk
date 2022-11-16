@@ -9,8 +9,6 @@
 #include <drivers/gpio.h>
 #include <drivers/pinctrl.h>
 
-#if CONFIG_UART
-
 struct uart_wch_config {
     WCH_UART_Type *uart;
     struct uart_config uart_cfg;
@@ -604,5 +602,3 @@ UART_INIT(2);
 #ifdef CONFIG_UART_3_ENABLE
 UART_INIT(3);
 #endif
-
-#endif /* CONFIG_UART */
