@@ -12,8 +12,6 @@
 #include <drivers/timer/system_timer.h>
 #include <logging/log.h>
 
-#ifdef CONFIG_PM
-
 LOG_MODULE_REGISTER(soc, CONFIG_SOC_LOG_LEVEL);
 
 const struct pm_state_info soc_pm_state = {
@@ -91,4 +89,3 @@ void pm_state_exit_post_ops(enum pm_state state, uint8_t substate_id)
 		break;
 	}
 }
-#endif
