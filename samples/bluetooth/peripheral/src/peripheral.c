@@ -189,7 +189,7 @@ void perip_process_init(void)
 
     GGS_AddService(GATT_ALL_SERVICES);           // GAP
     GATTServApp_AddService(GATT_ALL_SERVICES);   // GATT attributes
-    // device_info_service_register();
+    device_info_service_register();
     simple_service_register(&sps);
 
     uint8_t charc1[SIMPLEPROFILE_CHAR1_LEN] = {1};

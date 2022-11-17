@@ -16,7 +16,7 @@ config BT_CUSTOM_ADDRESS
       
 config BT_STACK_SIZE
     int "Bluetooth Stack size"
-    default 6324
+    default 6144
     help
       Configure the Bluetooth stack size.
       Should not be less than 6K.
