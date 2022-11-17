@@ -1,0 +1,56 @@
+# Copyright (c) 2022 Nanjing Qinheng Microelectronics Co., Ltd.
+# SPDX-License-Identifier: Apache-2.0
+
+config RISCV_CORE_QINGKE_V3A
+    bool 
+    select RISCV_ISA_RV32I
+	select RISCV_ISA_EXT_M
+	select RISCV_ISA_EXT_A
+	select RISCV_ISA_EXT_C
+    help
+      WCH QINGKE V3A Standard Core
+
+config RISCV_CORE_QINKER_V4A
+    bool
+	select RISCV_PMP
+    select RISCV_ISA_RV32I
+	select RISCV_ISA_EXT_M
+	select RISCV_ISA_EXT_A
+	select RISCV_ISA_EXT_C
+    help
+      WCH QINGKE V4A Standard Core
+
+# TODO: 在调试上可能存在一些差别， 且中断嵌套，硬件堆栈存在等存在差别，需再细分
+config RISCV_CORE_QINKER_V4B
+    bool
+	select RISCV_PMP
+    select RISCV_ISA_RV32I
+	select RISCV_ISA_EXT_M
+	select RISCV_ISA_EXT_A
+	select RISCV_ISA_EXT_C
+    select RISCV_WCH_EXT_XW
+    help
+      WCH QINGKE V4B Standard Core
+
+config RISCV_CORE_QINKER_V4C
+    bool
+	select RISCV_PMP
+    select RISCV_ISA_RV32I
+	select RISCV_ISA_EXT_M
+	select RISCV_ISA_EXT_A
+	select RISCV_ISA_EXT_C
+    select RISCV_WCH_EXT_XW
+    help
+      WCH QINGKE V4C Standard Core
+
+config RISCV_CORE_QINKER_V4F
+    bool
+	select RISCV_PMP
+    select RISCV_ISA_RV32I
+	select RISCV_ISA_EXT_M
+	select RISCV_ISA_EXT_A
+	select RISCV_ISA_EXT_C
+    select RISCV_ISA_EXT_F
+    select RISCV_WCH_EXT_XW
+    help
+      WCH QINGKE V4F Standard Core

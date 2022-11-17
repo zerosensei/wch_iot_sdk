@@ -91,3 +91,10 @@ config RISCV_ISA_EXT_C
 	  RISC-V standard compressed instruction set extension, named "C",
 	  which reduces static and dynamic code size by adding short 16-bit
 	  instruction encodings for common operations.
+
+config RISCV_WCH_EXT_XW
+	bool
+	help
+	  (XW) - WCH Extension for Extra Compressed extension
+
+	  Supports compressed instructions for halfword and byte operations.
