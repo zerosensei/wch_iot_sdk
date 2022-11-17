@@ -30,6 +30,8 @@ wch_include_directories(
 
 wch_include_directories(${SOC_DIR})
 
+wch_compile_options(-ffunction-sections -fdata-sections)
+
 # @Intent: Set compiler specific flag for disabling strict aliasing rule
 wch_compile_options($<$<COMPILE_LANGUAGE:C>:$<TARGET_PROPERTY:compiler,no_strict_aliasing>>)
 wch_compile_options($<$<COMPILE_LANGUAGE:CXX>:$<TARGET_PROPERTY:compiler-cpp,no_strict_aliasing>>)
