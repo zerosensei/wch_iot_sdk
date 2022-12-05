@@ -113,8 +113,6 @@ typedef enum {
     WCH_ERROR_ALREADY_INITIALIZED  = 12, ///< Module already initialized.
 } wch_err_t;
 
-//TODO:
-//#ifdef CONFIG_UART
 #include "ch57x_hal_adc.h"
 #include "ch57x_hal_pfic.h"
 #include "ch57x_hal_uart.h"

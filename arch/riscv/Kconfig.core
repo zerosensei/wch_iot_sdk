@@ -10,7 +10,7 @@ config RISCV_CORE_QINGKE_V3A
     help
       WCH QINGKE V3A Standard Core
 
-config RISCV_CORE_QINKER_V4A
+config RISCV_CORE_QINGKE_V4A
     bool
 	select RISCV_PMP
     select RISCV_ISA_RV32I
@@ -21,7 +21,7 @@ config RISCV_CORE_QINKER_V4A
       WCH QINGKE V4A Standard Core
 
 # TODO: 在调试上可能存在一些差别， 且中断嵌套，硬件堆栈存在等存在差别，需再细分
-config RISCV_CORE_QINKER_V4B
+config RISCV_CORE_QINGKE_V4B
     bool
 	select RISCV_PMP
     select RISCV_ISA_RV32I
@@ -32,7 +32,7 @@ config RISCV_CORE_QINKER_V4B
     help
       WCH QINGKE V4B Standard Core
 
-config RISCV_CORE_QINKER_V4C
+config RISCV_CORE_QINGKE_V4C
     bool
 	select RISCV_PMP
     select RISCV_ISA_RV32I
@@ -43,7 +43,7 @@ config RISCV_CORE_QINKER_V4C
     help
       WCH QINGKE V4C Standard Core
 
-config RISCV_CORE_QINKER_V4F
+config RISCV_CORE_QINGKE_V4F
     bool
 	select RISCV_PMP
     select RISCV_ISA_RV32I

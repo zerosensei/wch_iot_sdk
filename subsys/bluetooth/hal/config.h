@@ -13,7 +13,7 @@
 #endif
 
 #ifdef CONFIG_SOC_SERIES_CH58X
-
+#include <CH58xBLE_LIB.h>
 #endif
 
 #if defined(CONFIG_BT_CTLR_TX_PWR_PLUS_7)

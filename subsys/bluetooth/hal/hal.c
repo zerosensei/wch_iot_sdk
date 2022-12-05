@@ -103,7 +103,12 @@ uint16_t ble_hal_get_inter_temp(void)
 
 void ble_hal_lsi_calibrate(void)
 {
+#ifdef CONFIG_SOC_SERIES_CH57X
     hal_clk_lsi_calibrate();
+#endif
+#ifdef CONFIG_SOC_SERIES_CH58X
+    hal_clk_lsi_calibrate(LEVEL_64);
+#endif
 }
 
 uint32_t ble_flash_read(uint32_t addr, uint32_t num, uint32_t *pBuf)

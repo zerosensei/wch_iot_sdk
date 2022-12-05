@@ -5,25 +5,69 @@ config SOC_SERIES_CH58X
     default y
 
 choice
-    prompt "CH58x MCU Selection"
+    prompt "CH57x MCU Selection"
+    default SOC_CH583M
 
-config SOC_CH583M
-    bool "CH583M"
+    config SOC_CH583M
+        bool "CH583M"
 
-config SOC_CH582M
-    bool "CH582M"
+    config SOC_CH582M
+        bool "CH582M"
 
-config SOC_CH582F
-    bool "CH582F"
+    config SOC_CH582F
+        bool "CH582F"
 
-config SOC_CH581F
-    bool "CH581F"
+    config SOC_CH581F
+        bool "CH581F"
 
-endchoice 
+endchoice
 
 config SOC_DCDC_CH58X
-    bool "Soc DC/DC CH58X"
-    depends on SOC_CH583M || SOC_CH582M || SOC_CH582F || SOC_CH581F
+    bool "SoC DC/DC CH58X"
     help
-      Enable CH57X series System on Chip DC/DC converter.
+      Enable CH58X series System on Chip DC/DC converter.
 
+choice
+    prompt "SoC RTC source select"
+
+    config SOC_LSE_32768
+        bool "LSE 32768Hz"
+    config SOC_LSI_32000
+        bool "LSI 32000Hz"
+    config SOC_LSI_32768
+        bool "LSI 32768Hz"
+
+endchoice
+
+config SOC_RTC_FREQ
+    int
+    default 32768 if SOC_LSE_32768 || SOC_LSI_32768
+    default 32000 if SOC_LSI_32000
+    help
+      SoC RTC frequency (in Hz).
+
+config SOC_RTC_MAX_TICK
+    hex 
+    default 0xA8C00000
+
+
+config SOC_SYSTEM_OPERATE_FREQ
+    int "System Operating Frequency"
+    default 60000000
+    help
+      System operating frequency. 
+
+config SYS_CLOCK_HW_CYCLES_PER_SEC
+    default 32768
+
+config SYS_CLOCK_TICKS_PER_SEC
+    default 32768
+
+config ADC_CHANNEL_MAP
+    default 0xFFFF if SOC_CH582M || SOC_CH583M
+    default 0xF03F if SOC_CH582F
+    default 0xC03F if SOC_CH581F
+
+
+config BT_SNV_ADDR
+    default 0x7E00

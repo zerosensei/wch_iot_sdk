@@ -11,6 +11,7 @@
 #include <toolchain.h>
 #include <stddef.h>
 #include <stdarg.h>
+#include <stdio.h>
 #include <inttypes.h>
 
 #ifdef __cplusplus

@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include <ch57x_common.h>
+#include <ch58x_common.h>
 
 __HIGHCODE void hal_sys_reset(void)
 {
@@ -16,7 +16,9 @@ __HIGHCODE void hal_sys_reset(void)
 
 __HIGHCODE void hal_sys_init(void)
 {
-#if (CONFIG_SOC_SYSTEM_OPERATE_FREQ == 60000000)
+#if (CONFIG_SOC_SYSTEM_OPERATE_FREQ == 80000000)
+    hal_clk_sys_setup(CLK_SOURCE_PLL_80MHZ)
+#elif (CONFIG_SOC_SYSTEM_OPERATE_FREQ == 60000000)
     hal_clk_sys_setup(CLK_SOURCE_PLL_60MHZ);
 #elif (CONFIG_SOC_SYSTEM_OPERATE_FREQ == 48000000)
     hal_clk_sys_setup(CLK_SOURCE_PLL_48MHZ);
@@ -45,7 +47,9 @@ __HIGHCODE __attribute__((optimize("-Os")))
 void hal_sys_delay_us(uint16_t t)
 {
     uint32_t i = 0;
-#if(CONFIG_SOC_SYSTEM_OPERATE_FREQ == 60000000)
+#if(CONFIG_SOC_SYSTEM_OPERATE_FREQ == 80000000)
+    i = t * 20;
+#elif(CONFIG_SOC_SYSTEM_OPERATE_FREQ == 60000000)
     i = t * 15;
 #elif(CONFIG_SOC_SYSTEM_OPERATE_FREQ == 48000000)
     i = t * 12;

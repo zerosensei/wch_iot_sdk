@@ -468,6 +468,9 @@ static inline int gpio_pin_interrupt_configure(const struct device *port,
 	enum gpio_int_trig trig;
 	enum gpio_int_mode mode;
 
+    printk("pin: %d, flags: %#x\n", pin, flags);
+
+
 	__ASSERT((flags & (GPIO_INT_DISABLE | GPIO_INT_ENABLE))
 		 != (GPIO_INT_DISABLE | GPIO_INT_ENABLE),
 		 "Cannot both enable and disable interrupts");
@@ -499,6 +502,8 @@ static inline int gpio_pin_interrupt_configure(const struct device *port,
 
 	trig = (enum gpio_int_trig)(flags & (GPIO_INT_LOW_0 | GPIO_INT_HIGH_1));
 	mode = (enum gpio_int_mode)(flags & (GPIO_INT_EDGE | GPIO_INT_DISABLE | GPIO_INT_ENABLE));
+
+    printk("pin: %d, mode: %#x, trig: %#x\n",pin, mode, trig);
 
 	return api->pin_interrupt_configure(port, pin, mode, trig);
 #else

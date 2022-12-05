@@ -4,91 +4,124 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef __CH58x_COMM_H__
-#define __CH58x_COMM_H__
+#ifndef HAL_CH58X_INC_CH58X_COMMON_H
+#define HAL_CH58X_INC_CH58X_COMMON_H
 
-#ifdef __cplusplus
- extern "C" {
-#endif
-
-
-#ifndef  NULL
-#define  NULL     0
-#endif
-#define  ALL			0xFFFF
-
-#ifndef __HIGH_CODE
-#define __HIGH_CODE   __attribute__((section(".highcode")))
-#endif
-
-#ifndef __INTERRUPT
-#ifdef INT_SOFT
-#define __INTERRUPT   __attribute__((interrupt()))
-#else
-#define __INTERRUPT   __attribute__((interrupt("WCH-Interrupt-fast")))
-#endif
-#endif
-
-#define Debug_UART0        0
-#define Debug_UART1        1
-#define Debug_UART2        2
-#define Debug_UART3        3
-
-#ifdef DEBUG
-#include <stdio.h>
-#endif
-
-/**
- * @brief  系统主频时钟（Hz）
- */
-#ifndef	 FREQ_SYS
-#define  FREQ_SYS		60000000
-#endif
-
-#ifndef  SAFEOPERATE
-#define  SAFEOPERATE   __nop();__nop()
-#endif
-
-/**
- * @brief  32K时钟（Hz）
- */
-#ifdef CLK_OSC32K
-#if ( CLK_OSC32K == 1 )
-#define CAB_LSIFQ       32000
-#else
-#define CAB_LSIFQ       32768
-#endif
-#else
-#define CAB_LSIFQ       32000
-#endif
-
-#include <string.h>
 #include <stdint.h>
+#include <stddef.h>
+#include <stdbool.h>
 #include "CH583SFR.h"
-#include "core_riscv.h"
-#include "CH58x_clk.h"
-#include "CH58x_uart.h"
-#include "CH58x_gpio.h"
-#include "CH58x_i2c.h"
-#include "CH58x_flash.h"
-#include "CH58x_pwr.h"
-#include "CH58x_pwm.h"
-#include "CH58x_adc.h"
-#include "CH58x_sys.h"
-#include "CH58x_timer.h"
-#include "CH58x_spi.h"
-#include "CH58x_usbdev.h"
-#include "CH58x_usbhost.h"
-#include "ISP583.h"
+#include <ISP583.h>
+
+#define __WCH_INT_FAST          __attribute__((interrupt("WCH-Interrupt-fast")))
+#define __HIGHCODE              __attribute__((section(".highcode")))
 
 
-#define DelayMs(x)      mDelaymS(x)
-#define DelayUs(x)      mDelayuS(x)
+/**
+ * @brief Macro for checking if the specified identifier is defined and it has
+ *        a non-zero value.
+ *
+ */
+#define WCH_IS_ENABLED(cfg_macro)   (cfg_macro)
+
+/**
+ * @brief Macro for creating unsigned integer with bit position @p x set.
+ *
+ * @param[in] x Bit position to be set.
+ *
+ * @return Unsigned integer with requested bit position set.
+ */
+#define WCH_BIT(x) (1UL << (x))
+
+/**
+ * @brief Macro for returning bit mask or 0 if @p x is 0.
+ *
+ * @param[in] x Bit mask size. Bit mask has bits 0 through x-1 (inclusive) set.
+ *
+ * @return Bit mask.
+ */
+#define WCH_MASK(x) (WCH_BIT(x) - 1UL)
+
+/**
+ * @brief Macro for concatenating two tokens in macro expansion.
+ *
+ * @note This macro is expanded in two steps so that tokens given as macros
+ *       themselves are fully expanded before they are merged.
+ *
+ * @param[in] p1 First token.
+ * @param[in] p2 Second token.
+ *
+ * @return The two tokens merged into one, unless they cannot together form
+ *         a valid token (in such case, the preprocessor issues a warning and
+ *         does not perform the concatenation).
+ *
+ * @sa WCH_CONCAT_3
+ */
+#define WCH_CONCAT_2(p1, p2)       _WCH_CONCAT_2(p1, p2)
+
+/** @brief Internal macro used by @ref _WCH_CONCAT_2 to perform the expansion in two steps. */
+#define _WCH_CONCAT_2(p1, p2)      p1 ## p2
+
+/**
+ * @brief Macro for performing rounded integer division (as opposed to
+ *        truncating the result).
+ *
+ * @param[in] a Numerator.
+ * @param[in] b Denominator.
+ *
+ * @return Rounded (integer) result of dividing @c a by @c b.
+ */
+#define WCH_ROUNDED_DIV(a, b)  (((a) + ((b) / 2)) / (b))
+
+/**
+ * @brief Macro for performing integer division, making sure the result is rounded up.
+ *
+ * @details A typical use case for this macro is to compute the number of objects
+ *          with size @c b required to hold @c a number of bytes.
+ *
+ * @param[in] a Numerator.
+ * @param[in] b Denominator.
+ *
+ * @return Integer result of dividing @c a by @c b, rounded up.
+ */
+#define WCH_CEIL_DIV(a, b)  ((((a) - 1) / (b)) + 1)
+
+/**
+ * @brief Macro for getting the number of elements in an array.
+ *
+ * @param[in] array Name of the array.
+ *
+ * @return Array element count.
+ */
+#define WCH_ARRAY_SIZE(array) (sizeof(array) / sizeof((array)[0]))
 
 
-#ifdef __cplusplus
-}
-#endif
+/** @brief Enumerated type for error codes. */
+typedef enum {
+    WCH_SUCCESS                    = 0,  ///< Operation performed successfully.
+    WCH_ERROR_INTERNAL             = 1,  ///< Internal error.
+    WCH_ERROR_NO_MEM               = 2,  ///< No memory for operation.
+    WCH_ERROR_NOT_SUPPORTED        = 3,  ///< Not supported.
+    WCH_ERROR_INVALID_PARAM        = 4,  ///< Invalid parameter.
+    WCH_ERROR_INVALID_STATE        = 5,  ///< Invalid state, operation disallowed in this state.
+    WCH_ERROR_INVALID_LENGTH       = 6,  ///< Invalid length.
+    WCH_ERROR_TIMEOUT              = 7,  ///< Operation timed out.
+    WCH_ERROR_FORBIDDEN            = 8,  ///< Operation is forbidden.
+    WCH_ERROR_NULL                 = 9,  ///< Null pointer.
+    WCH_ERROR_INVALID_ADDR         = 10, ///< Bad memory address.
+    WCH_ERROR_BUSY                 = 11, ///< Busy.
+    WCH_ERROR_ALREADY_INITIALIZED  = 12, ///< Module already initialized.
+} wch_err_t;
 
-#endif  // __CH58x_COMM_H__
+#include "ch58x_hal_adc.h"
+#include "ch58x_hal_pfic.h"
+#include "ch58x_hal_uart.h"
+#include "ch58x_hal_sys.h"
+#include "ch58x_hal_gpio.h"
+// #include "ch58x_hal_systick.h"
+#include "ch58x_hal_rtc.h"
+#include "ch58x_hal_clk.h"
+#include "ch58x_hal_power.h"
+#include "ch58x_hal_flash.h"
 
+#endif /* HAL_CH58X_INC_CH58X_COMMON_H */

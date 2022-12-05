@@ -7,7 +7,7 @@ wch_sources(
     pin_cfg.c
     soc_irq.c
     soc.c  
-    startup_CH573.S
+    startup_CH583.S
 )
 
 if(CONFIG_PM)

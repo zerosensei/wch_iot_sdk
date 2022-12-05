@@ -99,4 +99,6 @@ comment "Serial Drivers"
 
 source "drivers/uart/Kconfig.ch57x"
 
+source "drivers/uart/Kconfig.ch58x"
+
 endif # UART

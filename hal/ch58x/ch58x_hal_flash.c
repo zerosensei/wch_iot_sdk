@@ -4,7 +4,7 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#include "ch57x_common.h"
+#include "ch58x_common.h"
 
 void hal_flash_rom_read(uint32_t addr, void *buf, uint32_t len)
 {

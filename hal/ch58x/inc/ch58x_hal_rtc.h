@@ -4,15 +4,15 @@
  * SPDX-License-Identifier: Apache-2.0
  */
 
-#ifndef HAL_CH57X_INC_CH57X_HAL_RTC_H
-#define HAL_CH57X_INC_CH57X_HAL_RTC_H
+#ifndef HAL_CH58X_INC_CH58X_HAL_RTC_H
+#define HAL_CH58X_INC_CH58X_HAL_RTC_H
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
-#include "ch57x_common.h"
-#include "time.h"
+#include "ch58x_common.h"
+#include <time.h>
 
 #define RTC_TIMESTAMP_MAX               1388534400UL      //44 years
 #define RTC_ONEDDAY_SECONDS             (60UL * 60UL * 24UL)
@@ -115,8 +115,9 @@ static inline uint32_t hal_rtc_get_alarm(void)
     return R32_RTC_TRIG;
 }
 
+
 #ifdef __cplusplus
 }
 #endif
 
-#endif /* HAL_CH57X_INC_CH57X_HAL_RTC_H */
+#endif /* HAL_CH58X_INC_CH58X_HAL_RTC_H */

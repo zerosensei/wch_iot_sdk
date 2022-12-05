@@ -11,124 +11,9 @@
 #include <pm/pm.h>
 #include <random/rand32.h>
 #include <string.h>
-
-
 LOG_MODULE_REGISTER(ble_init, CONFIG_BT_LOG_LEVEL);
 
 __attribute__((aligned(4))) uint8_t _bt_heap[CONFIG_BT_STACK_SIZE];
-
-// extern const struct pm_state_info soc_pm_state;
-// uint32_t exit_latency_tick;
-// uint32_t min_residency_tick;
-
-
-// uint32_t ble_idle(uint32_t tick)
-// {
-//     uint32_t sleep_tick;
-//     int key = irq_lock();
-//     uint32_t curr_tick = k_cycle_get_32();
-
-//     irq_unlock(key);
-
-//     if (tick >= curr_tick) {
-//         sleep_tick = tick - curr_tick;
-//     } else {
-//         sleep_tick = tick + 
-//                 (CONFIG_SOC_RTC_MAX_TICK - curr_tick);
-//     }
-
-//     if (sleep_tick <= exit_latency_tick + 
-//                   min_residency_tick) {
-//         if(sleep_tick < min_residency_tick) {
-//             return 2;
-//         }
-
-//         sys_clock_set_ticks(tick, true);
-//         pm_state_set(PM_STATE_RUNTIME_IDLE, 0);
-
-//         return 1;
-//     }
-
-//     sys_clock_set_ticks(tick - exit_latency_tick, true);
-
-//     pm_state_set(PM_STATE_SUSPEND_TO_RAM, 0);
-
-//     sys_clock_set_ticks(tick, true);
-//     pm_state_set(PM_STATE_SUSPEND_TO_IDLE, 0);
-
-//     pm_state_exit_post_ops(PM_STATE_SUSPEND_TO_RAM, 0);
-
-//     return 0;
-// }
-
-void LIBStatusCallback( uint8_t code, uint32_t status )
-{
-  static uint8_t flag=0;
-  int16_t cfo;
-
-  if( code == 9 ){
-    if( flag == 1 ){
-      printk("tx\trx\t");
-    }
-    else if( flag == 2 ){
-      printk("%d\t%d\t", status>>16, 100-(status&0xFFFF) );
-    }
-  }
-  else if( code == 0x89 ){
-//      printk("md timeout:%d ", status );
-  }
-  else if( code == 10 ){
-    if( flag == 1 ){
-      printk("crc\t");
-    }
-    else if( flag == 2 ){
-      printk("%d\t",status);
-    }
-  }
-  else if( code == 11 ){
-    if( flag == 1 ){
-      printk("cfo\t" );
-    }
-    if( flag == 2 ){
-      printk("%d\t",(s16)(status&0xffff) );
-    }
-    cfo = (s16)(status&0xffff);
-    if( cfo > 36 ){
-    }
-    else if( cfo < -36 ){
-    }
-  }
-  else if( code == 12 ){
-    if( flag == 1 ){
-      printk("rssi\n" );
-      flag = 2;
-    }
-    else if( flag == 2 ){
-      printk("%d\n",(s8)(status&0xff));
-    }    else{
-      flag = 1;
-    }
-  }
-  else if( code == 13 ){
-    printk("aa:%X\n", status );
-  }
-  else if( code == 14 ){
-    printk("crc:%X\n", status );
-  }
-  else if( code == 16 ){
-//    printk("time:%d  ", status );
-  }
-  else if( code == 17 ){
-//    printk("%d ", status );
-  }
-  else if( code == 18 ){
-//    printk("%d\n", status );
-  }
-  else if( code == 19 ){
-//    if(status)printk("length=%d\n", status );
-  }
-  else printk("lib-code:%x s::%x\n",code,status );
-}
 
 void ble_init(void)
 {
@@ -167,7 +52,6 @@ void ble_init(void)
     cfg.rcCB = ble_hal_lsi_calibrate; 
 #endif
 #endif
-    cfg.staCB = LIBStatusCallback;
 #if defined(CONFIG_PM)
     cfg.WakeUpTime = 1;
     // cfg.sleepCB = ble_idle;
@@ -184,11 +68,6 @@ void ble_init(void)
     GetMACAddress(mac_addr);
     tmos_memcpy(cfg.MacAddr, mac_addr, 6);
 #endif
-    printk("MAC: ");
-    for(int i = 0; i < 6; i++) {
-        printk("%#x ", mac_addr[i]);
-    }
-    printk("\n");
 
     __ASSERT(cfg.MEMAddr, "MEMAddr invalid");
     __ASSERT_NO_MSG(cfg.MEMLen >= 4 * 1024);

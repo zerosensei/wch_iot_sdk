@@ -8,7 +8,27 @@
 		"esbonio.sphinx.confDir": "",
 		"files.associations": {
 			"log.h": "c",
-			"gpio.h": "c"
+			"gpio.h": "c",
+			"rand32.h": "c",
+			"string.h": "c",
+			"ch58x_common.h": "c",
+			"ch583sfr.h": "c",
+			"isp583.h": "c",
+			"ch57x_common.h": "c",
+			"bluetooth.h": "c",
+			"err_code.h": "c",
+			"hal.h": "c",
+			"gatt.h": "c",
+			"stddef.h": "c",
+			"config.h": "c",
+			"uart.h": "c",
+			"soc.h": "c",
+			"printk.h": "c",
+			"stdio.h": "c",
+			"device.h": "c",
+			"toolchain.h": "c",
+			"util.h": "c",
+			"system_timer.h": "c"
 		}
 	}
 }

@@ -4,4 +4,4 @@
 config SOC_SERIES_CH58X
     bool
     select RISCV
-    select HAS_RISCV_PMP
+    select RISCV_CORE_QINGKE_V4A

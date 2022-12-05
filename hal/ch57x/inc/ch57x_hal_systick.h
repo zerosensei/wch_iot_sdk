@@ -12,7 +12,6 @@ extern "C" {
 #endif
 
 #include "ch57x_common.h"
-#include <stdio.h>
 
 /* memory mapped structure for SysTick */
 typedef struct __attribute__((packed))

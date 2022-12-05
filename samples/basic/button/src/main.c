@@ -9,7 +9,6 @@
 #include <drivers/gpio.h>
 #include <drivers/uart.h>
 #include <sys/printk.h>
-#include <drivers/timer/system_timer.h>
 
 #define BUTTON_PIN			22
 #define LED_PIN				15
