@@ -93,7 +93,7 @@ WCH_IOT_SDK以及Python依赖项安装
 
             .. code-block:: bash
             
-                pip3 insatll -r ./wch_iot_sdk/script/requirement.txt
+                pip3 insatll -r ./wch_iot_sdk/script/requirements.txt
 
         #. 设置WCH_IOT_SDK所需要的环境变量
 
